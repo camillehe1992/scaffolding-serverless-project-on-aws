@@ -13,7 +13,9 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/camillehe1992/scaffolding-serverless-project-on-aws.git']])
+                checkout scmGit(
+                    branches: [[name: 'main']],
+                    userRemoteConfigs: [[url: 'https://gitlab.com/camillehe1992/scaffolding-serverless-project-using-terraform-on-aws.git']])
             }
         }
         stage('Prepare Environemnt') {
