@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    options {
-        skipDefaultCheckout(true)
-    }
-
     tools {
         terraform "tf-1.3.4"
     }
@@ -17,7 +13,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/camillehe1992/scaffolding-serverless-project-on-aws.git']])
             }
         }
         stage('Prepare Environemnt') {
