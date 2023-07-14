@@ -19,5 +19,4 @@ module "iam" {
     "arn:aws-cn:iam::aws:policy/AWSXrayWriteOnlyAccess",
     "arn:aws-cn:iam::aws:policy/AWSXRayDaemonWriteAccess"
   ]
-
 }
