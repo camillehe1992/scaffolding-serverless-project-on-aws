@@ -36,7 +36,7 @@ variable "api_gateway_role_deployment" {
 
 variable "api_gateway_role_name" {
   type        = string
-  default     = "cmdb-apigateway-logs"
+  default     = "apigateway-logs-role"
   description = "Name of IAM role which dictates what other AWS services the API Gateway may access"
 }
 
@@ -48,25 +48,25 @@ variable "api_gateway_role_description" {
 
 variable "api_gateway_policy_name" {
   type        = string
-  default     = "cmdb-apigateway-policy"
+  default     = "apigateway-policy"
   description = "Name of IAM policy which dictates what other AWS services the API Gateway may access"
 }
 
 variable "lambda_role_name" {
   type        = string
-  default     = "cmdb-lambda-role"
+  default     = "lambda-execution-role"
   description = "Name of IAM role which dictates what other AWS services the Lambda function may access"
 }
 
 variable "lambda_role_description" {
   type        = string
-  default     = "IAM role for Lambda to execute automation tasks for the AWS Customer Portal for AWS"
+  default     = "IAM role for Lambda to execute specific tasks"
   description = "Description of IAM role which dictates what other AWS services the Lambda function may access"
 }
 
 variable "lambda_policy_name" {
   type        = string
-  default     = "cmdb-lambda-policy"
+  default     = "lambda-execution-policy"
   description = "Name of IAM policy which dictates what other AWS services the Lambda function may access"
 }
 

@@ -9,6 +9,16 @@ variable "tags" {
   description = "The key value pairs we want to apply as tags to the resources contained in this module"
 }
 
+variable "environment" {
+  type        = string
+  description = "The enviroment of project, such as dev, int, prod"
+}
+
+variable "nickname" {
+  type        = string
+  description = "The nickname of project. Should be lowercase without special chars"
+}
+
 variable "lambda_role_name" {
   type        = string
   description = "Name of IAM role which dictates what other AWS services the Lambda function may access"

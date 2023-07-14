@@ -1,5 +1,5 @@
 resource "aws_iam_role" "lambda_role" {
-  name        = var.lambda_role_name
+  name        = "${local.resource_prefix}${var.lambda_role_name}"
   description = var.lambda_role_description
 
   assume_role_policy = <<EOF
@@ -21,9 +21,8 @@ EOF
 }
 
 resource "aws_iam_role" "api_gateway_role" {
-  count = var.api_gateway_role_deployment ? 1 : 0
-
-  name        = var.api_gateway_role_name[count.index]
+  count       = var.api_gateway_role_deployment ? 1 : 0
+  name        = "${local.resource_prefix}${var.api_gateway_role_name[count.index]}"
   description = var.api_gateway_role_description[count.index]
 
   assume_role_policy = <<EOF

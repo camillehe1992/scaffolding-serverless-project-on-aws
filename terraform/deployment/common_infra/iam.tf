@@ -1,5 +1,8 @@
 module "iam" {
-  source = "../../modules/iam"
+  source      = "../../modules/iam"
+  tags        = var.tags
+  environment = var.environment
+  nickname    = var.nickname
 
   lambda_role_name        = var.lambda_role_name
   lambda_role_description = var.lambda_role_description
@@ -17,5 +20,4 @@ module "iam" {
     "arn:aws-cn:iam::aws:policy/AWSXRayDaemonWriteAccess"
   ]
 
-  tags = var.tags
 }

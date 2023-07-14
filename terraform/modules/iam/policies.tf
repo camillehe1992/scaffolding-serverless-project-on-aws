@@ -1,5 +1,5 @@
 resource "aws_iam_role_policy" "lambda_policy" {
-  name = var.lambda_policy_name
+  name = "${local.resource_prefix}${var.lambda_policy_name}"
   role = aws_iam_role.lambda_role.id
 
   policy = jsonencode(
@@ -59,7 +59,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
 resource "aws_iam_role_policy" "cloudwatch" {
   count = var.api_gateway_role_deployment ? 1 : 0
 
-  name = var.api_gateway_policy_name
+  name = "${local.resource_prefix}${var.api_gateway_policy_name}"
   role = aws_iam_role.api_gateway_role[0].id
 
   policy = jsonencode(
