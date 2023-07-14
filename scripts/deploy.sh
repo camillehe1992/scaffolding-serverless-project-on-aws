@@ -22,6 +22,6 @@ terraform init -reconfigure \
     -backend-config="$ENVIRONMENTS_FOLDER/backend.config" \
     -backend-config="key=$NICKNAME/$ENVIRONMENT/$REGION/$COMPONENT.tfstate"
 terraform plan -var-file ../../settings/${ENVIRONMENT}/variables.tfvars -out tfplan -lock=true
-terraform apply tfplan
+terraform apply tfplan -auto-approve -no-color
 
 popd || exit

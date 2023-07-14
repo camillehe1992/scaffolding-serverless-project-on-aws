@@ -1,12 +1,25 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
+    tools {
+        terraform "tf-1.3.4"
+    }
+
     environment {
         ENVIRONMENT = "dev"
         NICKNAME = "posts"
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
         stage('Prepare Environemnt') {
           steps {
             script {
@@ -21,8 +34,8 @@ pipeline {
 
         stage('Terraform Format Check & Validate') {
             steps {
-                sh 'terraform fmt -check -diff -recursive ./terraform'
-                sh 'terraform validate'
+                sh 'terraform fmt -check -diff -recursive ./terraform -no-color'
+                sh 'terraform validate -no-color'
             }
         }
         
