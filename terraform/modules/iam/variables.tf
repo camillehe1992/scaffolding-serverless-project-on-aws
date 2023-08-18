@@ -11,7 +11,7 @@ variable "tags" {
 
 variable "environment" {
   type        = string
-  description = "The enviroment of project, such as dev, int, prod"
+  description = "The environment of project, such as dev, int, prod"
 }
 
 variable "nickname" {

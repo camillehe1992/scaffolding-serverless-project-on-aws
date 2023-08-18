@@ -18,7 +18,7 @@ variable "tags" {
 
 variable "environment" {
   type        = string
-  description = "The enviroment of project, such as dev, int, prod"
+  description = "The environment of project, such as dev, int, prod"
 }
 
 variable "nickname" {
@@ -69,27 +69,3 @@ variable "lambda_policy_name" {
   default     = "lambda-execution-policy"
   description = "Name of IAM policy which dictates what other AWS services the Lambda function may access"
 }
-
-# VPC endpoints
-
-variable "api_gateway_vpc_endpoint_deployment" {
-  type        = bool
-  default     = false
-  description = "Defines if the VPC endpoint for API Gateway will be deployed or not"
-}
-
-variable "vpc_id" {
-  type        = string
-  description = "The Id of the VPC we want to associate with the VPC Endpoint"
-}
-
-variable "subnet_ids" {
-  type        = list(string)
-  description = "Subnet ids for Lambda functions wich runs in a VPC"
-}
-
-variable "security_group_ids" {
-  type        = list(string)
-  description = "Security Group ids for Lambda functions wich runs in a VPC"
-}
-

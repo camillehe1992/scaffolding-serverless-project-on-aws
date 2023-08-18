@@ -1,5 +1,5 @@
 locals {
-  resource_prefix = "${var.prefix}-${var.nickname}-"
+  resource_prefix = "${var.environment}-${var.nickname}-"
   lambda_function_file_code = {
     for lambda_function_key, lambda_function_specs in var.lambda_functions_specs : lambda_function_key => {
       source_file = lambda_function_specs["source_file_path"]

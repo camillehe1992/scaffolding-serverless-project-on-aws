@@ -1,46 +1,112 @@
 pipeline {
     agent any
-
-    tools {
-        terraform "tf-1.3.4"
+    parameters {
+        choice choices: ["dev"], name: "ENVIRONMENT"
+        choice choices: ["common_infra", "lambda_layers", "frontend"], name: "COMPONENT"
+        booleanParam defaultValue: false, name: "DESTROY"
+        booleanParam defaultValue: false, name: "SKIP_APPLY"
     }
 
     environment {
-        ENVIRONMENT = "dev"
-        NICKNAME = "posts"
+        NICKNAME = "petstore"
+        CREDENTIALS = "756143471679_UserFull"
+        AWS_REGION = "cn-north-1"
+        ECR_REGISTRY="756143471679.dkr.ecr.cn-north-1.amazonaws.com.cn"
+        TF_IMAGE="756143471679.dkr.ecr.cn-north-1.amazonaws.com.cn/terraform:1.3.4"
     }
 
     stages {
-        stage('Checkout') {
+        stage("Prepare Environment") {
             steps {
-                checkout scmGit(
-                    branches: [[name: 'main']],
-                    userRemoteConfigs: [[url: 'https://gitlab.com/camillehe1992/scaffolding-serverless-project-using-terraform-on-aws.git']])
+                script {
+                    def timestamps = sh(script: "echo `date +%s`", returnStdout: true).trim()
+                    def tag = "${timestamps}.${env.BUILD_NUMBER}"
+                    writeFile(file: "tag.txt", text: tag)
+                }
+                withAWS(credentials: "${env.CREDENTIALS}", region: "${env.AWS_REGION}") {
+                    catchError(message: "Failed to authenticate to AWS", stageResult: "FAILURE") {
+                        sh """
+                            ./scripts/ci/generate_cred.sh ${env.CREDENTIALS}
+                            ./scripts/ci/ecr_login.sh ${env.ECR_REGISTRY}
+                        """
+                    }
+                }
             }
-        }
-        stage('Prepare Environemnt') {
-          steps {
-            script {
-              def timestamps = sh(script: "echo `date +%s`", returnStdout: true).trim()
-              echo "${timestamps}"
-              def tag = "${timestamps}.${env.BUILD_NUMBER}"
-              echo "tag: ${tag}"
-              writeFile(file: 'tag.txt', text: tag)
-            }
-          }
         }
 
-        stage('Terraform Format Check & Validate') {
+        stage("Format & Validate") {
             steps {
-                sh 'terraform fmt -check -diff -recursive ./terraform -no-color'
-                sh 'terraform validate -no-color'
+                catchError(message: "Failed to format and validate terraform", stageResult: "FAILURE") {
+                    sh "./scripts/ci/validate.sh"
+                }
             }
         }
-        
-        stage('Terraform Init & Apply') {
-            steps {
-                sh "./scripts/deploy.sh common_infra ${ENVIRONMENT} ${NICKNAME}"
+
+        stage("Package") {
+            when {
+                expression {
+                    return "${params.COMPONENT}" == "lambda_layers" && params.DESTROY == false
+                }
             }
+            steps {
+                catchError(message: "Failed to package dependencies", stageResult: "FAILURE") {
+                    sh "./scripts/ci/package.sh"
+                }
+            }
+        }
+
+        stage("Init") {
+            steps {
+                catchError(message: "Failed to init terraform", stageResult: "FAILURE") {
+                    sh """
+                        mkdir -p ${WORKSPACE}/.terraform.d/plugin-cache
+                        rm -f ${WORKSPACE}/terraform/deployment/${params.COMPONENT}/.terraform.lock.hcl
+                        ./scripts/ci/init.sh ${params.COMPONENT} ${params.ENVIRONMENT}
+
+                    """
+                }
+            }
+        }
+
+        stage("Plan") {
+            when { expression { return params.DESTROY == false } }
+            steps {
+                catchError(message: "Failed to create a plan", stageResult: "FAILURE") {
+                    sh "./scripts/ci/plan.sh ${params.COMPONENT} ${params.ENVIRONMENT}"
+                }
+            }
+        }
+
+        stage("Destroy Plan") {
+            when { expression { return params.DESTROY == true } }
+            steps {
+                catchError(message: "Failed to create a destroy plan", stageResult: "FAILURE") {
+                    sh "./scripts/ci/destroy.sh ${params.COMPONENT} ${params.ENVIRONMENT}"
+                }
+            }
+        }
+
+        stage("Apply") {
+            when {
+                branch "main"
+                expression { return params.SKIP_APPLY == false }
+            }
+            steps {
+                catchError(message: "Failed to apply a plan", stageResult: "FAILURE") {
+                    sh "./scripts/ci/apply.sh ${params.COMPONENT}"
+                }
+            }
+        }
+
+    }
+    post {
+        // Clean after build
+        always {
+            cleanWs(cleanWhenNotBuilt: false,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true,
+                    patterns: [[pattern: ".aws", type: "INCLUDE"]])
         }
     }
 }

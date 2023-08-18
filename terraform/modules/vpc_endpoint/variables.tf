@@ -1,9 +1,3 @@
-variable "aws_region" {
-  type        = string
-  default     = "cn-north-1"
-  description = "AWS region"
-}
-
 variable "tags" {
   type        = map(string)
   description = "The key value pairs we want to apply as tags to the resources contained in this module"

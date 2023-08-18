@@ -1,0 +1,6 @@
+{
+    "resource": "/pets",
+    "path": "/pets",
+    "httpMethod": "POST",
+    "body": "{\"type\": \"cat\", \"price\": 123.21}"
+}
