@@ -6,6 +6,12 @@ variable "aws_region" {
   description = "AWS region"
 }
 
+variable "aws_partition" {
+  type        = string
+  default     = "aws-cn"
+  description = "AWS partition"
+}
+
 variable "aws_profile" {
   type        = string
   description = "AWS profile which is used for the deployment"
@@ -24,11 +30,6 @@ variable "environment" {
 variable "nickname" {
   type        = string
   description = "The nickname of project. Should be lowercase without special chars"
-}
-
-variable "s3_bucket" {
-  type        = string
-  description = "S3 bucket location containing the terraform state files"
 }
 
 # API Gateway
@@ -53,6 +54,30 @@ variable "vpc_id" {
 }
 
 # Lambda Functions
+variable "lambda_function_memory_size" {
+  type        = number
+  description = "The memory size of Lambda function"
+  default     = 128
+}
+
+variable "lambda_function_timeout" {
+  type        = number
+  description = "The timeout of Lambda function"
+  default     = 10
+}
+
+variable "lambda_function_runtime" {
+  type        = string
+  description = "The runtime of Lambda function"
+  default     = "python3.9"
+}
+
+variable "lambda_create_versions" {
+  type        = bool
+  default     = false
+  description = "Publish a new version of Lambda each time the code changes"
+}
+
 variable "lambda_log_retention_days" {
   type        = number
   default     = 180
@@ -64,14 +89,13 @@ variable "lambda_log_retention_days" {
 
 variable "log_level" {
   type        = string
-  description = "The log level of lambda"
+  description = "The log level of Lambda function"
   default     = "debug"
 }
 
-variable "lambda_create_versions" {
-  type        = bool
-  default     = false
-  description = "Publish a new version of Lambda each time the code changes"
+variable "s3_bucket" {
+  type        = string
+  description = "The s3 bucket where the terraform state file locates in"
 }
 
 variable "subnet_ids" {

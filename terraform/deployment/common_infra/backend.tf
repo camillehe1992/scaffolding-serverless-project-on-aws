@@ -1,8 +1,6 @@
 terraform {
-  backend "s3" {
-    region = "cn-north-1"
-  }
-
+  # terraform/settings/{env}/backend.conf
+  backend "s3" {}
   required_version = "= 1.3.4"
   required_providers {
     aws = {

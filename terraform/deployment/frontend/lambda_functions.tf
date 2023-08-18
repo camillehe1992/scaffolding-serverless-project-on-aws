@@ -1,17 +1,17 @@
 module "lambda_functions" {
   source = "../../modules/lambda_functions"
 
+  tags        = var.tags
   environment = var.environment
   nickname    = var.nickname
-  tags        = var.tags
 
-  # API Gateay triggered functions
+  # API Gateway triggered function
   lambda_functions_specs = {
     frontend = {
       description      = "The general entrance of API Gateway"
-      memory_size      = 128
-      timeout          = 10
-      runtime          = "python3.9"
+      memory_size      = var.lambda_function_memory_size
+      timeout          = var.lambda_function_timeout
+      runtime          = var.lambda_function_runtime
       publish          = var.lambda_create_versions
       source_dir_path  = "../../../src/frontend/"
       source_file_path = null
@@ -25,7 +25,7 @@ module "lambda_functions" {
       environment_variables = merge(local.lambda_default_env_variables, {})
       permissions = {
         api_gateway_rest_apis = {
-          statement_id = "${local.lambda_gateway_permission_default_statement_id}-rest-apis"
+          statement_id = local.lambda_gateway_permission_default_statement_id
           principal    = local.lambda_gateway_permission_default_principal
           source_arn   = "${module.api_gateway.arn}/*"
         }

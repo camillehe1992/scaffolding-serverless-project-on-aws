@@ -53,7 +53,7 @@ aws sts get-caller-identity
 #   {
 #       "UserId": "XXXXXXXXXXXXXXXXXXXX",
 #       "Account": "xxxxxxxxxxxx",
-#       "Arn": "arn:aws-cn:iam::xxxxxxxxxxxx:user/user_name"
+#       "Arn": "arn:${aws.partition}:iam::xxxxxxxxxxxx:user/user_name"
 #   }
 ```
 

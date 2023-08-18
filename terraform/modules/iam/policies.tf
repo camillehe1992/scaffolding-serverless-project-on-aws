@@ -44,11 +44,11 @@ resource "aws_iam_role_policy" "lambda_policy" {
             "apigateway:PATCH"
           ],
           "Resource" : [
-            "arn:aws-cn:apigateway:*::/apikeys",
-            "arn:aws-cn:apigateway:*::/apikeys/*",
-            "arn:aws-cn:apigateway:*::/usageplans/*",
-            "arn:aws-cn:apigateway:*::/usageplans",
-            "arn:aws-cn:apigateway:*::/restapis/*/resources"
+            "arn:${aws.partition}:apigateway:*::/apikeys",
+            "arn:${aws.partition}:apigateway:*::/apikeys/*",
+            "arn:${aws.partition}:apigateway:*::/usageplans/*",
+            "arn:${aws.partition}:apigateway:*::/usageplans",
+            "arn:${aws.partition}:apigateway:*::/restapis/*/resources"
           ]
         }
       ]

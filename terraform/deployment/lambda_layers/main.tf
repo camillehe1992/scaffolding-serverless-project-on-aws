@@ -1,9 +1,9 @@
 module "lambda_layers" {
   source = "../../modules/lambda_layers"
 
+  tags        = var.tags
   environment = var.environment
   nickname    = var.nickname
-  tags        = var.tags
 
   lambda_layers_remote = {}
   lambda_layers_local  = {}

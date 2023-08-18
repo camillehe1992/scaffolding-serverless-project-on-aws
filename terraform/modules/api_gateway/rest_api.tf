@@ -25,7 +25,7 @@ resource "aws_api_gateway_rest_api" "rest_api" {
           "Effect": "Allow",
           "Principal": "*",
           "Action": "execute-api:Invoke",
-          "Resource": "arn:aws-cn:execute-api:${var.aws_region}:${data.aws_caller_identity.current.account_id}:*"
+          "Resource": "arn:${aws.partition}:execute-api:${var.aws_region}:${data.aws_caller_identity.current.account_id}:*"
       }
   ]
 }
@@ -45,7 +45,7 @@ resource "aws_api_gateway_deployment" "rest_api" {
 }
 
 resource "aws_cloudwatch_log_group" "gateway_logs" {
-  name              = "API-Gateway-Execution-Logs_${aws_api_gateway_rest_api.rest_api.id}/${var.stage_name}"
+  name              = "/aws/apigateway/${aws_api_gateway_rest_api.rest_api.id}/${var.stage_name}"
   retention_in_days = var.api_gateway_log_retention_days
 
   tags = var.tags

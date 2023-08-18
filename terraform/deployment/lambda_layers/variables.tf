@@ -6,6 +6,12 @@ variable "aws_region" {
   description = "AWS region"
 }
 
+variable "aws_partition" {
+  type        = string
+  default     = "aws-cn"
+  description = "AWS partition"
+}
+
 variable "aws_profile" {
   type        = string
   description = "AWS profile which is used for the deployment"
@@ -30,5 +36,8 @@ variable "nickname" {
 
 variable "s3_bucket" {
   type        = string
-  description = "S3 bucket location containing the function's deployment package. Conflicts with filename. This bucket must reside in the same AWS region where you are creating the Lambda function."
+  description = <<EOF
+    S3 bucket location containing the function's deployment package. Conflicts with filename. 
+    This bucket must reside in the same AWS region where you are creating the Lambda function.
+  EOF
 }

@@ -6,6 +6,12 @@ variable "aws_region" {
   description = "AWS region"
 }
 
+variable "aws_partition" {
+  type        = string
+  default     = "aws-cn"
+  description = "AWS partition"
+}
+
 variable "aws_profile" {
   type        = string
   description = "AWS profile which is used for the deployment"

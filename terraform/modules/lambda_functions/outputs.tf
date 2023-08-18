@@ -22,7 +22,7 @@ output "lambda_permissions" {
   }
 }
 
-output "lambda_log_group" {
+output "lambda_log_groups" {
   value = {
     for key, lambda_log in aws_cloudwatch_log_group.lambda_logs : key => {
       id   = lambda_log.id,

@@ -2,8 +2,9 @@
 # GENERAL INFORMATION
 ##############################################
 
-aws_profile = "756143471679_UserFull"
-aws_region  = "cn-north-1"
+aws_region    = "cn-north-1"
+aws_partition = "aws-cn"
+aws_profile   = "756143471679_UserFull"
 
 tags = {
   environment = "dev"
@@ -12,7 +13,6 @@ tags = {
   nickname    = "petstore"
   createdby   = "scaffolding-serverless-project-on-aws"
 }
-
 environment = "dev"
 nickname    = "petstore"
 
