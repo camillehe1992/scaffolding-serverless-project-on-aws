@@ -12,6 +12,7 @@ DIR=$(pwd)
 
 REQUIREMENTS_DIR="$DIR/src/lambda_layers"
 REQUIREMENTS_FILES=$(find $REQUIREMENTS_DIR -type f -name "requirements-*")
+PYTHON_VERSION=3.9
 
 for FILE in $REQUIREMENTS_FILES; do
     FILE_NAME=$(basename -- "$FILE")
@@ -21,7 +22,7 @@ for FILE in $REQUIREMENTS_FILES; do
 
     pip3 install \
         --platform manylinux2014_x86_64 \
-        --python 3.9 \
+        --python PYTHON_VERSION \
         --implementation cp \
         --only-binary=:all: --upgrade \
         --target "$TARGET/python" \

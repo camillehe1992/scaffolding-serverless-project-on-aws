@@ -1,5 +1,7 @@
 BASE := $(shell /bin/pwd)
-PIPENV ?= pipenv
+
+TF ?= terraform
+PIP ?= pip
 COMPONENT ?= ''
 
 target:
@@ -11,19 +13,13 @@ clean:
 	rm -rf ./build/
 
 install:
-	$(info [*] Installing pipenv)
-	@pip3 install pipenv --upgrade
-	@$(PIPENV) shell
-
-dev:
-	$(info [*] Installing pipenv project dependencies)
-	@$(PIPENV) install --dev
-	@$(PIPENV) graph
+	$(info [*] Installing project dependencies)
+	@$(PIP) install -r requirements-dev.txt
 
 lint:
 	$(info [*] Linting terraform and python code)
-	@terraform fmt -check -diff -recursive ./terraform
-	@terraform validate
+	@$(TF) fmt -check -diff -recursive ./terraform
+	@$(TF) validate
 	@pylint --recursive=y ./src
 
 package:

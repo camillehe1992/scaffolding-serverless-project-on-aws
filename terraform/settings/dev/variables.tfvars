@@ -4,7 +4,7 @@
 
 aws_region    = "cn-north-1"
 aws_partition = "aws-cn"
-aws_profile   = "756143471679_UserFull"
+aws_profile   = "automation_dev"
 
 tags = {
   environment = "dev"

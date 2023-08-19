@@ -26,8 +26,7 @@ The project structure shows as below. It contains threee parts:
 ├── Jenkinsfile                 # Jenkins pipeline to deploy a specific component
 ├── Jenkinsfile.ci              # Jenkins pipeline to deploy all components in order
 ├── Makefile                    # A makefile to simplify your local deployment using shell scripts
-├── Pipfile                     # A configuration for the project top-level requirements
-├── Pipfile.lock
+├── requirements-dev.txt        # Lambda functions external dependencies and dev dependencies
 ├── README.md
 ├── pylintrc                    # configuration for pylint
 ├── pytest.ini                  # configuration for pytest

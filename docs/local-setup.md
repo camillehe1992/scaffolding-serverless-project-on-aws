@@ -57,16 +57,38 @@ aws sts get-caller-identity
 #   }
 ```
 
-### Install Pipenv and Dependencies
+### Install Anaconda and Dependencies
 
-AWS Lambda function's code consists of scripts or compiled programs and their dependencies. We use a deployment package to deploy function code to Lambda. Lambda supports two types of deployment packages: container images and .zip file archives. In this project, we use .zip file archieves and `pipenv` for python dependencies management.
+AWS Lambda function's code consists of scripts or compiled programs and their dependencies. We use a deployment package to deploy function code to Lambda. Lambda supports two types of deployment packages: container images and .zip file archives. In this project, we use .zip file archieves and `conda` for python dependencies management.
 
-Pipenv manages dependencies on a per-project basis. To install pipenv packages, change into your project’s directory and run:
+You can use other python version management tools you prefered, such as [pipenv](https://pipenv.pypa.io/en/latest/), [poetry](https://python-poetry.org/). For me, I use [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) here.
+
+When you have Ananconda installed on your local machine, create a virtual environment for your project, then install python dependencies in it.
 
 ```bash
-# install pipenv using pip on local machine. Find the pipenv command in Makefile.
-make install
-# install python dependencies in Pipefile
-make dev
+conda -V
+
+# Creae an environment named petstore-py39
+conda create -n petstore-py39
+
+# Activate the environment
+conda activate petstore-py39
+
+# Install python=3.9 on the environment
+conda install python=3.9
+# or using pip 
+pip install python=3.9
+
+# List all packages installed in the environment
+conda list
 ```
-Done.
+
+### Install Project Dependencies
+
+Install python dependencies (including dependencies for development) in the virtual environment.
+```bash
+pip install -r requirements-dev.txt
+# or you can use command `make install`
+make install 
+```
+Now, the local development environment is setup.
