@@ -67,7 +67,7 @@ resource "aws_lambda_event_source_mapping" "event_source" {
 resource "aws_cloudwatch_log_group" "lambda_logs" {
   for_each = var.lambda_functions_specs
 
-  name              = var.prefix == "" ? "/aws/lambda/${each.key}" : "/aws/lambda/${local.resource_prefix}${each.key}"
+  name              = "/aws/lambda/${local.resource_prefix}${each.key}"
   retention_in_days = each.value["log_retention_days"]
 
   tags = var.tags

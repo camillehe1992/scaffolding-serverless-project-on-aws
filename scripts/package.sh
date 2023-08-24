@@ -1,5 +1,5 @@
-#!/bin/sh
-
+#!/bin/bash
+set -e -o pipefail
 #########################################################################################################
 #
 # use public.ecr.aws/sam/build-python3.9 to install python packages in Linux environment to fix
@@ -8,9 +8,11 @@
 # it may spend a few minutes to download public.ecr.aws/sam/build-python3.9 to your local at the first time
 #
 #########################################################################################################
+DIR=$(pwd)
 
-REQUIREMENTS_DIR="./src/lambda_layers"
+REQUIREMENTS_DIR="$DIR/src/lambda_layers"
 REQUIREMENTS_FILES=$(find $REQUIREMENTS_DIR -type f -name "requirements-*")
+PYTHON_VERSION=3.9
 
 for FILE in $REQUIREMENTS_FILES; do
     FILE_NAME=$(basename -- "$FILE")
@@ -18,9 +20,9 @@ for FILE in $REQUIREMENTS_FILES; do
     ZIP_FILE_NAME="${FILE_NAME%.*}.zip"
     echo "Installing packages from $FILE into $TARGET/python"
 
-    pip install \
+    pip3 install \
         --platform manylinux2014_x86_64 \
-        --python 3.9 \
+        --python PYTHON_VERSION \
         --implementation cp \
         --only-binary=:all: --upgrade \
         --target "$TARGET/python" \
@@ -34,4 +36,4 @@ for FILE in $REQUIREMENTS_FILES; do
 
 done
 
-exit
+exit 0

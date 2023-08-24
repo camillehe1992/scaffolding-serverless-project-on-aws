@@ -1,7 +1,7 @@
-variable "aws_region" {
+variable "aws_partition" {
   type        = string
-  default     = "cn-north-1"
-  description = "AWS region"
+  default     = "aws-cn"
+  description = "AWS partition"
 }
 
 variable "tags" {

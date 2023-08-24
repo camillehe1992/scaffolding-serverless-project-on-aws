@@ -1,0 +1,8 @@
+-r ./src/lambda_layers/requirements-external.txt
+
+python-dotenv
+pre-commit
+pylint
+boto3
+botocore
+pytest

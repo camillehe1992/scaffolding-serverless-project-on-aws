@@ -1,5 +1,7 @@
 BASE := $(shell /bin/pwd)
-PIPENV ?= pipenv
+
+TF ?= terraform
+PIP ?= pip
 COMPONENT ?= ''
 
 target:
@@ -11,19 +13,14 @@ clean:
 	rm -rf ./build/
 
 install:
-	$(info [*] Installing pipenv)
-	@pip3 install pipenv --upgrade
-	@$(PIPENV) shell
-
-dev:
-	$(info [*] Installing pipenv project dependencies)
-	@$(PIPENV) install --dev
-	@$(PIPENV) graph
+	$(info [*] Enable Git Hooks & Installing project dependencies)
+	pre-commit install
+	@$(PIP) install -r requirements-dev.txt
 
 lint:
 	$(info [*] Linting terraform and python code)
-	@terraform fmt -check -diff -recursive ./terraform
-	@terraform validate
+	@$(TF) fmt -check -diff -recursive ./terraform
+	@$(TF) validate
 	@pylint --recursive=y ./src
 
 package:
@@ -46,15 +43,11 @@ deploy.layers:
 
 deploy.layers.quick:
 	$(info [*] Quick deploy terraform deployment - lambda_layers)
-	sh ./scripts/deploy.sh lambda_layers
+	sh ./scripts/apply.sh lambda_layers
 
 deploy.frontend:
 	$(info [*] Deploy terraform deployment - frontend)
-	sh ./scripts/deploy.sh frontend
-
-deploy.backend:
-	$(info [*] Deploy terraform deployment - backend)
-	sh ./scripts/deploy.sh backend
+	sh ./scripts/apply.sh frontend
 
 ci: ##=> Run full workflow - Install deps, package, and deploy
 	$(MAKE) deploy.infra
@@ -62,25 +55,19 @@ ci: ##=> Run full workflow - Install deps, package, and deploy
 	$(MAKE) deploy.layers
 	@sleep 10
 	$(MAKE) deploy.frontend
-	@sleep 10
-	$(MAKE) deploy.backend
 
 #################################### DESTROY #####################################
 destroy.infra:
 	$(info [*] Destroy terraform deployment - common_infra)
-	sh ./scripts/destroy.sh common_infra
+	sh ./scripts/apply.sh common_infra destroy
 
 destroy.layers:
 	$(info [*] Destroy terraform deployment - lambda_layers)
-	sh ./scripts/destroy.sh lambda_layers
+	sh ./scripts/apply.sh lambda_layers destroy
 
 destroy.frontend:
 	$(info [*] Destroy terraform deployment - frontend)
-	sh ./scripts/destroy.sh frontend
-
-destroy.backend:
-	$(info [*] Destroy terraform deployment - backend)
-	sh ./scripts/destroy.sh backend
+	sh ./scripts/apply.sh frontend destroy
 
 destroy.all:
 	$(info [*] Destroy all terraform deployments in order)
@@ -90,5 +77,15 @@ destroy.all:
 	$(MAKE) destroy.infra
 
 #################################### TEST #####################################
+test.unit:
+	$(info [*] Run unit test)
+	python -m pytest ./tests/unit
+
+test.e2e:
+	$(info [*] Run e2e test)
+	python -m pytest ./tests/e2e
+
 test:
-	$(info [*] Not implemented yet)
+	$(info [*] Run all tests)
+	$(MAKE) test.unit
+	$(MAKE) test.e2e

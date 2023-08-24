@@ -1,0 +1,8 @@
+{
+    "resource": "/pets/{petId}",
+    "path": "/pets/1",
+    "httpMethod": "GET",
+    "pathParameters": {
+        "petId": "1"
+    }
+}
