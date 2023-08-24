@@ -13,7 +13,8 @@ clean:
 	rm -rf ./build/
 
 install:
-	$(info [*] Installing project dependencies)
+	$(info [*] Enable Git Hooks & Installing project dependencies)
+	pre-commit install
 	@$(PIP) install -r requirements-dev.txt
 
 lint:

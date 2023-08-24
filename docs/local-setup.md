@@ -87,7 +87,7 @@ conda list
 
 Install python dependencies (including dependencies for development) in the virtual environment.
 ```bash
-pip install -r requirements-dev.txt
+pip install -r requirements.txt
 # or you can use command `make install`
 make install 
 ```

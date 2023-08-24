@@ -1,0 +1,31 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    - id: trailing-whitespace
+    - id: check-yaml
+      always_run: true
+  - repo: local
+    hooks:
+    - id: pylint
+      name: pylint
+      entry: pylint --recursive=y ./src
+      language: system
+      types: [python]
+      args:
+        [
+          "-rn", # Only display messages
+          "-sn", # Don't display the score
+          "--rcfile=pylintrc", # Link to your config file
+          "--load-plugins=pylint.extensions.docparams", # Load an extension
+        ]
+      always_run: true
+  - repo: local
+    hooks:
+      - id: pytest-check
+        name: pytest-check
+        types: [python]
+        entry: python -m pytest
+        language: system
+        pass_filenames: false
+        always_run: true

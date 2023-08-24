@@ -6,48 +6,9 @@ The diagram below shows the archtecture details. All AWS resources are built and
 
 ![Cloud Arch Diagram](./docs/arch_diagram.png)
 
-## Code Structure
+## Project Structure
 
-The project structure shows as below. It contains threee parts:
-- _terraform_ folder: all terraform resources and configurations. _deployment_ contains three componets:
-  - _common_infra_: we defines all common infrastructure resources here, such as IAM roles and policies that referenced in other components. Resources that is depended by other resources should be deployed with high priority. In other word, _**Most Dependent first**_.
-  - _frontend_: the core of project, including API Gateway, Lambda Function, CloudWatch Logs, etc.
-  - _lambda_layers_: the Lambda Layers. We define Lambda Layers into a separated component because we put lambda dependencies here which is rarely modified. The benefits are not only a lightweighted Lambda deployment package, but also a distribution mechanism for libraries, custom runtimes, and other function dependencies.
-- _src_ folder: all Lambda functions and layers code goes here.
-- _tests_: for a standard project, test specs are necessary.
-- _scripts_: I put all shell scripts here, including running terraform commands locally or in CICD pipelines.
-
-> Note: we don't provide the terraform definition for database layer as we only focus on a quick start to guide you how to setup a Serverless based REST API in AWS using Terraform. You should be good to create a specific component in _terraform/deployment_ folder to define your storage service, for example, a DynamodDB table as you needs.
-
-```bash
-# tree -L 2 -all
-.
-├── .pre-commit-config.yaml     # configuration for pre-commit, such as lint, auto format, test
-├── Jenkinsfile                 # Jenkins pipeline to deploy a specific component
-├── Jenkinsfile.ci              # Jenkins pipeline to deploy all components in order
-├── Makefile                    # A makefile to simplify your local deployment using shell scripts
-├── requirements-dev.txt        # Lambda functions external dependencies and dev dependencies
-├── README.md
-├── pylintrc                    # configuration for pylint
-├── pytest.ini                  # configuration for pytest
-├── scripts                     # shell scripts for makefile and Jenkins pipelines
-├── src                         # lambda functions, layers, dependencies source code
-│   ├── frontend
-│   └── lambda_layers
-├── swagger
-│   ├── spec.yaml               # swagger specification
-│   ├── index.html
-├── terraform                   # terraform components and modules definition
-│   ├── deployment
-│   ├── modules
-│   └── settings
-└── tests                       # test files and cases, postman collection, unit test, E2E test, etc
-    ├── data
-    └── postman
-    └── unit
-    └── e2e
-```
-## Deploy Terraform Resources
+Find the details from [Project Structure](./docs/project_structure.md)
 
 ### Local Environment Setup
 
@@ -135,6 +96,16 @@ python local_invoke.py tests/data/get_pet_by_id.json
 #     "timestamp": 1690860006
 #   }
 ```
+## Linting
+To keep code quality, passing lint is mandantry to commit your code using pre-commit.
+
+Run the command as below to lint your code.
+```bash
+make lint
+```
+
+See https://pypi.org/project/pylint/ for more information.
+
 ## Test
 For a standard project, you should have test specification setup, such as unit test, e2e test, etc. And `Postman` is a popular tool for local development.
 ### Postman
@@ -164,32 +135,6 @@ python -m pytest ./tests/e2e/test_pets.py
 ```
 
 Run all test cases using command `make test`.
-
-## Linting
-Pylint is a static code analyser for Python 2 or 3.
-
-Pylint analyses your code without actually running it. It checks for errors, enforces a coding standard, looks for code smells, and can make suggestions about how the code could be refactored.
-
-> To keep code quality, passing lint is mandantry to commit your code using pre-commit.
-
-See https://pypi.org/project/pylint/ for more information.
-
-## Pre Commit
-A framework for managing and maintaining multi-language pre-commit hooks.
-
-Git hook scripts are useful for identifying simple issues before submission to code review. We run our hooks on every commit to automatically point out issues in code such as missing semicolons, trailing whitespace, and debug statements. By pointing these issues out before code review, this allows a code reviewer to focus on the architecture of a change while not wasting time with trivial style nitpicks.
-
-Each time you commit your code on local, these hooks will be triggered to validate as configured. Except for some pre-commit provided hooks, we also add another hook named `pylint` to make sure your code follow and pass all rules defined in _pylintrc_ file. You can run `make lint` at any time to check the code lint result.
-
-> Please note, `make lint` command checks both static code as well as rewrite terrafrom configuration files to a canonical format and style.
-
-Below hooks are enabled in configuration `.pre-commit-config.yaml`.
-- trailing-whitespace
-- check-yaml
-- lint
-- pytest-check
-
-See https://pre-commit.com/ for more information.
 
 ## Reference
 
