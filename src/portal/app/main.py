@@ -9,7 +9,7 @@ from .response import lambda_response
 logger = Logger()
 app = APIGatewayRestResolver()
 
-MOCK_URL = "http://petstore.execute-api.cn-north-1.amazonaws.com.cn/petstore"
+MOCK_URL = "http://todo.execute-api.cn-north-1.amazonaws.com.cn/todo"
 HEADERS = {"Content-Type": "application/json"}
 TIMEOUT = 10
 

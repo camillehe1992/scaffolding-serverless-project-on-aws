@@ -10,7 +10,7 @@ fi
 
 COMPONENT=$1
 ENVIRONMENT="dev"
-PROJECT="petstore"
+PROJECT="todo"
 AWS_REGION="cn-north-1"
 
 if [[ $COMPONENT = "common_infra" ]]; then

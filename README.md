@@ -8,51 +8,63 @@ The diagram below shows the archtecture details. All AWS resources are built and
 
 ## Project Structure
 
-Find the details from [Project Structure](./docs/project_structure.md)
+```bash
+# tree -L 2 -all
+.
+├── .env.sample
+├── .pre-commit-config.yaml     # configuration for pre-commit, such as lint, auto format, test
+├── Makefile                    # makefile to simplify your local deployment using shell scripts
+├── README.md
+├── docs
+├── local_invoke.py
+├── pylintrc                    # configuration for pylint
+├── pytest.ini                  # configuration for pytest
+├── requirements-dev.txt
+├── scripts                     # shell scripts for makefile and Jenkins pipelines
+├── src                         # lambda functions, layers, dependencies source code
+│   └── portal
+├── swagger
+│   ├── index.html
+│   └── spec.yaml               # swagger specification to define API Gateway methods and paths
+├── terraform                   # terraform components and modules definition
+│   ├── deployment
+│   ├── modules
+│   └── settings
+└── tests                       # test files and cases, postman collection, unit test, E2E test, etc
+```
 
-### Local Environment Setup
+## Terraform Resources & Modules
+
+| File           | Modules                  | AWS Resources                          |
+| -------------- | ------------------------ | -------------------------------------- |
+| api_gateway.tf | api_gateway              | API Gateway, CloudWatch Logs Group     |
+| function.tf    | portal_function          | Lambda Function, CloudWatch Logs Group |
+| layers.tf      | dependencies_layer       | Lambda Layer                           |
+| roles.tf       | lambda_execution_role    | IAM Role                               |
+| roles.tf       | api_gateway_logging_role | IAM Role                               |
+
+## Local Environment Setup
 
 Find the details from [Local Environment Setup](./docs/local-setup.md)
 
-### Local Deploy
+## Terraform Init, Plan & Apply
 
-Run below `make` command to deploy specific component.
-
-```bash
-# deploy common_infra
-make deploy.infra
-# deploy lambda_layers
-make deploy.layers
-# deploy frontend
-make deploy.frontend
-
-# useful when there is no change on external denpendencies in requirements-external.txt
-make deploy.layers.quick
-```
-
-If you have any change on _lambda_layers_, make sure to deploy lambdas as well to use the latest version of layers.
-
-It will spend a few minutes to install terraform providers when you run it firstly. With the scrips run successfully, verify the change from AWS Console.
-
-### Local Destroy
-
-Run below comnand to destroy/remove components from AWS.
-
-As `frontend` depends on `lambda_layers`, you cannot destroy component before destorying its dependencies.
+Run below `make` commands to deploy terraform resources to target AWS environment.
 
 ```bash
-# deploy common_infra
-make destroy.infra
-# destroy lambda_layers
-make destroy.layers
-# destroy frontend
-make destroy.frontend
-
-# destroy all resources from AWS in order
-make destroy.all
+make plan
+make apply
 ```
 
-### CICD Pipelines
+Run below `make` commands to destroy/remove terraform resources from target AWS environment.
+
+```bash
+make plan-destroy
+make apply
+```
+
+## CICD Pipelines
+
 We setup two Jenkins pipelines for CICD.
 
 `Jenkinsfile` is used to deploy/destroy a specific component that you can choose by `Build with Parameters`.
@@ -61,53 +73,26 @@ We setup two Jenkins pipelines for CICD.
 
 Find more information from [CICD Setup](./docs/cicd.md)
 
-
-## Development
-A entry file named `local_invoke.py` that is used to execute the lambda source code locally.
-
-Below is a test case input that get pet by pet id 1.
-
-```bash
-python local_invoke.py tests/data/get_pet_by_id.json
-
-# Input:
-#   {
-#       "resource": "/pets/{petId}",
-#       "path": "/pets/1",
-#       "httpMethod": "GET",
-#       "pathParameters": {
-#           "petId": "1"
-#       }
-#   }
-
-# Output:
-#   {
-#     "code": "200",
-#     "message": "success",
-#     "data": {
-#       "pets": {
-#         "id": 1,
-#         "type": "dog",
-#         "price": 249.99
-#       }
-#     },
-#     "path": "/pets/1",
-#     "traceId": null,
-#     "timestamp": 1690860006
-#   }
-```
 ## Linting
-To keep code quality, passing lint is mandantry to commit your code using pre-commit.
+
+Pylint is a static code analyser for Python 2 or 3.
+
+Pylint analyses your code without actually running it. It checks for errors, enforces a coding standard, looks for code smells, and can make suggestions about how the code could be refactored.
+
+> To keep code quality, passing lint is mandantry to commit your code using pre-commit.
+
+See <https://pypi.org/project/pylint/> for more information.
 
 Run the command as below to lint your code.
+
 ```bash
 make lint
 ```
 
-See https://pypi.org/project/pylint/ for more information.
-
 ## Test
+
 For a standard project, you should have test specification setup, such as unit test, e2e test, etc. And `Postman` is a popular tool for local development.
+
 ### Postman
 
 Find Postman colllection from [collection.json](./tests/postman/collection.json)

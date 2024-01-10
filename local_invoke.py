@@ -11,7 +11,7 @@ sys.path.append(real_path + "/src/frontend")
 
 load_dotenv(override=True)
 from aws_lambda_powertools.utilities.typing import LambdaContext
-from src.frontend.app import main
+from src.portal.app import main
 
 
 def get_mock_lambda_context():

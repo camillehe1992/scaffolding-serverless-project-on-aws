@@ -12,8 +12,8 @@ module "portal_function" {
   memory_size   = 128
   timeout       = 60
   runtime       = "python3.9"
-  source_dir    = "../../../src/frontend"
-  output_path   = "build/frontend.zip"
+  source_dir    = "../../../src/portal"
+  output_path   = "build/portal.zip"
 
   layers = [
     module.dependencies_layer.layer.arn
@@ -25,7 +25,7 @@ module "portal_function" {
   lambda_permissions = {
     allow-apigateway-invocation = {
       principal  = "apigateway.amazonaws.com"
-      source_arn = "${module.api_gateway.api_gateway_rest_api.execution_arn}/*/*"
+      source_arn = "${module.api_gateway.rest_api.execution_arn}/*/*"
     }
   }
 }

@@ -5,7 +5,8 @@ module "lambda_execution_role" {
   role_name        = "lambda-exection-role"
   role_description = "The IAM role that grants the function permission to access AWS services and resources"
   aws_managed_policy_arns = [
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSLambdaENIManagementAccess"
+    "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSLambdaENIManagementAccess",
+    "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
   ]
 }
 

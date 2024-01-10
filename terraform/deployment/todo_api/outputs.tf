@@ -1,10 +1,14 @@
 # IAM Roles and Policies
 output "lambda_execution_role" {
-  value = module.lambda_execution_role.iam_role
+  value = {
+    arn = module.lambda_execution_role.iam_role.arn
+  }
 }
 
 output "api_gateway_logging_role" {
-  value = module.api_gateway_logging_role.iam_role
+  value = {
+    arn = module.api_gateway_logging_role.iam_role.arn
+  }
 }
 
 # Lambda Layers
@@ -17,11 +21,18 @@ output "dependencies_layer" {
 }
 
 # API Gateway
-output "curl_stage_invoke_url" {
-  value = module.api_gateway.curl_stage_invoke_url
+output "api_gateway_rest_api" {
+  value = {
+    arn           = module.api_gateway.rest_api.arn
+    execution_arn = module.api_gateway.rest_api.execution_arn
+    id            = module.api_gateway.rest_api.id
+  }
 }
 
 # Lambda Functions
 output "lambda_function" {
-  value = module.portal_function.function
+  value = {
+    arn           = module.portal_function.function.arn
+    function_name = module.portal_function.function.function_name
+  }
 }

@@ -19,6 +19,11 @@ variable "openapi_json_file" {
   description = "The path of OpenAPI specification of API Gateway Rest API"
 }
 
+variable "function_name" {
+  type        = string
+  description = "The Lambda function name that invoked by API Gateway"
+}
+
 variable "rest_api_description" {
   type        = string
   default     = "Rest API for serverless project that triggers lambda function"

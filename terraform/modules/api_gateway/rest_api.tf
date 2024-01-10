@@ -8,7 +8,7 @@ data "local_file" "openapi_spec" {
 
 resource "aws_api_gateway_rest_api" "this" {
   body = templatefile(var.openapi_json_file, {
-    function_name = "${local.resource_prefix}portal"
+    function_name = var.function_name
   })
 
   name        = "${local.resource_prefix}${var.rest_api_name}"

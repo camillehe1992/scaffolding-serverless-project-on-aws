@@ -21,6 +21,7 @@ The pipeline executes terraform scripts in container, which provide Terraform ex
 ## Deploy/Destroy a specific Component
 
  `Jenkinsfile` is used to deploy/destroy a specific component that you can choose by `Build with Parameters`.
+
 - Choose `ENVIRONMENT` and `COMPONENT` to deploy.
 - Check the `DESTROY` if this is a destroy action. Deploy as a default.
 - Check `SKIP_APPLY` if you don't want to create AWS resources. Useful when you only focus on the changes.
@@ -31,7 +32,6 @@ A view of pipeline stages.
 
 ![Stage View](./stage-view.png)
 
-
 ## Deploy all Components
 
 `Jenkinsfile.ci` is used to deploy all components.
@@ -41,7 +41,6 @@ A view of pipeline stages.
 A view of pipeline stages.
 
 ![Stage View CI](./stage-view-ci.png)
-
 
 ## Reference
 

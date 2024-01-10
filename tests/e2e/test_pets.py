@@ -1,6 +1,6 @@
 import json
 
-from frontend.app.main import lambda_handler
+from portal.app.main import lambda_handler
 
 
 def new_pet_payload(payload=None):

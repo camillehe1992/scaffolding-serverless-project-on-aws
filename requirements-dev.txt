@@ -1,4 +1,4 @@
--r ./src/lambda_layers/requirements-external.txt
+-r ./src/portal/requirements.txt
 
 python-dotenv
 pre-commit

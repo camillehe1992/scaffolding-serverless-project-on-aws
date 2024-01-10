@@ -16,5 +16,6 @@ module "api_gateway" {
   nickname          = var.nickname
   tags              = var.tags
   openapi_json_file = var.openapi_json_file
+  function_name     = module.portal_function.function.function_name
   # vpc_endpoint_id   = module.api_gateway_vpc_endpoint.interface_endpoint.id
 }

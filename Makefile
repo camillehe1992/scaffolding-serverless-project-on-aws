@@ -33,7 +33,6 @@ define DEFAULTS
 -var aws_region=$(AWS_REGION) \
 -var environment=$(ENVIRONMENT) \
 -var nickname=$(NICKNAME) \
--var state_bucket=$(STATE_BUCKET) \
 -refresh=true -out tfplan
 endef
 
@@ -44,7 +43,7 @@ $(info OPTIONS 		= $(OPTIONS))
 #########################################################################
 # Convenience Functions to use in Make
 #########################################################################
-environments := dev prod
+environments := dev
 check-for-environment = $(if $(filter $(ENVIRONMENT),$(environments)),,$(error Invalid environment: $(ENVIRONMENT). Accepted environments: $(environments)))
 
 #########################################################################
@@ -52,8 +51,8 @@ check-for-environment = $(if $(filter $(ENVIRONMENT),$(environments)),,$(error I
 #########################################################################
 lint:
 	$(info [*] Linting terraform)
-	@$(TF) fmt -check -diff -recursive
-	@$(TF) validate
+	terraform fmt -check -diff -recursive
+	terraform validate
 
 pre-check:
 	$(info [*] Check Environment Done)
@@ -95,10 +94,3 @@ test:
 	$(info [*] Run all tests)
 	$(MAKE) test-unit
 	$(MAKE) test-e2e
-
-#########################################################################
-# Quick Deployment Make Targets
-#########################################################################
-deploy-infra:
-	$(MAKE) DEPLOYMENT=common_infra plan-destroy
-	$(MAKE) DEPLOYMENT=common_infra apply

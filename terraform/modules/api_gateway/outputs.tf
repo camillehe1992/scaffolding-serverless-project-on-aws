@@ -1,8 +1,7 @@
-output "curl_stage_invoke_url" {
-  value       = "curl ${aws_api_gateway_stage.this.invoke_url}"
-  description = "URL to invoke the API pointing to the stage"
+output "rest_api" {
+  value = aws_api_gateway_rest_api.this
 }
 
-output "api_gateway_rest_api" {
-  value = aws_api_gateway_rest_api.this
+output "cw_logs_group" {
+  value = aws_cloudwatch_log_group.this
 }
