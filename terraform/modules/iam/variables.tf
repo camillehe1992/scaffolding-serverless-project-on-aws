@@ -1,74 +1,47 @@
-variable "aws_region" {
-  type        = string
-  default     = "cn-north-1"
-  description = "AWS region"
-}
-
-variable "aws_partition" {
-  type        = string
-  default     = "aws-cn"
-  description = "AWS partition"
-}
-
 variable "tags" {
   type        = map(string)
-  description = "The key value pairs we want to apply as tags to the resources contained in this module"
+  default     = {}
+  description = "The key value pairs apply as tags to all resources in the module"
 }
 
-variable "environment" {
+variable "name_prefix" {
   type        = string
-  description = "The environment of project, such as dev, int, prod"
+  default     = ""
+  description = "The prefix of the IAM role name"
 }
 
-variable "nickname" {
+variable "role_name" {
   type        = string
-  description = "The nickname of project. Should be lowercase without special chars"
+  default     = "LambdaExecutionRole"
+  description = "The name of IAM role"
 }
 
-variable "lambda_role_name" {
+variable "role_description" {
   type        = string
-  description = "Name of IAM role which dictates what other AWS services the Lambda function may access"
+  default     = ""
+  description = "The description of IAM role"
 }
 
-variable "lambda_role_description" {
-  type        = string
-  description = "Description of IAM role which dictates what other AWS services the Lambda function may access"
-}
-
-variable "lambda_policy_name" {
-  type        = string
-  description = "Name of IAM policy which dictates what other AWS services the Lambda function may access"
-}
-
-variable "lambda_policy_attachment_arns" {
+variable "assume_role_policy_identifiers" {
   type        = list(string)
-  default     = []
-  description = "The list of the policy arn needs to be attached to the lambda role"
+  default     = ["lambda.amazonaws.com"]
+  description = "The AWS service identitifers that are allowed to assume the role"
 }
 
-variable "api_gateway_role_deployment" {
+variable "aws_managed_policy_arns" {
+  type        = set(string)
+  default     = []
+  description = "A set of AWS managed policy ARN"
+}
+
+variable "customized_policies" {
+  type        = map(string)
+  default     = {}
+  description = "A map of JSON format of IAM policy"
+}
+
+variable "has_iam_instance_profile" {
   type        = bool
-  default     = true
-  description = "Defines if the API Gateway Role will be deployed or not. Use false if you have already a API Gateway Role deployed in your AWS account"
-}
-
-variable "api_gateway_role_name" {
-  type        = list(string)
-  description = "Name of IAM role which dictates what other AWS services the API Gateway may access"
-}
-
-variable "api_gateway_role_description" {
-  type        = list(string)
-  description = "Description of IAM role which dictates what other AWS services the API Gateway may access"
-}
-
-variable "api_gateway_policy_name" {
-  type        = string
-  description = "Name of IAM policy which dictates what other AWS services the API Gateway may access"
-}
-
-variable "api_gateway_policy_attachment_arns" {
-  type        = list(string)
-  default     = []
-  description = "The list of the policy arn needs to be attached to the API Gateway role"
+  default     = false
+  description = "If to create instance profile for the role"
 }

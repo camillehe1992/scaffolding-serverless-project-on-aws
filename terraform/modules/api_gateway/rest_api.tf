@@ -1,12 +1,14 @@
+data "aws_caller_identity" "current" {}
+data "aws_partition" "current" {}
+data "aws_region" "current" {}
+
 data "local_file" "openapi_spec" {
   filename = var.openapi_json_file
 }
-data "aws_caller_identity" "current" {}
 
-
-resource "aws_api_gateway_rest_api" "rest_api" {
+resource "aws_api_gateway_rest_api" "this" {
   body = templatefile(var.openapi_json_file, {
-    function_name = "${var.environment}-${var.nickname}-frontend"
+    function_name = "${local.resource_prefix}portal"
   })
 
   name        = "${local.resource_prefix}${var.rest_api_name}"
@@ -14,8 +16,8 @@ resource "aws_api_gateway_rest_api" "rest_api" {
   tags        = var.tags
 
   endpoint_configuration {
-    types            = ["PRIVATE"]
-    vpc_endpoint_ids = [var.vpc_endpoint_id]
+    types = ["REGIONAL"]
+    # vpc_endpoint_ids = [var.vpc_endpoint_id]
   }
   policy = <<EOF
 {
@@ -25,18 +27,18 @@ resource "aws_api_gateway_rest_api" "rest_api" {
           "Effect": "Allow",
           "Principal": "*",
           "Action": "execute-api:Invoke",
-          "Resource": "arn:${aws.partition}:execute-api:${var.aws_region}:${data.aws_caller_identity.current.account_id}:*"
+          "Resource": "arn:${data.aws_partition.current.partition}:execute-api:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
       }
   ]
 }
 EOF
 }
 
-resource "aws_api_gateway_deployment" "rest_api" {
-  rest_api_id = aws_api_gateway_rest_api.rest_api.id
+resource "aws_api_gateway_deployment" "this" {
+  rest_api_id = aws_api_gateway_rest_api.this.id
 
   triggers = {
-    redeployment = sha1(aws_api_gateway_rest_api.rest_api.body)
+    redeployment = sha1(aws_api_gateway_rest_api.this.body)
   }
 
   lifecycle {
@@ -44,8 +46,8 @@ resource "aws_api_gateway_deployment" "rest_api" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "gateway_logs" {
-  name              = "/aws/apigateway/${aws_api_gateway_rest_api.rest_api.id}/${var.stage_name}"
+resource "aws_cloudwatch_log_group" "this" {
+  name              = "API-Gateway-Execution-Logs_${aws_api_gateway_rest_api.this.id}/${var.stage_name}"
   retention_in_days = var.api_gateway_log_retention_days
 
   tags = var.tags

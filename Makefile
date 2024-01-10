@@ -1,91 +1,104 @@
+#########################################################################
+# Terraform Makefile
+#########################################################################
+-include .env
+
+SHELL := /bin/bash
 BASE := $(shell /bin/pwd)
+MAKE ?= make
 
-TF ?= terraform
-PIP ?= pip
-COMPONENT ?= ''
+ifdef AWS_PROFILE
+AWS_PROFILE := $(AWS_PROFILE)
+else
+AWS_PROFILE := default
+endif
 
-target:
-	$(info ${HELP_MESSAGE})
-	@exit 0
+# The deployment name, shared or app
+TF_ROOT_PATH := $(BASE)/terraform/deployment/todo_api
+TF_VAR_FILE := $(BASE)/terraform/settings/$(ENVIRONMENT)/variables.tfvars
 
-clean:
-	$(info [*] Who needs all that anyway? Destroying environment....)
-	rm -rf ./build/
+$(info AWS_ACCOUNT 		= $(AWS_ACCOUNT))
+$(info AWS_PROFILE 		= $(AWS_PROFILE))
+$(info AWS_REGION  		= $(AWS_REGION))
+$(info ENVIRONMENT 		= $(ENVIRONMENT))
+$(info NICKNAME    		= $(NICKNAME))
+$(info STATE_BUCKET		= $(STATE_BUCKET))
+$(info TF_ROOT_PATH 	= $(TF_ROOT_PATH))
+$(info TF_VAR_FILE 		= $(TF_VAR_FILE))
 
-install:
-	$(info [*] Enable Git Hooks & Installing project dependencies)
-	pre-commit install
-	@$(PIP) install -r requirements-dev.txt
+# Add defaults/common variables for all components
+define DEFAULTS
+-var-file=$(TF_VAR_FILE) \
+-var aws_profile=$(AWS_PROFILE) \
+-var aws_region=$(AWS_REGION) \
+-var environment=$(ENVIRONMENT) \
+-var nickname=$(NICKNAME) \
+-var state_bucket=$(STATE_BUCKET) \
+-refresh=true -out tfplan
+endef
 
+OPTIONS += $(DEFAULTS)
+
+$(info OPTIONS 		= $(OPTIONS))
+
+#########################################################################
+# Convenience Functions to use in Make
+#########################################################################
+environments := dev prod
+check-for-environment = $(if $(filter $(ENVIRONMENT),$(environments)),,$(error Invalid environment: $(ENVIRONMENT). Accepted environments: $(environments)))
+
+#########################################################################
+# CICD Make Targets
+#########################################################################
 lint:
-	$(info [*] Linting terraform and python code)
-	@$(TF) fmt -check -diff -recursive ./terraform
+	$(info [*] Linting terraform)
+	@$(TF) fmt -check -diff -recursive
 	@$(TF) validate
-	@pylint --recursive=y ./src
 
-package:
-	$(info [*] Installing Lambda dependencies & Create .zip file archives)
-	$(MAKE) clean
-	docker run --rm \
-		-v "${BASE}":/var/task \
-		"public.ecr.aws/sam/build-python3.9" /bin/sh -c "./scripts/package.sh"
+pre-check:
+	$(info [*] Check Environment Done)
+	@$(call check-for-environment)
+	@$(info $(shell aws sts get-caller-identity --profile $(AWS_PROFILE)))
 
-#################################### DEPLOY #####################################
+init: pre-check
+	$(info [*] Init Terrafrom Infra)
+	@cd $(TF_ROOT_PATH) && terraform init -reconfigure \
+		-backend-config="bucket=$(STATE_BUCKET)" \
+		-backend-config="region=$(AWS_REGION)" \
+		-backend-config="profile=$(AWS_PROFILE)" \
+		-backend-config="key=$(NICKNAME)/$(ENVIRONMENT)/$(AWS_REGION)/$(DEPLOYMENT).tfstate"
 
-deploy.infra:
-	$(info [*] Deploy terraform deployment - common_infra)
-	sh ./scripts/deploy.sh common_infra
+plan: init
+	$(info [*] Plan Terrafrom Infra)
+	@cd $(TF_ROOT_PATH) && terraform plan $(OPTIONS)
 
-deploy.layers:
-	$(info [*] Deploy terraform deployment - lambda_layers)
-	$(MAKE) package
-	sh ./scripts/deploy.sh lambda_layers
+plan-destroy: init
+	$(info [*] Plan Terrafrom Infra - Destroy)
+	@cd $(TF_ROOT_PATH) && terraform plan -destroy $(OPTIONS)
 
-deploy.layers.quick:
-	$(info [*] Quick deploy terraform deployment - lambda_layers)
-	sh ./scripts/apply.sh lambda_layers
+apply:
+	$(info [*] Apply Terrafrom Infra)
+	@cd $(TF_ROOT_PATH) && terraform apply tfplan
 
-deploy.frontend:
-	$(info [*] Deploy terraform deployment - frontend)
-	sh ./scripts/apply.sh frontend
-
-ci: ##=> Run full workflow - Install deps, package, and deploy
-	$(MAKE) deploy.infra
-	@sleep 10
-	$(MAKE) deploy.layers
-	@sleep 10
-	$(MAKE) deploy.frontend
-
-#################################### DESTROY #####################################
-destroy.infra:
-	$(info [*] Destroy terraform deployment - common_infra)
-	sh ./scripts/apply.sh common_infra destroy
-
-destroy.layers:
-	$(info [*] Destroy terraform deployment - lambda_layers)
-	sh ./scripts/apply.sh lambda_layers destroy
-
-destroy.frontend:
-	$(info [*] Destroy terraform deployment - frontend)
-	sh ./scripts/apply.sh frontend destroy
-
-destroy.all:
-	$(info [*] Destroy all terraform deployments in order)
-	$(MAKE) destroy.backend
-	$(MAKE) destroy.frontend
-	$(MAKE) destroy.layers
-	$(MAKE) destroy.infra
-
-#################################### TEST #####################################
-test.unit:
+#########################################################################
+# TEST Make Targets
+#########################################################################
+test-unit:
 	$(info [*] Run unit test)
 	python -m pytest ./tests/unit
 
-test.e2e:
+test-e2e:
 	$(info [*] Run e2e test)
 	python -m pytest ./tests/e2e
 
 test:
 	$(info [*] Run all tests)
-	$(MAKE) test.unit
-	$(MAKE) test.e2e
+	$(MAKE) test-unit
+	$(MAKE) test-e2e
+
+#########################################################################
+# Quick Deployment Make Targets
+#########################################################################
+deploy-infra:
+	$(MAKE) DEPLOYMENT=common_infra plan-destroy
+	$(MAKE) DEPLOYMENT=common_infra apply

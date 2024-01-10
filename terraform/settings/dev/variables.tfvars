@@ -1,20 +1,15 @@
 ##############################################
 # GENERAL INFORMATION
 ##############################################
-
-aws_region    = "cn-north-1"
-aws_partition = "aws-cn"
-aws_profile   = "automation_dev"
-
 tags = {
   environment = "dev"
   emails      = "group@example.com"
-  application = "petstore-demo"
-  nickname    = "petstore"
+  application = "todo-demo"
+  nickname    = "todo"
   createdby   = "scaffolding-serverless-project-on-aws"
 }
 environment = "dev"
-nickname    = "petstore"
+nickname    = "todo"
 
 ##############################################
 # COMMON INFRA DEPLOYMENT INFORMATION
@@ -28,8 +23,6 @@ security_group_ids                  = ["sg-00fe42c9972b4e4af"]
 ##############################################
 # LAMBDA LAYERS DEPLOYMENT INFORMATION
 ##############################################
-# The bucket that used to store terraform state files and lambda layers zip files
-s3_bucket = "hyc-tf-state-756143471679-cn-north-1"
 
 ##############################################
 # FRONTEND DEPLOYMENT INFORMATION

@@ -1,9 +1,3 @@
-variable "aws_region" {
-  type        = string
-  default     = "cn-north-1"
-  description = "AWS region"
-}
-
 variable "environment" {
   type        = string
   description = "The environment of project, such as dev, int, prod"
@@ -20,7 +14,6 @@ variable "tags" {
 }
 
 # API Gateways
-
 variable "openapi_json_file" {
   type        = string
   description = "The path of OpenAPI specification of API Gateway Rest API"
@@ -42,12 +35,6 @@ variable "rest_api_name" {
   description = "The name of API Gateway Rest API"
 }
 
-variable "rest_api_path" {
-  type        = string
-  default     = "/path1"
-  description = "The path to create in the API Gateway RestA PI"
-}
-
 variable "api_gateway_log_retention_days" {
   type        = number
   default     = 30
@@ -59,6 +46,7 @@ variable "api_gateway_log_retention_days" {
 
 variable "vpc_endpoint_id" {
   type        = string
+  default     = ""
   description = "VPC endpoint for private Rest API"
 }
 

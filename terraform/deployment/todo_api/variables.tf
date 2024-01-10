@@ -1,17 +1,9 @@
-# General deployment variables
-
+# General
 variable "aws_region" {
   type        = string
-  default     = "cn-north-1"
-  description = "AWS region"
-}
+  description = "AWS region which is used for the deployment"
 
-variable "aws_partition" {
-  type        = string
-  default     = "aws-cn"
-  description = "AWS partition"
 }
-
 variable "aws_profile" {
   type        = string
   description = "AWS profile which is used for the deployment"
@@ -31,6 +23,10 @@ variable "nickname" {
   type        = string
   description = "The nickname of project. Should be lowercase without special chars"
 }
+
+# IAM Roles and Policies
+
+# Lambda Layers
 
 # API Gateway
 variable "openapi_json_file" {
@@ -93,7 +89,7 @@ variable "log_level" {
   default     = "debug"
 }
 
-variable "s3_bucket" {
+variable "state_bucket" {
   type        = string
   description = "The s3 bucket where the terraform state file locates in"
 }
