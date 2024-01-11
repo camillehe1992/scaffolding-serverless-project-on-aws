@@ -181,7 +181,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: portal.zip
-          path: ${{ env.WORKING_DIRECTORY }}/build/portal.zip
+          path: ${{ env.WORKING_DIRECTORY }}/build
 
       # Terraform Apply
       - name: Terraform Apply
