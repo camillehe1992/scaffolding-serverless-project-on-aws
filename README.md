@@ -4,7 +4,7 @@ The project is a AWS cloud native serverless application partially, including AP
 
 The diagram below shows the archtecture details. All AWS resources are built and deployed using Terraform.
 
-![Cloud Arch Diagram](./docs/arch_diagram.png)
+![Cloud Arch Diagram](./docs/images/arch-diagram.png)
 
 ## Project Structure
 
@@ -15,12 +15,12 @@ The diagram below shows the archtecture details. All AWS resources are built and
 ├── .pre-commit-config.yaml     # configuration for pre-commit, such as lint, auto format, test
 ├── Makefile                    # makefile to simplify your local deployment using shell scripts
 ├── README.md
-├── docs
+├── docs                        # documentation
 ├── local_invoke.py
 ├── pylintrc                    # configuration for pylint
 ├── pytest.ini                  # configuration for pytest
 ├── requirements-dev.txt
-├── scripts                     # shell scripts for makefile and Jenkins pipelines
+├── scripts                     # shell scripts for Jenkins pipelines
 ├── src                         # lambda functions, layers, dependencies source code
 │   └── portal
 ├── swagger
@@ -35,7 +35,7 @@ The diagram below shows the archtecture details. All AWS resources are built and
 
 ## Terraform Resources & Modules
 
-| File           | Modules                  | AWS Resources                          |
+| File           | Modules                  | Main AWS Resources                     |
 | -------------- | ------------------------ | -------------------------------------- |
 | api_gateway.tf | api_gateway              | API Gateway, CloudWatch Logs Group     |
 | function.tf    | portal_function          | Lambda Function, CloudWatch Logs Group |
@@ -43,35 +43,15 @@ The diagram below shows the archtecture details. All AWS resources are built and
 | roles.tf       | lambda_execution_role    | IAM Role                               |
 | roles.tf       | api_gateway_logging_role | IAM Role                               |
 
-## Local Environment Setup
+## Development
 
-Find the details from [Local Environment Setup](./docs/local-setup.md)
+Follow [DEPLOYMENT.md](./docs/DEPLOYMENT.md) if you want to contribute on the project.
 
-## Terraform Init, Plan & Apply
+## Deployment
 
-Run below `make` commands to deploy terraform resources to target AWS environment.
+### Terraform Init, Plan & Apply
 
-```bash
-make plan
-make apply
-```
-
-Run below `make` commands to destroy/remove terraform resources from target AWS environment.
-
-```bash
-make plan-destroy
-make apply
-```
-
-## CICD Pipelines
-
-We setup two Jenkins pipelines for CICD.
-
-`Jenkinsfile` is used to deploy/destroy a specific component that you can choose by `Build with Parameters`.
-
-`Jenkinsfile.ci` is used to deploy all components.
-
-Find more information from [CICD Setup](./docs/cicd.md)
+Find more information from [CICD Pipelines Setup](./docs/cicd.md)
 
 ## Linting
 
@@ -123,10 +103,5 @@ Run all test cases using command `make test`.
 
 ## Reference
 
-- https://registry.terraform.io/providers/hashicorp/aws/latest
-- https://pipenv.pypa.io/en/latest/
-- https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
-- [Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
+- [Terraform AWS Provider](https://registry.terraform.io/providers/hashicorp/aws/latest)
 - [AWS Lambda Powertools for Python](https://awslabs.github.io/aws-lambda-powertools-python/2.12.0/)
-- https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-package.html#gettingstarted-package-layers
-- https://github.com/awslabs/aws-lambda-powertools-python

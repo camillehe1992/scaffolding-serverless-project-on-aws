@@ -1,30 +1,37 @@
-# Local Environment Setup
+# Local Development Environment Setup
 
 After downloading the sample code on your local machine, you should setup your local environment for development. For example, you need to create a virtual environment to install your python dependencies if you choose Python as your Lambda function language. Moreover, AWS credentials configuration should be setup if you need to deploy AWS resources to AWS environments.
 
 ## Install Terraform CLI
 
-To deploy terraform resources to AWS from local, you need to install Terraform CLI from <https://releases.hashicorp.com/terraform/> according to your PC OS version, and downlaod it as a zip archive.
+Terraform provides several ways to install Terraform CLI on machine in its official website, but I recommend to use `tfenv` which is a [Terraform](https://www.terraform.io/) version manager inspired by `rbenv`. With `tfenv`, you are able to manage and switch between multiple Terraform versions easily when you have to work on many projects using different Terraform versions.
 
-> In the repo, we specify terraform version as `1.3.6` in backend config of each component we have to install version `1.3.6` from <https://releases.hashicorp.com/terraform/1.3.6/>.
+I installed `tfenv` manually on my desktop (MacBook Air M2) following the `tfenv` [README](https://github.com/tfutils/tfenv).
 
-After downloading Terraform zip file, unzip the package. Terraform runs as a single binary named `terraform`. Make sure that the terraform binary is available on environment variable `PATH`. This process will differ depending on your operating system.
+Firstly, you check out `tfenv` into any path (for me, it's my user home root path ${HOME}/.tfenv).
 
 ```bash
-# for Mac or Linux
-echo $PATH
+git clone --depth=1 https://github.com/tfutils/tfenv.git ~/.tfenv
 ```
 
-Move the Terraform binary file to one of the listed locations. Below command assumes that the binary is currently in your `Downloads` folder and your `PATH` includes `/usr/local/bin`.
+Then, make symlinks for `tfenv/bin/*` scripts into a path that is already added to your $PATH (e.g. /usr/local/bin) OSX/Linux Only!
 
 ```bash
-mv ~/Downloads/terraform /usr/local/bin/
+sudo ln -s ~/.tfenv/bin/* /usr/local/bin
 ```
 
-Validate the installation of Terraform CLI by running below command in the terminal.
+Open another terminal, and run `tfenv -v` to check if the installation works. Finally, install Terrafrom version you required using command `tfenv install x.x.x`. In this repo, I use Terraform version `1.3.6`, so run below command to install `1.3.6`.
 
 ```bash
-terraform --version
+tfenv install 1.3.6
+
+# Switch to use 1.3.6
+tfenv use 1.3.6
+
+# validate current Terraform version
+terraform -v
+# Terraform v1.3.6
+# on darwin_arm64
 ```
 
 ## Install AWS CLI
@@ -82,7 +89,7 @@ conda activate todo-py39
 
 # Install python=3.9 on the environment
 conda install python=3.9
-# or using pip 
+# or using pip
 pip install python=3.9
 
 # List all packages installed in the environment
