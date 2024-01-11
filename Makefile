@@ -15,7 +15,7 @@ endif
 
 # The deployment name, shared or app
 TF_ROOT_PATH := $(BASE)/terraform/deployment/todo_api
-TF_VAR_FILE := $(BASE)/terraform/settings/$(ENVIRONMENT)/variables.tfvars
+TF_VAR_FILE := $(BASE)/terraform/settings/$(ENVIRONMENT)/terraform.tfvars
 
 $(info AWS_ACCOUNT 		= $(AWS_ACCOUNT))
 $(info AWS_PROFILE 		= $(AWS_PROFILE))

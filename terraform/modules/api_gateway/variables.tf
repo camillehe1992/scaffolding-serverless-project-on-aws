@@ -19,9 +19,9 @@ variable "openapi_json_file" {
   description = "The path of OpenAPI specification of API Gateway Rest API"
 }
 
-variable "function_name" {
+variable "invoke_arn" {
   type        = string
-  description = "The Lambda function name that invoked by API Gateway"
+  description = "ARN to be used for invoking Lambda Function from API Gateway"
 }
 
 variable "rest_api_description" {

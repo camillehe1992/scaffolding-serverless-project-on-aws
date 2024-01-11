@@ -7,15 +7,15 @@ info:
 servers:
   - url: https://my-serverless-pet-application.com
 paths:
-  /pets:
+  /health:
     get:
-      summary: List all pets
-      operationId: listPets
+      summary: Health check
+      operationId: health
       tags:
-        - pets
+        - system
       responses:
         "200":
-          description: A paged array of pets
+          description: A health check successful response
           headers:
             Access-Control-Allow-Origin:
               schema:
@@ -23,29 +23,24 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Pets"
+                type: object
       x-amazon-apigateway-integration:
         responses:
           default:
             statusCode: "200"
-        uri: arn:$${AWS::Partition}:apigateway:$${AWS::Region}:lambda:path/2015-03-31/functions/arn:$${AWS::Partition}:lambda:$${AWS::Region}:$${AWS::AccountId}:function:${function_name}/invocations
+        uri: ${invoke_arn}
         passthroughBehavior: when_no_match
         httpMethod: POST
         type: aws_proxy
-    post:
-      summary: Create a pet
-      operationId: createPets
+  /todos:
+    get:
+      summary: List all todos
+      operationId: listTodos
       tags:
-        - pets
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/NewPet"
+        - todos
       responses:
-        "201":
-          description: Null response
+        "200":
+          description: A paged array of todos
           headers:
             Access-Control-Allow-Origin:
               schema:
@@ -53,18 +48,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NewPetResponse"
+                $ref: "#/components/schemas/Todos"
       x-amazon-apigateway-integration:
         responses:
           default:
             statusCode: "200"
-        uri: arn:$${AWS::Partition}:apigateway:$${AWS::Region}:lambda:path/2015-03-31/functions/arn:$${AWS::Partition}:lambda:$${AWS::Region}:$${AWS::AccountId}:function:${function_name}/invocations
-        passthroughBehavior: when_no_match
+        uri: ${invoke_arn}
         httpMethod: POST
         type: aws_proxy
 components:
   schemas:
-    Pet:
+    Todo:
       type: object
       required:
         - id
@@ -73,37 +67,18 @@ components:
         id:
           type: integer
           format: int64
-        name:
+        userId:
+          type: integer
+          format: int64
+        title:
           type: string
-        price:
-          type: number
-    Pets:
+        completed:
+          type: boolean
+    Todos:
       type: array
       maxItems: 100
       items:
-        $ref: "#/components/schemas/Pet"
-    NewPet:
-      type: object
-      properties:
-        type:
-          type: string
-          example: cat
-        price:
-          type: number
-          example: 123.21
-    PetType:
-      type: string
-      enum:
-        - dog
-        - cat
-        - fish
-        - bird
-        - gecko
-    NewPetResponse:
-      type: object
-      properties:
-        pet:
-          $ref: "#/components/schemas/Pet"
+        $ref: "#/components/schemas/Todo"
     Error:
       type: object
       required:

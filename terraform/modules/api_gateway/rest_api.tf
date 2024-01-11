@@ -4,7 +4,7 @@ data "aws_region" "current" {}
 
 resource "aws_api_gateway_rest_api" "this" {
   body = templatefile(var.openapi_json_file, {
-    function_name = var.function_name
+    invoke_arn = var.invoke_arn
   })
 
   name        = "${local.resource_prefix}${var.rest_api_name}"

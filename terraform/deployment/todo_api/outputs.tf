@@ -26,6 +26,7 @@ output "api_gateway_rest_api" {
     arn           = module.api_gateway.rest_api.arn
     execution_arn = module.api_gateway.rest_api.execution_arn
     id            = module.api_gateway.rest_api.id
+    invoke_url    = module.api_gateway.stage.invoke_url
   }
 }
 
@@ -34,5 +35,6 @@ output "lambda_function" {
   value = {
     arn           = module.portal_function.function.arn
     function_name = module.portal_function.function.function_name
+    invoke_arn    = module.portal_function.function.invoke_arn
   }
 }
