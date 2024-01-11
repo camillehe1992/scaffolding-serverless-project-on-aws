@@ -16,20 +16,25 @@ repos:
         language: system
         types: [python]
         args: [
-            '-rn', # Only display messages
-            '-sn', # Don't display the score
-            '--rcfile=pylintrc', # Link to your config file
-            '--load-plugins=pylint.extensions.docparams', # Load an extension
+            "-rn", # Only display messages
+            "-sn", # Don't display the score
+            "--rcfile=pylintrc", # Link to your config file
+            "--load-plugins=pylint.extensions.docparams", # Load an extension
           ]
         always_run: true
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.86.0
     hooks:
+      - id: checkov
       - id: terraform_fmt
         args:
           - --args=-recursive
         types: [terraform]
       - id: terraform_providers_lock
+      - id: terraform_validate
+      - id: terraform_tflint
+      - id: terraform_tfsec
+
   - repo: https://github.com/psf/black-pre-commit-mirror
     rev: 23.9.1
     hooks:
