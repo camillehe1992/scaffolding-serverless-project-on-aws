@@ -104,19 +104,17 @@ jobs:
 
       # Save plan to artifacts
       - name: Publish Terraform Plan
-        working-directory: ${{ env.WORKING_DIRECTORY }}
         uses: actions/upload-artifact@v3
         with:
           name: tfplan
-          path: tfplan
+          path: ${{ env.WORKING_DIRECTORY }}/tfplan
 
       # Save lambda zip file to artifacts
       - name: Publish Lambda Zip File
-        working-directory: ${{ env.WORKING_DIRECTORY }}
         uses: actions/upload-artifact@v3
         with:
           name: portal.zip
-          path: build/portal.zip
+          path: ${{ env.WORKING_DIRECTORY }}/build/portal.zip
 
       # Create string output of Terraform Plan
       - name: Create String Output
@@ -173,19 +171,17 @@ jobs:
 
       # Download saved plan from artifacts
       - name: Download Terraform Plan
-        working-directory: ${{ env.WORKING_DIRECTORY }}
         uses: actions/download-artifact@v3
         with:
           name: tfplan
-          path: .
+          path: ${{ env.WORKING_DIRECTORY }}
 
       # Download saved lambda zip file from artifacts
       - name: Download Lambda Zip File
-        working-directory: ${{ env.WORKING_DIRECTORY }}
         uses: actions/download-artifact@v3
         with:
           name: portal.zip
-          path: build/portal.zip
+          path: ${{ env.WORKING_DIRECTORY }}/build/portal.zip
 
       # Terraform Apply
       - name: Terraform Apply
