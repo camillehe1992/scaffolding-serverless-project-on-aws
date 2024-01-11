@@ -27,4 +27,3 @@ security_group_ids                  = ["sg-00fe42c9972b4e4af"]
 ##############################################
 # FRONTEND DEPLOYMENT INFORMATION
 ##############################################
-log_level = "debug"

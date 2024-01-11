@@ -24,11 +24,11 @@ variable "description" {
   description = "The description of Lambda layer"
 }
 
-variable "npm_install" {
-  type        = bool
-  default     = false
-  description = "Whether to npm install dependencies. Default false"
-}
+# variable "npm_install" {
+#   type        = bool
+#   default     = false
+#   description = "Whether to npm install dependencies. Default false"
+# }
 
 variable "pip_install" {
   type        = bool

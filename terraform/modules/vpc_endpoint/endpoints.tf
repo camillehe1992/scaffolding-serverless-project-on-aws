@@ -1,9 +1,11 @@
 data "aws_region" "current" {}
 
+data "aws_partition" "current" {}
+
 resource "aws_vpc_endpoint" "private_api_gateway" {
   count = var.api_gateway_vpc_endpoint_deployment ? 1 : 0
 
-  service_name      = "${local.partition}com.amazonaws.${data.aws_region.current.name}.execute-api"
+  service_name      = "${data.aws_partition.current.partition}com.amazonaws.${data.aws_region.current.name}.execute-api"
   vpc_endpoint_type = "Interface"
 
   vpc_id              = var.vpc_id

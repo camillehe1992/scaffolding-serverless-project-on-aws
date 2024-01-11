@@ -40,7 +40,7 @@ variable "rest_api_name" {
   description = "The name of API Gateway Rest API"
 }
 
-variable "api_gateway_log_retention_days" {
+variable "log_retention_days" {
   type        = number
   default     = 30
   description = <<EOF
@@ -49,10 +49,8 @@ variable "api_gateway_log_retention_days" {
   EOF
 }
 
-variable "vpc_endpoint_id" {
-  type        = string
-  default     = ""
-  description = "VPC endpoint for private Rest API"
-}
-
-
+# variable "vpc_endpoint_id" {
+#   type        = string
+#   default     = ""
+#   description = "VPC endpoint for private Rest API"
+# }

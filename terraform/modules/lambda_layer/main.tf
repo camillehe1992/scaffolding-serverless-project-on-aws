@@ -4,7 +4,7 @@ resource "null_resource" "pip_install" {
   count = var.pip_install ? 1 : 0
 
   triggers = {
-    shell_hash = "${sha256(file("${var.source_path}"))}"
+    shell_hash = sha256(file(var.source_path))
     timestamp  = timestamp()
   }
 
@@ -61,6 +61,8 @@ resource "aws_s3_object" "file_upload" {
   key         = "${local.s3_key_prefix}/${var.layer_name}.zip"
   source      = data.archive_file.s3_object[count.index].output_path
   source_hash = data.archive_file.s3_object[count.index].output_base64sha256
+
+  tags = var.tags
 }
 
 resource "aws_lambda_layer_version" "from_s3" {

@@ -96,7 +96,7 @@ variable "security_group_ids" {
 
 variable "retention_in_days" {
   type        = number
-  default     = 14
+  default     = 60
   description = "The retention (days) of Lambda function Cloudwatch logs group"
 }
 

@@ -9,18 +9,22 @@ module "portal_function" {
   description   = "The portal function that invoked by API Gateway"
   role_arn      = module.lambda_execution_role.iam_role.arn
   handler       = "app.main.lambda_handler"
-  memory_size   = 128
-  timeout       = 60
-  runtime       = "python3.9"
+  memory_size   = var.lambda_function_memory_size
+  timeout       = var.lambda_function_timeout
+  runtime       = var.lambda_function_runtime
   source_dir    = "../../../src/portal"
   output_path   = "build/portal.zip"
 
   layers = [
     module.dependencies_layer.layer.arn
   ]
-  environment_variables = {}
-  subnet_ids            = []
-  security_group_ids    = []
+  environment_variables = {
+    DEBUG_LEVEL = var.log_level
+  }
+  subnet_ids         = []
+  security_group_ids = []
+
+  retention_in_days = var.log_retention_days
 
   lambda_permissions = {
     allow-apigateway-invocation = {
