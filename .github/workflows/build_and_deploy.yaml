@@ -9,6 +9,13 @@ on:
       - hotfix/*
       - bugfix/*
     inputs:
+      environment:
+        description: Environment to run agains
+        type: choice
+        options:
+          - dev
+        default: dev
+        required: true
       force:
         description: True to force apply
         required: true
