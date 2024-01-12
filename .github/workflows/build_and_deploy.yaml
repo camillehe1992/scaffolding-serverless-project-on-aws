@@ -44,7 +44,6 @@ env:
   NICKNAME: todo
   STATE_BUCKET: "${{ vars.STATE_BUCKET }}"
   WORKING_DIRECTORY: terraform/deployment/${{ inputs.deployment }}
-  DESTROY: ${{ inputs.destroy }}
 
 jobs:
   terraform-plan:
