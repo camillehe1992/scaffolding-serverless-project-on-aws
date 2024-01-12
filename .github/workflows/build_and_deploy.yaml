@@ -9,6 +9,13 @@ on:
       - hotfix/*
       - bugfix/*
     inputs:
+      deployment:
+        description: Deployment to apply
+        type: choice
+        options:
+          - todo_api
+        default: todo_api
+        required: true
       environment:
         description: Environment to run agains
         type: choice
@@ -22,7 +29,7 @@ on:
         default: false
         type: boolean
 
-# run-name: ${{ format('Deploy to {0} (destroy = {1})', inputs.environment, inputs.destroy) }}
+run-name: ${{ format('Deploy {0} to {1}', inputs.deployment, inputs.environment) }}
 
 permissions:
   contents: read
@@ -36,7 +43,7 @@ env:
   ENVIRONMENT: dev
   NICKNAME: todo
   STATE_BUCKET: "${{ vars.STATE_BUCKET }}"
-  WORKING_DIRECTORY: terraform/deployment/todo_api
+  WORKING_DIRECTORY: terraform/deployment/{{ inputs.deployment }}
 
 jobs:
   terraform-plan:
