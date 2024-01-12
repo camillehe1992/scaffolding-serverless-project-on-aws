@@ -1,19 +1,21 @@
+# pylint: disable=consider-alternative-union-syntax
+from typing import Optional
 import requests
 from aws_lambda_powertools.event_handler import (
     APIGatewayRestResolver,
     Response,
     content_types,
 )
+from aws_lambda_powertools.event_handler.exceptions import NotFoundError
+from aws_lambda_powertools.event_handler.openapi.params import Body, Query
+from aws_lambda_powertools.shared.types import Annotated
 from aws_lambda_powertools.logging import correlation_paths
 from aws_lambda_powertools.utilities.typing import LambdaContext
-from aws_lambda_powertools.event_handler.openapi.exceptions import (
-    RequestValidationError,
-)
-
 from .logging import logger
 from .model import Todo
 
 app = APIGatewayRestResolver(enable_validation=True)
+app.enable_swagger(path="/swagger")
 
 DEMO_API_URL = "https://jsonplaceholder.typicode.com"
 TIMEOUT_IN_SECONDS = 60
@@ -26,58 +28,60 @@ def am_i_alive():
 
 # List all todos
 @app.get("/todos")
-def get_todos() -> [Todo]:
-    todos: Response = requests.get(f"{DEMO_API_URL}/todos", timeout=TIMEOUT_IN_SECONDS)
-    todos.raise_for_status()
+def get_todos(
+    completed: Annotated[Optional[str], Query(min_length=4)] = None
+) -> list[Todo]:
+    url = f"{DEMO_API_URL}/todos"
+    if completed is not None:
+        url = f"{url}/?completed={completed}"
+    response: Response = requests.get(url, timeout=TIMEOUT_IN_SECONDS)
+    response.raise_for_status()
     # for brevity, we'll limit to the first 5 only
-    todos = {"todos": todos.json()[:5]}
+    todos = response.json()[:5]
     logger.info("get todos", todos=todos)
     return todos
 
 
 # Get a specific todo by given todo_id
 @app.get("/todos/<todo_id>")
-def get_todo_by_id(todo_id: Todo) -> int:  # value come as str
-    todos: Response = requests.get(
+def get_todo_by_id(todo_id: int) -> Todo:
+    response: Response = requests.get(
         f"{DEMO_API_URL}/todos/{todo_id}", timeout=TIMEOUT_IN_SECONDS
     )
-    todos.raise_for_status()
-    todo = todos.json()
+    response.raise_for_status()
+    todo = response.json()
     logger.info(f"get todo with given todo_id {todo_id}", todo=todo)
-    return todo["id"]
+    return todo
 
 
 # Create a new todo
 @app.post("/todos")
-def create_todo() -> Todo:
-    todo_data: dict = app.current_event.json_body  # deserialize json str to dict
-    logger.info("create todo with data", data=todo_data)
-    todo: Response = requests.post(
-        f"{DEMO_API_URL}/todos", data=todo_data, timeout=TIMEOUT_IN_SECONDS
+def create_todo(todo: Annotated[Todo, Body()]) -> int:
+    todo_data = todo.model_dump(by_alias=True)
+    logger.info("create todo with data", json=todo_data)
+    response: Response = requests.post(
+        f"{DEMO_API_URL}/todos", json=todo_data, timeout=TIMEOUT_IN_SECONDS
     )
-    todo.raise_for_status()
-    todo = todo.json()
+    response.raise_for_status()
+    todo = response.json()
     logger.info("todo created successfully", todo=todo)
-    return todo
+    return todo["id"]
 
 
-# We use exception handler decorator to catch any request validation errors.
-# Then, we log the detailed reason as to why it failed while returning a custom Response object to hide that from them.
-@app.exception_handler(RequestValidationError)
-def handle_validation_error(ex: RequestValidationError):
-    logger.error(
-        "Request failed validation", path=app.current_event.path, errors=ex.errors()
-    )
+@app.not_found
+def handle_not_found_errors(exc: NotFoundError) -> Response:
+    logger.info(f"Not found route: {app.current_event.path}", exc.msg)
     return Response(
-        status_code=422,
-        content_type=content_types.APPLICATION_JSON,
-        body="Invalid data",
+        status_code=418, content_type=content_types.TEXT_PLAIN, body="I'm a teapot!"
     )
 
 
-# You can continue to use other utilities just as before
 @logger.inject_lambda_context(
-    log_event=True, correlation_id_path=correlation_paths.API_GATEWAY_REST
+    log_event=True, correlation_id_path=correlation_paths.API_GATEWAY_HTTP
 )
 def lambda_handler(event: dict, context: LambdaContext) -> dict:
-    return app.resolve(event, context)
+    try:
+        return app.resolve(event, context)
+    except Exception as err:
+        logger.error("Failed to process request", error=err)
+        raise Exception(err) from err

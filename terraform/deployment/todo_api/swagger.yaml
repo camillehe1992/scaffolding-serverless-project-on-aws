@@ -1,12 +1,81 @@
 openapi: 3.0.0
 info:
   version: 0.0.1
-  title: Swagger Petstore
+  title: Swagger Todos
   license:
     name: MIT
 servers:
   - url: https://vw3mtdrx3f.execute-api.ap-southeast-1.amazonaws.com/v1/
 paths:
+  /swagger:
+    get:
+      summary: Swagger specification
+      operationId: swagger
+      responses:
+        "200":
+          description: A portal of Swagger UI
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+        uri: ${invoke_arn}
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+  /swagger.css:
+    get:
+      summary: Swagger specification
+      operationId: swagger
+      responses:
+        "200":
+          description: A portal of Swagger UI
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+        uri: ${invoke_arn}
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+  /swagger.js:
+    get:
+      summary: Swagger specification
+      operationId: swagger
+      responses:
+        "200":
+          description: A portal of Swagger UI
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+        uri: ${invoke_arn}
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
   /health:
     get:
       summary: Health check
@@ -73,9 +142,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: integer
-                    format: int64
                   userId:
                     type: integer
                     format: int64
