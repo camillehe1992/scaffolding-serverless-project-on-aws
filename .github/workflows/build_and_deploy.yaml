@@ -23,6 +23,11 @@ on:
           - dev
         default: dev
         required: true
+      destroy:
+        description: True if apply destroy
+        required: true
+        default: false
+        type: boolean
       force:
         description: True to force apply
         required: true
@@ -44,6 +49,7 @@ env:
   NICKNAME: todo
   STATE_BUCKET: "${{ vars.STATE_BUCKET }}"
   WORKING_DIRECTORY: terraform/deployment/${{ inputs.deployment }}
+  DESTROY: ${{ inputs.destroy }}
 
 jobs:
   terraform-plan:
@@ -96,7 +102,16 @@ jobs:
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: |
           export exitcode=0
-          terraform plan -var-file $(pwd)/../../settings/$ENVIRONMENT/terraform.tfvars \
+
+          OPTIONS=""
+
+          if [ $DESTROY -eq true ]
+          then
+            OPTIONS="-destroy"
+            echo "This is a destroy action..."
+          fi
+
+          terraform plan $OPTIONS -var-file $(pwd)/../../settings/$ENVIRONMENT/terraform.tfvars \
           -var="aws_region=$AWS_REGION" \
           -detailed-exitcode -no-color -out tfplan || export exitcode=$?
 
