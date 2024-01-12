@@ -103,6 +103,8 @@ jobs:
         run: |
           export exitcode=0
 
+          echo $DESTROY
+
           OPTIONS=""
 
           if [ $DESTROY -eq true ]
