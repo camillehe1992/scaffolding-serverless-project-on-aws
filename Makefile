@@ -85,3 +85,7 @@ unit-test:
 	$(info [*] Run unit test with coverage report)
 	coverage run -m pytest
 	coverage report -m
+
+e2e-test:
+	$(info [*] Test RestAPIs via invoking API Gateway endpoint)
+	python -m pytest ./src/tests/e2e/

@@ -3,7 +3,7 @@ data "aws_partition" "current" {}
 data "aws_region" "current" {}
 
 resource "aws_api_gateway_rest_api" "this" {
-  body = templatefile(var.openapi_json_file, {
+  body = templatefile(var.swagger_file, {
     invoke_arn = var.invoke_arn
   })
 

@@ -30,10 +30,10 @@ variable "nickname" {
 # Lambda Layers
 
 # API Gateway
-variable "openapi_json_file" {
+variable "swagger_file" {
   type        = string
-  default     = "../../../swagger/spec.yaml"
-  description = "The path of OpenAPI specification of API Gateway Rest API"
+  default     = "swagger.yaml"
+  description = "The path of Swagger specification of API Gateway Rest API"
 }
 
 variable "log_retention_days" {

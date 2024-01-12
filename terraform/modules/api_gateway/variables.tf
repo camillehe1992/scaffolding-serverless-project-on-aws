@@ -14,9 +14,9 @@ variable "tags" {
 }
 
 # API Gateways
-variable "openapi_json_file" {
+variable "swagger_file" {
   type        = string
-  description = "The path of OpenAPI specification of API Gateway Rest API"
+  description = "The path of Swagger specification of API Gateway Rest API"
 }
 
 variable "invoke_arn" {

@@ -9,3 +9,4 @@ pytest
 coverage
 python-dotenv
 python-lambda-local
+tavern

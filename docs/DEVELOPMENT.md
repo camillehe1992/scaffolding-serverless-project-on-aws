@@ -2,6 +2,19 @@
 
 After downloading the sample code on your local machine, you should setup your local environment for development. For example, you need to create a virtual environment to install your python dependencies if you choose Python as your Lambda function language. Moreover, AWS credentials configuration should be setup if you need to deploy AWS resources to AWS environments.
 
+- [Local Development Environment Setup](#local-development-environment-setup)
+  - [Install Terraform CLI](#install-terraform-cli)
+  - [Install AWS CLI](#install-aws-cli)
+  - [Install Anaconda and Dependencies](#install-anaconda-and-dependencies)
+  - [Install Project Dependencies](#install-project-dependencies)
+  - [Enable Pre Commit](#enable-pre-commit)
+  - [Testing](#testing)
+    - [Local Lambda Test](#local-lambda-test)
+    - [Unit Test](#unit-test)
+    - [E2E Test](#e2e-test)
+    - [Postman](#postman)
+  - [Linting \& Formatting](#linting--formatting)
+
 ## Install Terraform CLI
 
 Terraform provides several ways to install Terraform CLI on machine in its official website, but I recommend to use `tfenv` which is a [Terraform](https://www.terraform.io/) version manager inspired by `rbenv`. With `tfenv`, you are able to manage and switch between multiple Terraform versions easily when you have to work on many projects using different Terraform versions.
@@ -121,40 +134,79 @@ pre-commit install
 # output: pre-commit installed at .git/hooks/pre-commit
 ```
 
-## Local Test
+## Testing
 
-A entry file named `local_invoke.py` that is used to execute the lambda source code locally.
+### Local Lambda Test
 
-Below is a test case input that get pet by pet id 1.
+Run lambda function in python on local machine usin [python-lambda-local](https://pypi.org/project/python-lambda-local/). All local test files locates in `src/local_test` folder.
 
 ```bash
-python local_invoke.py tests/data/get_pet_by_id.json
+# Test GET /todos with event defined in src/local_test/events folder
+python -m src.local_test.local_get_todos
 
-# Input:
-#   {
-#       "resource": "/pets/{petId}",
-#       "path": "/pets/1",
-#       "httpMethod": "GET",
-#       "pathParameters": {
-#           "petId": "1"
-#       }
-#   }
-
-# Output:
-#   {
-#     "code": "200",
-#     "message": "success",
-#     "data": {
-#       "pets": {
-#         "id": 1,
-#         "type": "dog",
-#         "price": 249.99
-#       }
-#     },
-#     "path": "/pets/1",
-#     "traceId": null,
-#     "timestamp": 1690860006
-#   }
+# Outputs
+# [root - INFO - 2024-01-12 13:13:35,928] Event: {'resource': '/todos', 'path': '/todos', 'httpMethod': 'GET', 'body': None}
+# [root - INFO - 2024-01-12 13:13:35,928] START RequestId: d01e81a9-332a-4fd6-88a3-c3c2ba224692 Version: $LATEST
+# [root - INFO - 2024-01-12 13:13:37,018] END RequestId: d01e81a9-332a-4fd6-88a3-c3c2ba224692
+# [root - INFO - 2024-01-12 13:13:37,018] REPORT RequestId: d01e81a9-332a-4fd6-88a3-c3c2ba224692  Duration: 937.32 ms
+# [root - INFO - 2024-01-12 13:13:37,018] RESULT:
+# {'statusCode': <HTTPStatus.OK: 200>, 'body': '{"todos":[{"userId":1,"id":1,"title":"delectus aut autem","completed":false},{"userId":1,"id":2,"title":"quis ut nam facilis et officia qui","completed":false},{"userId":1,"id":3,"title":"fugiat veniam minus","completed":false},{"userId":1,"id":4,"title":"et porro tempora","completed":true},{"userId":1,"id":5,"title":"laboriosam mollitia et enim quasi adipisci quia provident illum","completed":false},{"userId":1,"id":6,"title":"qui ullam ratione quibusdam voluptatem quia omnis","completed":false},{"userId":1,"id":7,"title":"illo expedita consequatur quia in","completed":false},{"userId":1,"id":8,"title":"quo adipisci enim quam ut ab","completed":true},{"userId":1,"id":9,"title":"molestiae perspiciatis ipsa","completed":false},{"userId":1,"id":10,"title":"illo est ratione doloremque quia maiores aut","completed":true}]}', 'isBase64Encoded': False, 'multiValueHeaders': defaultdict(<class 'list'>, {'Content-Type': ['application/json']})}
 ```
+
+### Unit Test
+
+In the project, we use `pytest` and `unittest` for unit test.
+
+```bash
+# Run all unit test cases in /src/tests/unit folder
+coverage run -m pytest ./src/tests/unit/
+
+# Run unit test cases in a sepcific file
+python -m pytest ./src/tests/unit/test_main.py
+
+# Report unit test coverage
+coverage report -m
+```
+
+Run `make unit-test` to execute unit test in one command.
+
+### E2E Test
+
+[Tavern](https://pypi.org/project/tavern/) is a pytest plugin, command-line tool and Python library for automated testing of APIs, with a simple, concise and flexible YAML-based syntax.
+
+```bash
+# Run all e2e test cases in /tests/unit folder
+python -m pytest ./src/tests/e2e/
+
+# Run e2e test cases in a sepcific file
+python -m pytest ./src/tests/e2e/test_minimal.tavern.yaml -v
+```
+
+### Postman
+
+Find Postman colllection from [collection.json](./src/tests/postman/collection.json)
+
+> Please keep Postman colllection updated.
+
+## Linting & Formatting
+
+[Pylint](https://pypi.org/project/pylint/) is a static code analyser for Python 2 or 3.
+
+Pylint analyses your code without actually running it. It checks for errors, enforces a coding standard, looks for code smells, and can make suggestions about how the code could be refactored.
+
+__To keep code quality, passing lint is mandantry to commit your code with pre-commit hooks enabled.__
+
+Run `pylint src/*` to lint your python code as a pre check before commiting. Besides, we also enabled terraform code lint and format in pre-commit hooks, so you have to pass terraform lint as well before commiting. Run below to commands to lint and format your terraform code.
+
+```bash
+terraform fmt -check -diff -recursive
+terraform validate
+# or
+make lint
+```
+
+[TFLint](https://github.com/terraform-linters/tflint) is not a terraform built-in feature, you need to install the tool on your local machine if you want to pre-lint terraform code before commiting.
+
+---
 
 Now, the local development environment is setup.

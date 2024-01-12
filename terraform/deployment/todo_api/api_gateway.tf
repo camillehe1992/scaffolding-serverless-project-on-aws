@@ -12,10 +12,10 @@ module "api_gateway" {
   source = "../../modules/api_gateway"
   # depends_on = [module.api_gateway_vpc_endpoint]
 
-  environment       = var.environment
-  nickname          = var.nickname
-  tags              = var.tags
-  openapi_json_file = var.openapi_json_file
-  invoke_arn        = module.portal_function.function.invoke_arn
+  environment  = var.environment
+  nickname     = var.nickname
+  tags         = var.tags
+  swagger_file = var.swagger_file
+  invoke_arn   = module.portal_function.function.invoke_arn
   # vpc_endpoint_id   = module.api_gateway_vpc_endpoint.interface_endpoint.id
 }

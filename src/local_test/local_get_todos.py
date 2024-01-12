@@ -19,7 +19,7 @@ sys.path.append(current_dir.replace("local_test", ""))
 # Import Lambda portal function
 from portal.app.main import lambda_handler
 
-# Define the event input for testing
+# Import test event
 file_path = f"{current_dir}/events/get_todos.json"
 context = Context(timeout_in_seconds=15)
 
