@@ -53,6 +53,16 @@ variable "runtime" {
   description = "The runtime of Lambda function"
 }
 
+variable "architecture" {
+  type    = string
+  default = "x86_64"
+  validation {
+    condition     = contains(["arm64", "x86_64"], var.architecture)
+    error_message = "The architecture value must be arm64 or x86_64"
+  }
+  description = "The type of computer processor that Lambda uses to run the function"
+}
+
 variable "source_file" {
   type        = string
   default     = null

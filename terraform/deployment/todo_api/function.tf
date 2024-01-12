@@ -12,6 +12,7 @@ module "portal_function" {
   memory_size   = var.lambda_function_memory_size
   timeout       = var.lambda_function_timeout
   runtime       = var.lambda_function_runtime
+  architecture  = var.architecture
   source_dir    = "../../../src/portal"
   output_path   = "build/portal.zip"
 
@@ -19,7 +20,8 @@ module "portal_function" {
     module.dependencies_layer.layer.arn
   ]
   environment_variables = {
-    DEBUG_LEVEL = var.log_level
+    POWERTOOLS_SERVICE_NAME = var.nickname
+    POWERTOOLS_LOG_LEVEL    = var.log_level
   }
   subnet_ids         = []
   security_group_ids = []

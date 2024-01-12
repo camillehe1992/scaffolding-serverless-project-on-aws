@@ -69,10 +69,20 @@ variable "lambda_function_runtime" {
   default     = "python3.9"
 }
 
+variable "architecture" {
+  type    = string
+  default = "arm64"
+  validation {
+    condition     = contains(["arm64", "x86_64"], var.architecture)
+    error_message = "The architecture value must be arm64 or x86_64"
+  }
+  description = "The type of computer processor that Lambda uses to run the function"
+}
+
 variable "log_level" {
   type        = string
-  description = "The log level of Lambda function"
-  default     = "debug"
+  description = "The log level of Lambda function. Default INFO"
+  default     = "DEBUG"
 }
 
 # variable "state_bucket" {

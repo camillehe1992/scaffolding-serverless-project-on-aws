@@ -68,6 +68,16 @@ variable "s3_bucket" {
 
 variable "runtimes" {
   type        = list(string)
-  description = "List of compatible runtimes of the Lambda layer, e.g. [python3.9]"
   default     = ["python3.9"]
+  description = "List of compatible runtimes of the Lambda layer, e.g. [python3.9]"
+}
+
+variable "architecture" {
+  type    = string
+  default = "x86_64"
+  validation {
+    condition     = contains(["arm64", "x86_64"], var.architecture)
+    error_message = "The architecture value must be arm64 or x86_64"
+  }
+  description = "The type of computer processor that Lambda uses to run the function"
 }

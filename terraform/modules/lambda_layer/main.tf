@@ -9,7 +9,7 @@ resource "null_resource" "pip_install" {
   }
 
   provisioner "local-exec" {
-    command = "rm -rf ${local.archive_path} && python3 -m pip install -r ${var.source_path} -t ${local.archive_path}/python"
+    command = "rm -rf ${local.archive_path} && python3 -m pip install -r ${var.source_path} --platform ${local.platform} -t ${local.archive_path}/python --only-binary=:all:"
   }
 }
 

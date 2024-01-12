@@ -1,26 +1,13 @@
 import json
-from datetime import datetime
-from typing import Any
 from http import HTTPStatus
 from .logging import logger
-from .enum import ResponseMessage
 
 
-def lambda_response(data: Any = None, path: str = None):
-    if not data:
-        data = {}
-    if isinstance(data, str):
-        data = json.loads(data)
-    traceId = None
-    timestamp = int(datetime.timestamp(datetime.now()))
-    body = {
-        "code": str(HTTPStatus.OK.value),
-        "message": ResponseMessage.SUCCESS.value,
-        "data": data,
-        "path": path,
-        "traceId": traceId,
-        "timestamp": timestamp,
-    }
+def lambda_response(body: dict) -> dict:
+    if not body:
+        body = {}
+    if isinstance(body, str):
+        body = json.loads(body)
     logger.debug("Lambda response body", body=body)
     return {
         "statusCode": HTTPStatus.OK,
@@ -30,8 +17,9 @@ def lambda_response(data: Any = None, path: str = None):
 
 
 def return_error_message(message: str) -> dict:
+    logger.error("Lambda response error message", message=message)
     return {
         "statusCode": HTTPStatus.BAD_REQUEST,
         "headers": {"Content-Type": "application/json"},
-        "body": json.dumps({"statusCode": HTTPStatus.BAD_REQUEST, "message": message}),
+        "body": json.dumps({"message": message}),
     }

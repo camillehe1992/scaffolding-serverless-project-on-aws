@@ -5,7 +5,7 @@ info:
   license:
     name: MIT
 servers:
-  - url: https://my-serverless-pet-application.com
+  - url: https://vw3mtdrx3f.execute-api.ap-southeast-1.amazonaws.com/v1/
 paths:
   /health:
     get:
@@ -56,13 +56,73 @@ paths:
         uri: ${invoke_arn}
         httpMethod: POST
         type: aws_proxy
+    post:
+      summary: Create todo
+      operationId: createTodo
+      tags:
+        - todos
+      responses:
+        "200":
+          description: A newly created todo
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                  userId:
+                    type: integer
+                    format: int64
+                  title:
+                    type: string
+                  completed:
+                    type: boolean
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+        uri: ${invoke_arn}
+        httpMethod: POST
+        type: aws_proxy
+  /todos/{todo_id}:
+    get:
+      summary: Get a specific todo by given todo_id
+      operationId: getTodo
+      tags:
+        - todos
+      responses:
+        "200":
+          description: A todo information
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+        uri: ${invoke_arn}
+        httpMethod: POST
+        type: aws_proxy
 components:
   schemas:
     Todo:
       type: object
       required:
         - id
-        - name
+        - userId
+        - title
+        - completed
       properties:
         id:
           type: integer
