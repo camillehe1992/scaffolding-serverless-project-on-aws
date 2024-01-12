@@ -23,11 +23,11 @@ terraform-docs -c .terraform-docs.yaml module-a/
 
 # executing from child
 cd module-a/
-terraform-docs -c ../.terraform-docs.yaml .
+terraform-docs -c .terraform-docs.yaml .
 
 # or an absolute path
 terraform-docs -c /path/to/parent/folder/.terraform-docs.yml .
 
 # create a README.md file for a particular module
-terraform-docs -c ../.terraform-docs.yaml module-a > module-a/README.md
+terraform-docs -c .terraform-docs.yaml module-a > module-a/README.md
 ```

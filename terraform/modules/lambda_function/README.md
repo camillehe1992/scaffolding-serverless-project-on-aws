@@ -1,5 +1,3 @@
-# Lambda Function Module
-
 ## Requirements
 
 | Name      | Version  |
@@ -32,6 +30,7 @@ No modules.
 
 | Name                   | Description                                                                            | Type                                                                                   | Default       | Required |
 | ---------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ------------- | :------: |
+| architecture           | The type of computer processor that Lambda uses to run the function                    | `string`                                                                               | `"x86_64"`    |    no    |
 | description            | The description of Lambda function                                                     | `string`                                                                               | `""`          |    no    |
 | environment            | The environment of application                                                         | `string`                                                                               | n/a           |   yes    |
 | environment\_variables | A set of environment variables of Lambda function                                      | `map(string)`                                                                          | `{}`          |    no    |
