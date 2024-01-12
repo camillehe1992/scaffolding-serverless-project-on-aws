@@ -43,7 +43,7 @@ env:
   ENVIRONMENT: dev
   NICKNAME: todo
   STATE_BUCKET: "${{ vars.STATE_BUCKET }}"
-  WORKING_DIRECTORY: terraform/deployment/{{ inputs.deployment }}
+  WORKING_DIRECTORY: terraform/deployment/${{ inputs.deployment }}
 
 jobs:
   terraform-plan:
