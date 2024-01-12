@@ -38,8 +38,6 @@ endef
 
 OPTIONS += $(DEFAULTS)
 
-$(info OPTIONS 		= $(OPTIONS))
-
 #########################################################################
 # Convenience Functions to use in Make
 #########################################################################
@@ -50,9 +48,10 @@ check-for-environment = $(if $(filter $(ENVIRONMENT),$(environments)),,$(error I
 # CICD Make Targets
 #########################################################################
 lint:
-	$(info [*] Linting terraform)
+	$(info [*] Linting terraform & python source code)
 	terraform fmt -check -diff -recursive
 	terraform validate
+	pylint src/*
 
 pre-check:
 	$(info [*] Check Environment Done)
@@ -82,15 +81,7 @@ apply:
 #########################################################################
 # TEST Make Targets
 #########################################################################
-test-unit:
-	$(info [*] Run unit test)
-	python -m pytest ./tests/unit
-
-test-e2e:
-	$(info [*] Run e2e test)
-	python -m pytest ./tests/e2e
-
-test:
-	$(info [*] Run all tests)
-	$(MAKE) test-unit
-	$(MAKE) test-e2e
+unit-test:
+	$(info [*] Run unit test with coverage report)
+	coverage run -m pytest
+	coverage report -m

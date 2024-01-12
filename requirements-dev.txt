@@ -6,3 +6,6 @@ pylint
 boto3
 botocore
 pytest
+coverage
+python-dotenv
+python-lambda-local
