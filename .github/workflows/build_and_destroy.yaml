@@ -1,4 +1,4 @@
-name: Deploy API to Dev
+name: Destroy API from Dev
 
 on:
   workflow_dispatch:
@@ -98,7 +98,7 @@ jobs:
         run: |
           export exitcode=0
 
-          terraform plan -var-file $(pwd)/../../settings/$ENVIRONMENT/terraform.tfvars \
+          terraform plan -destroy -var-file $(pwd)/../../settings/$ENVIRONMENT/terraform.tfvars \
           -var="aws_region=$AWS_REGION" \
           -detailed-exitcode -no-color -out tfplan || export exitcode=$?
 
