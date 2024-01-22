@@ -45,11 +45,6 @@ variable "log_retention_days" {
   EOF
 }
 
-# variable "vpc_id" {
-#   type        = string
-#   description = "The VPC id associated with VPC endpoint for private Rest API"
-# }
-
 # Lambda Functions
 variable "lambda_function_memory_size" {
   type        = number
@@ -82,26 +77,5 @@ variable "architecture" {
 variable "log_level" {
   type        = string
   description = "The log level of Lambda function. Default INFO"
-  default     = "DEBUG"
+  default     = "INFO"
 }
-
-# variable "state_bucket" {
-#   type        = string
-#   description = "The s3 bucket where the terraform state file locates in"
-# }
-
-# variable "subnet_ids" {
-#   type        = list(string)
-#   description = "Subnet ids for Lambda functions wich runs in a VPC"
-# }
-
-# variable "security_group_ids" {
-#   type        = list(string)
-#   description = "Security Group ids for Lambda functions wich runs in a VPC"
-# }
-
-# variable "api_gateway_vpc_endpoint_deployment" {
-#   type        = bool
-#   default     = false
-#   description = "Defines if the VPC endpoint for API Gateway will be deployed or not"
-# }

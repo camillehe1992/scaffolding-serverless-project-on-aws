@@ -1,30 +1,31 @@
-variable "environment" {
-  type        = string
-  description = "The environment of project, such as dev, int, prod"
-}
-
-variable "nickname" {
-  type        = string
-  description = "The nickname of project. Should be lowercase without special chars"
-}
-
 variable "tags" {
   type        = map(string)
   description = "The key value pairs we want to apply as tags to the resources contained in this module"
 }
 
+variable "resource_prefix" {
+  type        = string
+  description = "The prefix of resources name"
+}
+
 # API Gateways
+variable "endpoint_type" {
+  type        = string
+  default     = "EGDE"
+  description = "The endpoint type. Must be one of REGIONAL or EGDE"
+}
 variable "swagger_file" {
   type        = string
-  description = "The path of Swagger specification of API Gateway Rest API"
+  default     = "swagger.yaml"
+  description = "The relative path of Swagger file according to current working directory"
 }
 
 variable "invoke_arn" {
   type        = string
-  description = "ARN to be used for invoking Lambda Function from API Gateway"
+  description = "The ARN to be used for invoking Lambda Function from API Gateway"
 }
 
-variable "rest_api_description" {
+variable "description" {
   type        = string
   default     = "Rest API for serverless project that triggers lambda function"
   description = "The description of API Gateway Rest API"
@@ -34,9 +35,9 @@ variable "stage_name" {
   default     = "v1"
   description = "The stage name of API Gateway Rest API"
 }
-variable "rest_api_name" {
+variable "name" {
   type        = string
-  default     = "rest-api"
+  default     = "portal"
   description = "The name of API Gateway Rest API"
 }
 

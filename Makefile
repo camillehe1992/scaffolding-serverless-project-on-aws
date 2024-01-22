@@ -7,6 +7,8 @@ SHELL := /bin/bash
 BASE := $(shell /bin/pwd)
 MAKE ?= make
 
+DEPLOYMENT := dynamodb
+
 ifdef AWS_PROFILE
 AWS_PROFILE := $(AWS_PROFILE)
 else
@@ -14,7 +16,7 @@ AWS_PROFILE := default
 endif
 
 # The deployment name, shared or app
-TF_ROOT_PATH := $(BASE)/terraform/deployment/todo_api
+TF_ROOT_PATH := $(BASE)/terraform/deployment/$(DEPLOYMENT)
 TF_VAR_FILE := $(BASE)/terraform/settings/$(ENVIRONMENT)/terraform.tfvars
 
 $(info AWS_ACCOUNT 		= $(AWS_ACCOUNT))
@@ -22,6 +24,7 @@ $(info AWS_PROFILE 		= $(AWS_PROFILE))
 $(info AWS_REGION  		= $(AWS_REGION))
 $(info ENVIRONMENT 		= $(ENVIRONMENT))
 $(info NICKNAME    		= $(NICKNAME))
+$(info DEPLOYMENT    	= $(DEPLOYMENT))
 $(info STATE_BUCKET		= $(STATE_BUCKET))
 $(info TF_ROOT_PATH 	= $(TF_ROOT_PATH))
 $(info TF_VAR_FILE 		= $(TF_VAR_FILE))
@@ -43,7 +46,8 @@ OPTIONS += $(DEFAULTS)
 #########################################################################
 environments := dev
 check-for-environment = $(if $(filter $(ENVIRONMENT),$(environments)),,$(error Invalid environment: $(ENVIRONMENT). Accepted environments: $(environments)))
-
+deployments := todo_api dynamodb
+check-for-deployment = $(if $(filter $(DEPLOYMENT),$(DEPLOYMENT)),,$(error Invalid deployment: $(DEPLOYMENT). Accepted deployments: $(deployments)))
 #########################################################################
 # CICD Make Targets
 #########################################################################
@@ -56,6 +60,7 @@ lint:
 pre-check:
 	$(info [*] Check Environment Done)
 	@$(call check-for-environment)
+	@$(call check-for-deployment)
 	@$(info $(shell aws sts get-caller-identity --profile $(AWS_PROFILE)))
 
 init: pre-check
@@ -70,13 +75,17 @@ plan: init
 	$(info [*] Plan Terrafrom Infra)
 	@cd $(TF_ROOT_PATH) && terraform plan $(OPTIONS)
 
-plan-destroy: init
+destroy: init
 	$(info [*] Plan Terrafrom Infra - Destroy)
 	@cd $(TF_ROOT_PATH) && terraform plan -destroy $(OPTIONS)
 
 apply:
 	$(info [*] Apply Terrafrom Infra)
 	@cd $(TF_ROOT_PATH) && terraform apply tfplan
+
+plan-apply:
+	@cd $(TF_ROOT_PATH) && terraform plan $(OPTIONS) && terraform apply tfplan
+
 
 #########################################################################
 # TEST Make Targets

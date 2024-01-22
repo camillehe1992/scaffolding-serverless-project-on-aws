@@ -1,5 +1,5 @@
 resource "aws_iam_role" "this" {
-  name               = "${var.name_prefix}${var.role_name}"
+  name               = "${var.resource_prefix}${var.role_name}"
   description        = var.role_description
   assume_role_policy = data.aws_iam_policy_document.ecs_tasks_assume_role_policy.json
 

@@ -1,9 +1,8 @@
 module "portal_function" {
   source = "../../modules/lambda_function"
 
-  environment = var.environment
-  nickname    = var.nickname
-  tags        = var.tags
+  resource_prefix = "${var.environment}-${var.nickname}-"
+  tags            = var.tags
 
   function_name = "portal"
   description   = "The portal function that invoked by API Gateway"
@@ -22,6 +21,9 @@ module "portal_function" {
   environment_variables = {
     POWERTOOLS_SERVICE_NAME = var.nickname
     POWERTOOLS_LOG_LEVEL    = var.log_level
+    DEBUG_LEVEL             = var.log_level
+    NICKNAME                = var.nickname
+    ENVIRONMENT             = var.environment
   }
   subnet_ids         = []
   security_group_ids = []

@@ -1,5 +1,3 @@
-# IAM Module
-
 ## Requirements
 
 | Name      | Version  |

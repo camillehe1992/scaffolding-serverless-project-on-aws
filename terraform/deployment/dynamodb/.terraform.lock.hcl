@@ -2,7 +2,8 @@
 # Manual edits may be lost in future updates.
 
 provider "registry.terraform.io/hashicorp/archive" {
-  version = "2.4.1"
+  version     = "2.4.1"
+  constraints = "~> 2.4.1"
   hashes = [
     "h1:3mCpFxc6HwDIETCFHNENlxBUgKdsW2S1EmVHARn9Lgk=",
     "zh:00240c042740d18d6ba545b211ff7ed5a9e8490d30be3f865e71dba90d7a34cf",
@@ -64,7 +65,8 @@ provider "registry.terraform.io/hashicorp/local" {
 }
 
 provider "registry.terraform.io/hashicorp/null" {
-  version = "3.2.2"
+  version     = "3.2.2"
+  constraints = "~> 3.2.2"
   hashes = [
     "h1:IMVAUHKoydFrlPrl9OzasDnw/8ntZFerCC9iXw1rXQY=",
     "zh:3248aae6a2198f3ec8394218d05bd5e42be59f43a3a7c0b71c66ec0df08b69e7",

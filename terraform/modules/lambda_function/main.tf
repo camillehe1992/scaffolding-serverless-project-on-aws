@@ -1,15 +1,16 @@
 # https://registry.terraform.io/providers/hashicorp/aws/5.0.0/docs/resources/cloudwatch_log_group
 resource "aws_cloudwatch_log_group" "this" {
-  name              = "/aws/lambda/${var.environment}-${var.nickname}-${var.function_name}"
+  name              = "/aws/lambda/${aws_lambda_function.this.function_name}"
   retention_in_days = var.retention_in_days
-  tags              = var.tags
+
+  tags = var.tags
 }
 
 # https://registry.terraform.io/providers/hashicorp/aws/5.0.0/docs/resources/lambda_function
 resource "aws_lambda_function" "this" {
-  depends_on = [aws_cloudwatch_log_group.this, data.archive_file.this]
+  depends_on = [data.archive_file.this]
 
-  function_name    = "${var.environment}-${var.nickname}-${var.function_name}"
+  function_name    = "${var.resource_prefix}${var.function_name}"
   description      = var.description
   role             = var.role_arn
   handler          = var.handler
