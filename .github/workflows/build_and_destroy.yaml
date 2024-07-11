@@ -1,4 +1,4 @@
-name: Destroy API from Dev
+name: Destroy API
 
 on:
   workflow_dispatch:
@@ -25,58 +25,55 @@ on:
           - dev
         default: dev
         required: true
-      force:
-        description: True to force apply
-        required: true
-        default: false
-        type: boolean
 
 run-name: Destroy ${{ inputs.deployment }} from ${{ inputs.environment }} environment
 
 permissions:
   contents: read
   pull-requests: write
+  id-token: write
 
 env:
-  AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}"
-  AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-  AWS_ACCOUNT: "${{ vars.AWS_ACCOUNT }}"
-  AWS_REGION: "${{ vars.AWS_REGION }}"
-  ENVIRONMENT: dev
+  # Env Variables
+  ROLE_TO_ASSUME: ${{ vars.ROLE_TO_ASSUME }}
+  ROLE_SESSION_NAME: ${{ vars.ROLE_SESSION_NAME }}
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+  # Input Variables
+  ENVIRONMENT: ${{ inputs.environment }}
   NICKNAME: todo
-  STATE_BUCKET: "${{ vars.STATE_BUCKET }}"
+  TF_VERSION: 1.8.0
   WORKING_DIRECTORY: terraform/deployment/${{ inputs.deployment }}
+  # Terraform Variables are prefixed with TF_VAR
+  TF_VAR_aws_region: ${{ vars.AWS_REGION }}
 
 jobs:
-  terraform-plan:
-    name: Terraform Init & Plan
+  terraform-plan-apply:
+    name: Terraform Plan & Apply
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     env:
       #this is needed since we are running terraform with read-only permissions
       ARM_SKIP_PROVIDER_REGISTRATION: true
     outputs:
-      tfplanExitCode: ${{ steps.tf-plan.outputs.exitcode }}
+      exitcode: ${{ steps.tf-plan.outputs.exitcode }}
 
     steps:
-      # Checkout the repository to the GitHub Actions runner
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # Install the latest version of the Terraform CLI
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_wrapper: false
           terraform_version: ${{ env.TF_VERSION }}
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ env.ROLE_TO_ASSUME }}
+          role-session-name: ${{ env.ROLE_SESSION_NAME }}
           aws-region: ${{ env.AWS_REGION }}
-
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
         working-directory: ${{ env.WORKING_DIRECTORY }}
@@ -86,22 +83,19 @@ jobs:
           -backend-config="region=$AWS_REGION" \
           -backend-config="key=$NICKNAME/$ENVIRONMENT/$AWS_REGION/terraform.tfstate"
 
-      # Checks that all Terraform configuration files adhere to a canonical format
-      # Will fail the build if not
-      - name: Terraform Format
-        run: terraform fmt -check
-
       # Generates an execution plan for Terraform
       # An exit code of 0 indicated no changes, 1 a terraform failure, 2 there are pending changes.
-      - name: Terraform Plan
+      - name: Terraform Plan - Destroy
         id: tf-plan
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: |
-          export exitcode=0
+          set +e # allow the workflow to continue following steps even if the `terraform` execution failed
 
           terraform plan -destroy -var-file $(pwd)/../../settings/$ENVIRONMENT/terraform.tfvars \
-          -var="aws_region=$AWS_REGION" \
-          -detailed-exitcode -no-color -out tfplan || export exitcode=$?
+          -detailed-exitcode -no-color -out tfplan
+
+          exitcode=$?
+          echo exitcode = $exitcode
 
           echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
 
@@ -111,20 +105,6 @@ jobs:
           else
             exit 0
           fi
-
-      # Save plan to artifacts
-      - name: Publish Terraform Plan
-        uses: actions/upload-artifact@v3
-        with:
-          name: tfplan
-          path: ${{ env.WORKING_DIRECTORY }}/tfplan
-
-      # Save lambda zip file to artifacts
-      - name: Publish Lambda Zip File
-        uses: actions/upload-artifact@v3
-        with:
-          name: portal.zip
-          path: ${{ env.WORKING_DIRECTORY }}/build/portal.zip
 
       # Create string output of Terraform Plan
       - name: Create String Output
@@ -151,49 +131,27 @@ jobs:
         run: |
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
 
-  terraform-apply:
-    name: Terraform Apply
-    if: ${{ inputs.force == true }} || needs.terraform-plan.outputs.tfplanExitCode == 2
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    needs: [terraform-plan]
-
-    steps:
-      # Checkout the repository to the GitHub Actions runner
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_wrapper: false
-          terraform_version: ${{ env.TF_VERSION }}
-
-      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-      - name: Terraform Init
+      - name: Terraform Apply
+        if: ${{ steps.tf-plan.outputs.exitcode == 2 }}
+        id: tf-apply-string
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: |
-          terraform init -reconfigure \
-          -backend-config="bucket=$STATE_BUCKET" \
-          -backend-config="region=$AWS_REGION" \
-          -backend-config="key=$NICKNAME/$ENVIRONMENT/$AWS_REGION/terraform.tfstate"
+          TERRAFORM_OUTPUT=$(terraform apply -auto-approve tfplan -no-color)
 
-      # Download saved plan from artifacts
-      - name: Download Terraform Plan
-        uses: actions/download-artifact@v3
-        with:
-          name: tfplan
-          path: ${{ env.WORKING_DIRECTORY }}
+          delimiter="$(openssl rand -hex 8)"
+          echo "summary<<${delimiter}" >> $GITHUB_OUTPUT
+          echo "### Terraform Apply Output" >> $GITHUB_OUTPUT
+          echo "<details><summary>Click to expand</summary>" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo '```terraform' >> $GITHUB_OUTPUT
+          echo "$TERRAFORM_OUTPUT" >> $GITHUB_OUTPUT
+          echo '```' >> $GITHUB_OUTPUT
+          echo "</details>" >> $GITHUB_OUTPUT
+          echo "${delimiter}" >> $GITHUB_OUTPUT
 
-      # Download saved lambda zip file from artifacts
-      - name: Download Lambda Zip File
-        uses: actions/download-artifact@v3
-        with:
-          name: portal.zip
-          path: ${{ env.WORKING_DIRECTORY }}/build
-
-      # Terraform Apply
-      - name: Terraform Apply
-        working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: terraform apply -auto-approve tfplan
+      - name: Publish Terraform Output to Task Summary
+        if: ${{ steps.tf-plan.outputs.exitcode == 2 }}
+        env:
+          SUMMARY: ${{ steps.tf-apply-string.outputs.summary }}
+        run: |
+          echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
