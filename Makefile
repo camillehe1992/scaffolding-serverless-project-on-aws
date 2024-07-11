@@ -36,6 +36,7 @@ define DEFAULTS
 -var aws_region=$(AWS_REGION) \
 -var environment=$(ENVIRONMENT) \
 -var nickname=$(NICKNAME) \
+-var app_version=${APP_VERSION} \
 -refresh=true -out tfplan
 endef
 

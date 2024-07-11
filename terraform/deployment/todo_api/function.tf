@@ -20,11 +20,12 @@ module "portal_function" {
     local.aws_lambda_powertools_lambda_layer_arn
   ]
   environment_variables = {
-    POWERTOOLS_SERVICE_NAME = var.nickname
-    POWERTOOLS_LOG_LEVEL    = var.log_level
-    DEBUG_LEVEL             = var.log_level
-    NICKNAME                = var.nickname
+    APP_VERSION             = var.app_version
     ENVIRONMENT             = var.environment
+    LOG_LEVEL               = var.log_level
+    NICKNAME                = var.nickname
+    POWERTOOLS_LOG_LEVEL    = var.log_level
+    POWERTOOLS_SERVICE_NAME = var.nickname
   }
   subnet_ids         = []
   security_group_ids = []

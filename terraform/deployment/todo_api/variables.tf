@@ -84,3 +84,9 @@ variable "log_level" {
   description = "The log level of Lambda function. Default INFO"
   default     = "INFO"
 }
+
+variable "app_version" {
+  type        = string
+  description = "The application version, for example 0.0.1"
+  default     = "0.0.1"
+}
