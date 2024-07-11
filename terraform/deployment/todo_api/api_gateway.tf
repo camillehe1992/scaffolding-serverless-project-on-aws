@@ -1,7 +1,7 @@
 module "api_gateway" {
   source = "../../modules/api_gateway"
 
-  resource_prefix = "${var.environment}-${var.nickname}"
+  resource_prefix = "${var.environment}-${var.nickname}-"
   tags            = var.tags
 
   endpoint_type = "REGIONAL"

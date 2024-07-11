@@ -70,8 +70,8 @@ variable "s3_key_prefix" {
 
 variable "runtimes" {
   type        = list(string)
-  default     = ["python3.9"]
-  description = "List of compatible runtimes of the Lambda layer, e.g. [python3.9]"
+  default     = ["python3.10"]
+  description = "List of compatible runtimes of the Lambda layer, e.g. [python3.10]"
 }
 
 variable "architecture" {

@@ -7,7 +7,7 @@ SHELL := /bin/bash
 BASE := $(shell /bin/pwd)
 MAKE ?= make
 
-DEPLOYMENT := dynamodb
+DEPLOYMENT := todo_api
 
 ifdef AWS_PROFILE
 AWS_PROFILE := $(AWS_PROFILE)
@@ -83,7 +83,7 @@ apply:
 	$(info [*] Apply Terrafrom Infra)
 	@cd $(TF_ROOT_PATH) && terraform apply tfplan
 
-plan-apply:
+plan-apply: init
 	@cd $(TF_ROOT_PATH) && terraform plan $(OPTIONS) && terraform apply tfplan
 
 

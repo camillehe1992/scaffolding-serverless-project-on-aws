@@ -16,7 +16,8 @@ module "portal_function" {
   output_path   = "build/portal.zip"
 
   layers = [
-    module.dependencies_layer.layer.arn
+    module.dependencies_layer.layer.arn,
+    local.aws_lambda_powertools_lambda_layer_arn
   ]
   environment_variables = {
     POWERTOOLS_SERVICE_NAME = var.nickname

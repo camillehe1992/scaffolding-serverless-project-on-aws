@@ -1,11 +1,4 @@
 openapi: 3.0.0
-info:
-  version: 0.0.1
-  title: Swagger Todos
-  license:
-    name: MIT
-servers:
-  - url: https://vw3mtdrx3f.execute-api.ap-southeast-1.amazonaws.com/v1/
 paths:
   /swagger:
     get:

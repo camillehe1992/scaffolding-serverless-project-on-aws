@@ -28,6 +28,11 @@ variable "nickname" {
 # IAM Roles and Policies
 
 # Lambda Layers
+variable "runtimes" {
+  type        = list(string)
+  default     = ["python3.10"]
+  description = "List of compatible runtimes of the Lambda layer, e.g. [python3.10]"
+}
 
 # API Gateway
 variable "swagger_file" {
@@ -61,7 +66,7 @@ variable "lambda_function_timeout" {
 variable "lambda_function_runtime" {
   type        = string
   description = "The runtime of Lambda function"
-  default     = "python3.9"
+  default     = "python3.10"
 }
 
 variable "architecture" {
