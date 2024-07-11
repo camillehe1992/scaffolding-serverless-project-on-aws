@@ -7,7 +7,7 @@ SHELL := /bin/bash
 BASE := $(shell /bin/pwd)
 MAKE ?= make
 
-DEPLOYMENT := todo_api
+DEPLOYMENT := api
 
 ifdef AWS_PROFILE
 AWS_PROFILE := $(AWS_PROFILE)
@@ -29,6 +29,15 @@ $(info STATE_BUCKET		= $(STATE_BUCKET))
 $(info TF_ROOT_PATH 	= $(TF_ROOT_PATH))
 $(info TF_VAR_FILE 		= $(TF_VAR_FILE))
 
+# Add deployment specific variables
+define API_OPTIONS
+-var app_version=${APP_VERSION}
+endef
+
+ifeq ($(DEPLOYMENT), api)
+override OPTIONS += $(API_OPTIONS)
+endif
+
 # Add defaults/common variables for all components
 define DEFAULTS
 -var-file=$(TF_VAR_FILE) \
@@ -36,19 +45,18 @@ define DEFAULTS
 -var aws_region=$(AWS_REGION) \
 -var environment=$(ENVIRONMENT) \
 -var nickname=$(NICKNAME) \
--var app_version=${APP_VERSION} \
 -refresh=true -out tfplan
 endef
 
-OPTIONS += $(DEFAULTS)
+override OPTIONS += $(DEFAULTS)
 
 #########################################################################
 # Convenience Functions to use in Make
 #########################################################################
 environments := dev
 check-for-environment = $(if $(filter $(ENVIRONMENT),$(environments)),,$(error Invalid environment: $(ENVIRONMENT). Accepted environments: $(environments)))
-deployments := todo_api dynamodb
-check-for-deployment = $(if $(filter $(DEPLOYMENT),$(DEPLOYMENT)),,$(error Invalid deployment: $(DEPLOYMENT). Accepted deployments: $(deployments)))
+deployments := common_infra api dynamodb
+check-for-deployment = $(if $(filter $(DEPLOYMENT),$(deployments)),,$(error Invalid deployment: $(DEPLOYMENT). Accepted deployments: $(deployments)))
 #########################################################################
 # CICD Make Targets
 #########################################################################

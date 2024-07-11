@@ -25,15 +25,6 @@ variable "nickname" {
   description = "The nickname of project. Should be lowercase without special chars"
 }
 
-# IAM Roles and Policies
-
-# Lambda Layers
-variable "runtimes" {
-  type        = list(string)
-  default     = ["python3.10"]
-  description = "List of compatible runtimes of the Lambda layer, e.g. [python3.10]"
-}
-
 # API Gateway
 variable "swagger_file" {
   type        = string

@@ -6,7 +6,7 @@ module "portal_function" {
 
   function_name = "portal"
   description   = "The portal function that invoked by API Gateway"
-  role_arn      = module.lambda_execution_role.iam_role.arn
+  role_arn      = data.terraform_remote_state.common_infra.outputs.lambda_execution_role_arn
   handler       = "app.main.lambda_handler"
   memory_size   = var.lambda_function_memory_size
   timeout       = var.lambda_function_timeout
@@ -16,7 +16,7 @@ module "portal_function" {
   output_path   = "build/portal.zip"
 
   layers = [
-    module.dependencies_layer.layer.arn,
+    data.terraform_remote_state.common_infra.outputs.dependencies_layer_arn,
     local.aws_lambda_powertools_lambda_layer_arn
   ]
   environment_variables = {
