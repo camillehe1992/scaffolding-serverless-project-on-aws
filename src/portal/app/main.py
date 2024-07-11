@@ -21,7 +21,7 @@ app.enable_swagger(
 
 # Inject routers
 app.include_router(system.router)
-app.include_router(todo.router)
+app.include_router(todo.router, prefix="/todos")
 
 
 @app.not_found
