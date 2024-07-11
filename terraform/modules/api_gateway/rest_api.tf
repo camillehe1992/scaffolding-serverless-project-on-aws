@@ -1,33 +1,16 @@
-data "aws_caller_identity" "current" {}
-data "aws_partition" "current" {}
-data "aws_region" "current" {}
-
 resource "aws_api_gateway_rest_api" "this" {
   body = templatefile(var.swagger_file, {
     invoke_arn = var.invoke_arn
   })
 
-  name        = "${local.resource_prefix}${var.rest_api_name}"
-  description = var.rest_api_description
+  name        = "${var.resource_prefix}${var.name}"
+  description = var.description
   tags        = var.tags
 
   endpoint_configuration {
-    types = ["REGIONAL"]
-    # vpc_endpoint_ids = [var.vpc_endpoint_id]
+    types = [var.endpoint_type]
   }
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-      {
-          "Effect": "Allow",
-          "Principal": "*",
-          "Action": "execute-api:Invoke",
-          "Resource": "arn:${data.aws_partition.current.partition}:execute-api:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
-      }
-  ]
-}
-EOF
+  policy = data.aws_iam_policy_document.this.json
 }
 
 resource "aws_api_gateway_deployment" "this" {

@@ -1,0 +1,105 @@
+openapi: 3.0.0
+paths:
+  /swagger:
+    get:
+      summary: Swagger specification
+      operationId: swagger
+      responses:
+        "200":
+          description: A portal of Swagger UI
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+        uri: ${invoke_arn}
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+  /swagger.css:
+    get:
+      summary: Swagger specification
+      operationId: swagger
+      responses:
+        "200":
+          description: A portal of Swagger UI
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+        uri: ${invoke_arn}
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+  /swagger.js:
+    get:
+      summary: Swagger specification
+      operationId: swagger
+      responses:
+        "200":
+          description: A portal of Swagger UI
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+        uri: ${invoke_arn}
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+  /health:
+    get:
+      x-amazon-apigateway-integration:
+        uri: ${invoke_arn}
+        httpMethod: POST
+        type: aws_proxy
+  /system-info:
+    get:
+      x-amazon-apigateway-integration:
+        uri: ${invoke_arn}
+        httpMethod: POST
+        type: aws_proxy
+  /todos:
+    get:
+      x-amazon-apigateway-integration:
+        uri: ${invoke_arn}
+        httpMethod: POST
+        type: aws_proxy
+    post:
+      x-amazon-apigateway-integration:
+        uri: ${invoke_arn}
+        httpMethod: POST
+        type: aws_proxy
+  /todos/{todo_id}:
+    get:
+      x-amazon-apigateway-integration:
+        uri: ${invoke_arn}
+        httpMethod: POST
+        type: aws_proxy
+    delete:
+      x-amazon-apigateway-integration:
+        uri: ${invoke_arn}
+        httpMethod: POST
+        type: aws_proxy

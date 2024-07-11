@@ -13,8 +13,10 @@ on:
         description: Deployment to apply
         type: choice
         options:
-          - todo_api
-        default: todo_api
+          - common_infra
+          - api
+          - dynamodb
+        default: api
         required: true
       environment:
         description: Environment to run agains
@@ -29,7 +31,7 @@ on:
         default: false
         type: boolean
 
-run-name: ${{ format('Deploy {0} to {1}', inputs.deployment, inputs.environment) }}
+run-name: Deploy ${{ inputs.deployment }} to ${{ inputs.environment }} environment
 
 permissions:
   contents: read

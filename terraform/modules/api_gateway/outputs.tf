@@ -6,6 +6,6 @@ output "stage" {
   value = aws_api_gateway_stage.this
 }
 
-output "cw_logs_group" {
+output "cw_log_group" {
   value = aws_cloudwatch_log_group.this
 }

@@ -4,7 +4,7 @@ variable "tags" {
   description = "The key value pairs apply as tags to all resources in the module"
 }
 
-variable "name_prefix" {
+variable "resource_prefix" {
   type        = string
   default     = ""
   description = "The prefix of the IAM role name"

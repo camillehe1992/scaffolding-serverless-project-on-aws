@@ -1,13 +1,12 @@
 module "portal_function" {
   source = "../../modules/lambda_function"
 
-  environment = var.environment
-  nickname    = var.nickname
-  tags        = var.tags
+  resource_prefix = "${var.environment}-${var.nickname}-"
+  tags            = var.tags
 
   function_name = "portal"
   description   = "The portal function that invoked by API Gateway"
-  role_arn      = module.lambda_execution_role.iam_role.arn
+  role_arn      = data.terraform_remote_state.common_infra.outputs.lambda_execution_role_arn
   handler       = "app.main.lambda_handler"
   memory_size   = var.lambda_function_memory_size
   timeout       = var.lambda_function_timeout
@@ -17,11 +16,16 @@ module "portal_function" {
   output_path   = "build/portal.zip"
 
   layers = [
-    module.dependencies_layer.layer.arn
+    data.terraform_remote_state.common_infra.outputs.dependencies_layer_arn,
+    local.aws_lambda_powertools_lambda_layer_arn
   ]
   environment_variables = {
-    POWERTOOLS_SERVICE_NAME = var.nickname
+    APP_VERSION             = var.app_version
+    ENVIRONMENT             = var.environment
+    LOG_LEVEL               = var.log_level
+    NICKNAME                = var.nickname
     POWERTOOLS_LOG_LEVEL    = var.log_level
+    POWERTOOLS_SERVICE_NAME = var.nickname
   }
   subnet_ids         = []
   security_group_ids = []

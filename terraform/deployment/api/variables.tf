@@ -25,10 +25,6 @@ variable "nickname" {
   description = "The nickname of project. Should be lowercase without special chars"
 }
 
-# IAM Roles and Policies
-
-# Lambda Layers
-
 # API Gateway
 variable "swagger_file" {
   type        = string
@@ -44,11 +40,6 @@ variable "log_retention_days" {
     Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653
   EOF
 }
-
-# variable "vpc_id" {
-#   type        = string
-#   description = "The VPC id associated with VPC endpoint for private Rest API"
-# }
 
 # Lambda Functions
 variable "lambda_function_memory_size" {
@@ -66,7 +57,7 @@ variable "lambda_function_timeout" {
 variable "lambda_function_runtime" {
   type        = string
   description = "The runtime of Lambda function"
-  default     = "python3.9"
+  default     = "python3.10"
 }
 
 variable "architecture" {
@@ -82,26 +73,11 @@ variable "architecture" {
 variable "log_level" {
   type        = string
   description = "The log level of Lambda function. Default INFO"
-  default     = "DEBUG"
+  default     = "INFO"
 }
 
-# variable "state_bucket" {
-#   type        = string
-#   description = "The s3 bucket where the terraform state file locates in"
-# }
-
-# variable "subnet_ids" {
-#   type        = list(string)
-#   description = "Subnet ids for Lambda functions wich runs in a VPC"
-# }
-
-# variable "security_group_ids" {
-#   type        = list(string)
-#   description = "Security Group ids for Lambda functions wich runs in a VPC"
-# }
-
-# variable "api_gateway_vpc_endpoint_deployment" {
-#   type        = bool
-#   default     = false
-#   description = "Defines if the VPC endpoint for API Gateway will be deployed or not"
-# }
+variable "app_version" {
+  type        = string
+  description = "The application version, for example 0.0.1"
+  default     = "0.0.1"
+}

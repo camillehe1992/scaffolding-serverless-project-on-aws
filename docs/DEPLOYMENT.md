@@ -18,7 +18,7 @@ make apply
 Run below `make` commands to destroy/remove terraform resources from target AWS environment from local.
 
 ```bash
-make plan-destroy
+make destroy
 make apply
 ```
 

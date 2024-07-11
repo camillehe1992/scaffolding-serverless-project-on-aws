@@ -1,17 +1,12 @@
-variable "environment" {
-  type        = string
-  description = "The environment of application"
-}
-
-variable "nickname" {
-  type        = string
-  description = "The nickname of application. Must be lowercase without special chars"
-}
-
 variable "tags" {
   type        = map(string)
   default     = {}
   description = "The key value pairs we want to apply as tags to the resources contained in this module"
+}
+
+variable "resource_prefix" {
+  type        = string
+  description = "The prefix of resources name"
 }
 
 variable "function_name" {
@@ -49,7 +44,7 @@ variable "timeout" {
 
 variable "runtime" {
   type        = string
-  default     = "python3.9"
+  default     = "python3.10"
   description = "The runtime of Lambda function"
 }
 

@@ -1,5 +1,3 @@
-# VPC Endpoint
-
 ## Requirements
 
 | Name      | Version  |

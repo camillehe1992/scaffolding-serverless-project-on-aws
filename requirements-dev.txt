@@ -1,5 +1,6 @@
 -r ./src/portal/requirements.txt
 
+aws-lambda-powertools==2.40.0
 python-dotenv
 pre-commit
 pylint

@@ -1,5 +1,3 @@
-# Lambda Layer Module
-
 ## Requirements
 
 | Name      | Version  |
@@ -38,6 +36,7 @@ No modules.
 
 | Name         | Description                                                                              | Type           | Default                            | Required |
 | ------------ | ---------------------------------------------------------------------------------------- | -------------- | ---------------------------------- | :------: |
+| architecture | The type of computer processor that Lambda uses to run the function                      | `string`       | `"x86_64"`                         |    no    |
 | description  | The description of Lambda layer                                                          | `string`       | `""`                               |    no    |
 | environment  | The environment of project, such as dev, int, prod                                       | `string`       | n/a                                |   yes    |
 | from\_local  | Whether the package archived file is uploaded from local. Default false                  | `bool`         | `false`                            |    no    |

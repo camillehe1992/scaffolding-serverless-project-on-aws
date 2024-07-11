@@ -113,7 +113,8 @@ disable=
     consider-iterating-dictionary,
     consider-using-generator,
     redefined-outer-name,
-    unsubscriptable-object
+    unsubscriptable-object,
+    consider-alternative-union-syntax
 
 
 [REPORTS]
