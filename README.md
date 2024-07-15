@@ -2,6 +2,10 @@
 
 The project is an AWS cloud native serverless application, including API Gateway, Lambda function (with layers), and Dynamodb for data persistence. However, AWS provides a variety of storage services and you should make the decisition as you needs.
 
+The project is powered by [Powertools for AWS Lambda (Python)](https://docs.powertools.aws.dev/lambda/python/latest/), which is a developer toolkit to implement Serverless best practices and increase developer velocity. With it, we enabled the [SwaggerUI](https://docs.powertools.aws.dev/lambda/python/latest/core/event_handler/api_gateway/#enabling-swaggerui) for the project, you can view the detailed backend API from `API Gateway Invoke URL + /swagger`. The swagger UI shows as below.
+
+![SwaggerUI](./docs/images/swaggerui.png)
+
 The diagram below shows the archtecture details. All AWS resources are built and deployed using Terraform.
 
 ![Cloud Arch Diagram](./docs/images/arch-diagram.png)
