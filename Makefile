@@ -107,3 +107,28 @@ unit-test:
 e2e-test:
 	$(info [*] Test RestAPIs via invoking API Gateway endpoint)
 	python -m pytest ./src/tests/e2e/
+
+#########################################################################
+# Dynamodb Tables Locally Make Targets
+#########################################################################
+DDB_ENDPOINT := http://localhost:8000
+
+list-tables:
+	$(info [*] List Dynamodb Tables Locally)
+	aws dynamodb list-tables --endpoint-url $(DDB_ENDPOINT)
+create-table:
+	$(info [*] Create Dynamodb Tables Locally)
+	aws dynamodb create-table \
+		--table-name Todos \
+		--attribute-definitions \
+			AttributeName=Id,AttributeType=S \
+			AttributeName=Title,AttributeType=S \
+		--key-schema \
+			AttributeName=Id,KeyType=HASH \
+			AttributeName=Title,KeyType=RANGE \
+		--provisioned-throughput \
+			ReadCapacityUnits=1,WriteCapacityUnits=1 \
+		--table-class STANDARD
+describe-table:
+	$(info [*] Describe Dynamodb Table Locally)
+	 aws dynamodb describe-table --table-name Todos | grep TableStatus

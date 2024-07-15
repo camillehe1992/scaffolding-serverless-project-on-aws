@@ -93,17 +93,18 @@ When you have Ananconda installed on your local machine, create a virtual enviro
 
 ```bash
 conda -V
+# conda 24.4.0
 
-# Creae an environment named todo-py39
-conda create -n todo-py39
+# Creae an environment named todo-py10
+conda create -n todo-py10
 
 # Activate the environment
-conda activate todo-py39
+conda activate todo-py10
 
-# Install python=3.9 on the environment
-conda install python=3.9
+# Install python=3.10 on the environment
+conda install python=3.10
 # or using pip
-pip install python=3.9
+pip install python=3.10
 
 # List all packages installed in the environment
 conda list

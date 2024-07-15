@@ -92,7 +92,29 @@ paths:
         uri: ${invoke_arn}
         httpMethod: POST
         type: aws_proxy
-  /todos/{todo_id}:
+  /todos/{id}:
+    get:
+      x-amazon-apigateway-integration:
+        uri: ${invoke_arn}
+        httpMethod: POST
+        type: aws_proxy
+    delete:
+      x-amazon-apigateway-integration:
+        uri: ${invoke_arn}
+        httpMethod: POST
+        type: aws_proxy
+  /users:
+    get:
+      x-amazon-apigateway-integration:
+        uri: ${invoke_arn}
+        httpMethod: POST
+        type: aws_proxy
+    post:
+      x-amazon-apigateway-integration:
+        uri: ${invoke_arn}
+        httpMethod: POST
+        type: aws_proxy
+  /users/{id}:
     get:
       x-amazon-apigateway-integration:
         uri: ${invoke_arn}

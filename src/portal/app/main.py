@@ -9,19 +9,20 @@ from aws_lambda_powertools.logging import correlation_paths
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
 from .logging import logger
-from .routers import todo, system
+from .routers import todo, system, user
 
 # Enable Swagger UI
 app = APIGatewayRestResolver(enable_validation=True)
 app.enable_swagger(
     version=os.getenv("APP_VERSION"),
     title="Swagger for Todo API",
-    tags=["System", "Todo"],
+    tags=["System", "Todo", "User"],
 )
 
 # Inject routers
 app.include_router(system.router)
 app.include_router(todo.router, prefix="/todos")
+app.include_router(user.router, prefix="/users")
 
 
 @app.not_found
