@@ -1,6 +1,6 @@
 # A REST API (Serverless) in AWS using Terraform
 
-The project is a AWS cloud native serverless application partially, including API Gateway, Lambda function (with layers), and RDS database for data persistence. _Partially_ here means we use RDS database as data layer for demo purpose instead of a _serverless_ database, like DynamoDB. However, AWS provides a variety of storage services and you should make the decisition as you needs.
+The project is an AWS cloud native serverless application, including API Gateway, Lambda function (with layers), and Dynamodb for data persistence. However, AWS provides a variety of storage services and you should make the decisition as you needs.
 
 The diagram below shows the archtecture details. All AWS resources are built and deployed using Terraform.
 

@@ -1,12 +1,29 @@
 # Deployment Documenatation
 
-We provides two ways to deploy the project into target AWS environment: manually and automatically.
+Deploy below AWS resources into target AWS account from local environment or using CICD pipelines.
 
-## Manual Deployment from local
+| Deployment   | File                   | Terraform Modules        | Main AWS Resources                                                 |
+| ------------ | ---------------------- | ------------------------ | ------------------------------------------------------------------ |
+| common_infra | common_infra/roles.tf  | lambda_execution_role    | IAM Role                                                           |
+| common_infra | common_infra/roles.tf  | api_gateway_logging_role | IAM Role                                                           |
+| common_infra | common_infra/layers.tf | dependencies_layer       | Lambda Layer                                                       |
+| api          | api/api_gateway.tf     | api_gateway              | API Gateway RestAPI, Stage, Deployment, CloudWatch Logs Group, etc |
+| api          | api/function.tf        | portal_function          | Lambda Function, CloudWatch Logs Group                             |
 
-Follow [DEVELOPMENT.md](DEVELOPMENT.md) to setup your local environment if you want to deploy from local.
+- [Deployment Documenatation](#deployment-documenatation)
+	- [Manual Deployment from Local](#manual-deployment-from-local)
+	- [Automate Deployment via GitHub Actions](#automate-deployment-via-github-actions)
+		- [Configure AWS Crendential in GitHub](#configure-aws-crendential-in-github)
+		- [Run Workflow in GitHub Console](#run-workflow-in-github-console)
+	- [Automate Deployment via Jenkins (Deprecated)](#automate-deployment-via-jenkins-deprecated)
+		- [Deploy/Destroy a specific Component](#deploydestroy-a-specific-component)
+		- [Deploy all Components](#deploy-all-components)
 
-Create a `.env` from `env.sample`, and update environment variables as needed. The `.env` file won't be checked into your source code. After updated, these variables in `.env` will be injected into `Makefile` when you execute `make` commands. You can run `make pre-check` to validate these variables.
+## Manual Deployment from Local
+
+Firstly, follow [DEVELOPMENT.md](DEVELOPMENT.md) to setup your local environment.
+
+Thne, create a `.env` from `env.sample`, and update environment variables as needed. The `.env` file won't be checked into your source code. After updated, these variables in `.env` will be injected into `Makefile` when you execute `make` commands. You can run `make pre-check` to validate these variables.
 
 After done, run below `make` commands to deploy terraform resources to target AWS environment from local.
 
@@ -24,9 +41,28 @@ make apply
 
 ## Automate Deployment via GitHub Actions
 
-todo
+### Configure AWS Crendential in GitHub
 
-## Automate Deployment via Jenkins
+In order to deploy AWS resources using GitHub Actions workflow, we need to configure AWS credentials in workflow. As these variables are sensitive, I put them in GitHub Environment Variables. Below are the variables that need to be added.
+
+> Read the blog if you are interested in [How to deploy Terraform resources to AWS using GitHub Actions via OIDC](https://dev.to/camillehe1992/deploy-terraform-resources-to-aws-using-github-actions-via-oidc-3b9g)
+
+```yaml
+AWS_REGION: ${{ vars.AWS_REGION }}
+ROLE_TO_ASSUME: ${{ vars.ROLE_TO_ASSUME }}
+ROLE_SESSION_NAME: ${{ vars.ROLE_SESSION_NAME }}
+STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+```
+
+### Run Workflow in GitHub Console
+
+| Workflow             | File                  | Description                           |
+| -------------------- | --------------------- | ------------------------------------- |
+| Deploy API           | build_and_deploy.yaml | Deploy AWS resources to AWS account   |
+| Destroy API          | build_and_detroy.yaml | Remove AWS resources from AWS account |
+| Create Tag & Release | create_tag.yaml       | Create GitHub Tag and Release         |
+
+## Automate Deployment via Jenkins (Deprecated)
 
 [Jenkins](https://www.jenkins.io/doc/) is a self-contained, open source automation server which can be used to automate all sorts of tasks related to building, testing, and delivering or deploying software.
 
@@ -58,18 +94,18 @@ The pipeline executes terraform scripts in container, which provide Terraform ex
 - Check the `DESTROY` if this is a destroy action. Deploy as a default.
 - Check `SKIP_APPLY` if you don't want to create AWS resources. Useful when you only focus on the changes.
 
-![Build with Parameters](./jenkins-screenshot.png)
+![Build with Parameters](./images/jenkins-screenshot.png)
 
 A view of pipeline stages.
 
-![Stage View](./stage-view.png)
+![Stage View](./images/stage-view.png)
 
 ### Deploy all Components
 
 `Jenkinsfile.ci` is used to deploy all components.
 
-![Build Now](./build-now.png)
+![Build Now](./images/build-now.png)
 
 A view of pipeline stages.
 
-![Stage View CI](./stage-view-ci.png)
+![Stage View CI](./images/stage-view-ci.png)
