@@ -2,7 +2,7 @@
 
 | Name      | Version  |
 | --------- | -------- |
-| terraform | >= 1.3.6 |
+| terraform | >= 1.8.0 |
 | aws       | ~> 5.0.0 |
 
 ## Providers

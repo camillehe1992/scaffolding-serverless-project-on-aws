@@ -39,16 +39,6 @@ The diagram below shows the archtecture details. All AWS resources are built and
     └── settings
 ```
 
-## Terraform Resources & Modules
-
-| File           | Modules                  | Main AWS Resources                                                 |
-| -------------- | ------------------------ | ------------------------------------------------------------------ |
-| api_gateway.tf | api_gateway              | API Gateway RestAPI, Stage, Deployment, CloudWatch Logs Group, etc |
-| function.tf    | portal_function          | Lambda Function, CloudWatch Logs Group                             |
-| layers.tf      | dependencies_layer       | Lambda Layer                                                       |
-| roles.tf       | lambda_execution_role    | IAM Role                                                           |
-| roles.tf       | api_gateway_logging_role | IAM Role                                                           |
-
 ## Development
 
 Follow [DEPLOYMENT.md](./docs/DEPLOYMENT.md) if you want to contribute on the project.
