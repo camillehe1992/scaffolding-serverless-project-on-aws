@@ -50,4 +50,4 @@ Follow [DEVELOPMENT.md](./docs/DEVELOPMENT.md) if you want to deploy project fro
 ## References
 
 - [Terraform AWS Provider](https://registry.terraform.io/providers/hashicorp/aws/latest)
-- [AWS Lambda Powertools for Python](https://awslabs.github.io/aws-lambda-powertools-python/2.12.0/)
+- [AWS Lambda Powertools for Python](https://docs.powertools.aws.dev/lambda/python/latest/)

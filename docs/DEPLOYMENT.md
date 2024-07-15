@@ -56,11 +56,11 @@ STATE_BUCKET: ${{ vars.STATE_BUCKET }}
 
 ### Run Workflow in GitHub Console
 
-| Workflow             | File                  | Description                           |
-| -------------------- | --------------------- | ------------------------------------- |
-| Deploy API           | build_and_deploy.yaml | Deploy AWS resources to AWS account   |
-| Destroy API          | build_and_detroy.yaml | Remove AWS resources from AWS account |
-| Create Tag & Release | create_tag.yaml       | Create GitHub Tag and Release         |
+| Workflow             | File                       | Description                           |
+| -------------------- | -------------------------- | ------------------------------------- |
+| Deploy API           | [build_and_deploy.yaml][1] | Deploy AWS resources to AWS account   |
+| Destroy API          | [build_and_detroy.yaml][2] | Remove AWS resources from AWS account |
+| Create Tag & Release | [create_tag.yaml][3]       | Create GitHub Tag and Release         |
 
 ## Automate Deployment via Jenkins (Deprecated)
 
@@ -109,3 +109,7 @@ A view of pipeline stages.
 A view of pipeline stages.
 
 ![Stage View CI](./images/stage-view-ci.png)
+
+[1]: https://github.com/camillehe1992/scaffolding-serverless-project-on-aws/actions/workflows/build_and_deploy.yaml
+[2]: https://github.com/camillehe1992/scaffolding-serverless-project-on-aws/actions/workflows/build_and_destroy.yaml
+[3]: https://github.com/camillehe1992/scaffolding-serverless-project-on-aws/actions/workflows/create_tag.yaml
