@@ -64,12 +64,12 @@
 	},
 	"update_todo": {
 		"resource": "/todos/{id}",
-		"path": "/todos/f04672f280694175b1883582f70cdb33",
+		"path": "/todos/29ffdf1d118546b9aab9be9240a18a8e",
 		"httpMethod": "PUT",
 		"body": {
-			"id": "f04672f280694175b1883582f70cdb33",
+			"id": "29ffdf1d118546b9aab9be9240a18a8e",
 			"userId": "060888c3dc2c414486a3d7d7d95493c3",
-			"title": "Learn Cloud!",
+			"title": "Learn Python!",
 			"completed": true
 		}
 	},

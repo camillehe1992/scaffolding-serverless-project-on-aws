@@ -1,0 +1,22 @@
+{
+    "clientName": "Thunder Client",
+    "environmentName": "todo-local",
+    "environmentId": "b5a870aa-aff1-459b-9cfa-a018c36119b4",
+    "dateExported": "2024-07-17T09:28:44.741Z",
+    "version": "1.2",
+    "variables": [
+        {
+            "name": "id",
+            "value": "0d0ba891666347108e20f997365ae749"
+        },
+        {
+            "name": "userId",
+            "value": "caab6f26f7ef4b1f9cbbc10e02955067"
+        },
+        {
+            "name": "title",
+            "value": "Learn Python!"
+        }
+    ],
+    "ref": "16rW_7_qZdOOgl1uUy0uXoNA9jTZYaWvzUCNaPTj9dX7HszEuC6f-Iu2lwnSDkaL"
+}

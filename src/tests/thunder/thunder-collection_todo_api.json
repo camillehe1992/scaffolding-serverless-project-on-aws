@@ -1,0 +1,222 @@
+{
+    "clientName": "Thunder Client",
+    "collectionName": "todo_api",
+    "collectionId": "be807a55-1805-4e1d-8077-5d3f5a472b20",
+    "dateExported": "2024-07-17T09:27:46.522Z",
+    "version": "1.2",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "8cc28070-0ea8-4ba6-b3e9-a372052e779e",
+            "colId": "be807a55-1805-4e1d-8077-5d3f5a472b20",
+            "containerId": "",
+            "name": "create todo",
+            "url": "/todos",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2024-01-12T07:59:09.642Z",
+            "modified": "2024-07-17T08:46:42.669Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"userId\": \"060888c3dc2c414486a3d7d7d95493c3\",\n  \"title\": \"Learn Python!\"\n}",
+                "form": []
+            },
+            "tests": [
+                {
+                    "type": "json-query",
+                    "custom": "json.completed",
+                    "action": "equal",
+                    "value": "false"
+                },
+                {
+                    "type": "set-env-var",
+                    "custom": "json.id",
+                    "action": "setto",
+                    "value": "{{id}}"
+                },
+                {
+                    "type": "set-env-var",
+                    "custom": "json.title",
+                    "action": "setto",
+                    "value": "{{title}}"
+                },
+                {
+                    "type": "set-env-var",
+                    "custom": "json.userId",
+                    "action": "setto",
+                    "value": "{{userId}}"
+                }
+            ]
+        },
+        {
+            "_id": "0f27b53e-1fc1-4f72-bfd1-0635d127ec2b",
+            "colId": "be807a55-1805-4e1d-8077-5d3f5a472b20",
+            "containerId": "",
+            "name": "create user",
+            "url": "/users",
+            "method": "POST",
+            "sortNum": 15000,
+            "created": "2024-07-17T08:57:25.174Z",
+            "modified": "2024-07-17T09:16:41.920Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"username\": \"John Doe\",\n  \"email\": \"john.doe@example.com\"\n}",
+                "form": []
+            },
+            "tests": [
+                {
+                    "type": "set-env-var",
+                    "custom": "json.id",
+                    "action": "setto",
+                    "value": "{{userId}}"
+                },
+                {
+                    "type": "res-code",
+                    "custom": "",
+                    "action": "equal",
+                    "value": "200"
+                }
+            ]
+        },
+        {
+            "_id": "2449e2b3-3b2e-4ab8-8692-8cc42ef87d68",
+            "colId": "be807a55-1805-4e1d-8077-5d3f5a472b20",
+            "containerId": "",
+            "name": "list todos",
+            "url": "/todos",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2024-01-12T10:00:07.684Z",
+            "modified": "2024-07-17T09:19:25.859Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "completed",
+                    "value": "true",
+                    "isDisabled": true,
+                    "isPath": false
+                }
+            ],
+            "tests": [
+                {
+                    "type": "res-body",
+                    "custom": "",
+                    "action": "istype",
+                    "value": "array"
+                },
+                {
+                    "type": "res-body",
+                    "custom": "",
+                    "action": "count",
+                    "value": "1"
+                }
+            ]
+        },
+        {
+            "_id": "50c7048e-a75f-48d9-bceb-a8db1bb433a9",
+            "colId": "be807a55-1805-4e1d-8077-5d3f5a472b20",
+            "containerId": "",
+            "name": "get todo",
+            "url": "/todos/{{id}}",
+            "method": "GET",
+            "sortNum": 30000,
+            "created": "2024-01-12T10:00:48.248Z",
+            "modified": "2024-07-17T09:19:44.810Z",
+            "headers": [],
+            "tests": [
+                {
+                    "type": "json-query",
+                    "custom": "json.id",
+                    "action": "equal",
+                    "value": "{{id}}"
+                },
+                {
+                    "type": "json-query",
+                    "custom": "json.title",
+                    "action": "equal",
+                    "value": "{{title}}"
+                },
+                {
+                    "type": "json-query",
+                    "custom": "json.completed",
+                    "action": "equal",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "_id": "2acfd37e-a7ba-4763-8909-9596dbcfee31",
+            "colId": "be807a55-1805-4e1d-8077-5d3f5a472b20",
+            "containerId": "",
+            "name": "update todo",
+            "url": "/todos/{{id}}",
+            "method": "PUT",
+            "sortNum": 40000,
+            "created": "2024-07-16T08:57:21.143Z",
+            "modified": "2024-07-17T08:54:49.747Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"id\": \"{{id}}\",\n  \"userId\": \"{{userId}}\",\n  \"title\": \"{{title}}\",\n  \"completed\": true\n}",
+                "form": []
+            },
+            "tests": [
+                {
+                    "type": "json-query",
+                    "custom": "json.completed",
+                    "action": "equal",
+                    "value": "true"
+                }
+            ]
+        },
+        {
+            "_id": "6e3053eb-d3cc-4195-a094-25f99f9253aa",
+            "colId": "be807a55-1805-4e1d-8077-5d3f5a472b20",
+            "containerId": "",
+            "name": "delete todo",
+            "url": "/todos/{{id}}",
+            "method": "DELETE",
+            "sortNum": 50000,
+            "created": "2024-07-16T09:04:22.504Z",
+            "modified": "2024-07-16T09:25:27.502Z",
+            "headers": [],
+            "tests": [
+                {
+                    "type": "json-query",
+                    "custom": "json.message",
+                    "action": "contains",
+                    "value": "successfully"
+                }
+            ]
+        },
+        {
+            "_id": "72b6686a-a029-4ff2-a34a-796d21b1c952",
+            "colId": "be807a55-1805-4e1d-8077-5d3f5a472b20",
+            "containerId": "",
+            "name": "delete user",
+            "url": "/users/{{userId}}",
+            "method": "DELETE",
+            "sortNum": 60000,
+            "created": "2024-07-17T09:00:25.947Z",
+            "modified": "2024-07-17T09:02:59.370Z",
+            "headers": [],
+            "tests": [
+                {
+                    "type": "json-query",
+                    "custom": "json.message",
+                    "action": "contains",
+                    "value": "successfully"
+                }
+            ]
+        }
+    ],
+    "settings": {
+        "options": {
+            "baseUrl": "https://9q3ibkqhd9.execute-api.ap-southeast-1.amazonaws.com/v1"
+        },
+        "envId": "b5a870aa-aff1-459b-9cfa-a018c36119b4"
+    },
+    "ref": "suQ3uw4P0jlU3q6h4hPAeVSr3pzjlHV-3nOB-iwtIISJDLR-qfww8WscaUN6qrAhFrUTxcN5Rr39YpYDjwNR4A"
+}

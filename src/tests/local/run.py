@@ -23,7 +23,7 @@ from portal.app.main import lambda_handler
 # Import test event
 context = Context(timeout_in_seconds=15)
 file_path = f"{current_dir}/events.json"
-test_case = "get_all_completed_todos"
+test_case = "update_todo"
 
 if __name__ == "__main__":
     with open(file_path, encoding="utf-8") as my_file:
