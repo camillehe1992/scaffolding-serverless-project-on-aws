@@ -7,4 +7,4 @@ class SystemInfo(BaseModel):
     service: str = "todo"
     nickname: str = "todo"
     environment: str = "dev"
-    timestamp: str = "2024-07-11T14:52:15"
+    deployed_at: str = "2024-07-11 14:52:15 UTC"

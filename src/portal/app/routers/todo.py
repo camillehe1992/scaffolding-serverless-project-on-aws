@@ -18,7 +18,6 @@ def get_todos(
         Query(
             min_length=4,
             description="Whether the todo is completed or not. true or false",
-            examples=["false", "true"],
         ),
     ] = None
 ) -> list[Todo]:

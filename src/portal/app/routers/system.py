@@ -1,5 +1,4 @@
 import os
-from datetime import datetime
 from aws_lambda_powertools.event_handler import (
     Response,
     content_types,
@@ -10,14 +9,18 @@ from ..models import SystemInfo
 router = Router()
 
 
-@router.get("/health", tags=["System"])
+@router.get("/health", tags=["System"], summary="Get application health status")
 def health() -> str:
     return Response(
         status_code=200, content_type=content_types.TEXT_PLAIN, body="SERVER IS UP"
     )
 
 
-@router.get("/system-info", tags=["System"])
+@router.get(
+    "/system-info",
+    tags=["System"],
+    summary="Get application system information details",
+)
 def system_info() -> SystemInfo:
     return Response(
         status_code=200,
@@ -27,6 +30,6 @@ def system_info() -> SystemInfo:
             "service": os.getenv("POWERTOOLS_SERVICE_NAME"),
             "nickname": os.getenv("NICKNAME"),
             "environment": os.getenv("ENVIRONMENT"),
-            "timestamp": datetime.now().isoformat(timespec="seconds"),
+            "deployed_at": os.getenv("DEPLOYED_AT"),
         },
     )

@@ -1,4 +1,9 @@
+
 # A REST API (Serverless) in AWS using Terraform
+
+[![license](https://img.shields.io/badge/license-apache-blue.svg)](https://github.com/camillehe1992/scaffolding-serverless-project-on-aws/blob/main/LICENSE)
+[![python-3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-310/)
+[![version](https://img.shields.io/badge/version-0.1.2-green.svg)](https://github.com/camillehe1992/scaffolding-serverless-project-on-aws/releases/tag/v0.1.2)
 
 The project is an AWS cloud native serverless application, including API Gateway, Lambda function (with layers), and Dynamodb for data persistence. However, AWS provides a variety of storage services and you should make the decisition as you needs.
 

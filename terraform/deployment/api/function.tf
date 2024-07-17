@@ -20,7 +20,8 @@ module "portal_function" {
     local.aws_lambda_powertools_lambda_layer_arn
   ]
   environment_variables = {
-    APP_VERSION             = var.app_version
+    APP_VERSION             = local.app_version
+    DEPLOYED_AT             = local.deployed_at
     ENVIRONMENT             = var.environment
     LOG_LEVEL               = var.log_level
     NICKNAME                = var.nickname
