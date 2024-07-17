@@ -1,7 +1,8 @@
 -r ./src/portal/requirements.txt
 
+# The version of pydantic in lambda layer AWSLambdaPowertoolsPythonV2-Arm64:75
+pydantic==1.10.17
 aws-lambda-powertools
-pydantic
 python-dotenv
 pre-commit
 pylint

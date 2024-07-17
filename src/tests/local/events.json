@@ -1,0 +1,82 @@
+{
+	"create_user": {
+		"resource": "/users",
+		"path": "/users",
+		"httpMethod": "POST",
+		"body": {
+			"email": "allen.walker@example.com",
+			"username": "Allen Walker"
+		}
+	},
+	"get_all_users": {
+		"resource": "/users",
+		"path": "/users",
+		"httpMethod": "GET",
+		"body": null
+	},
+	"get_user": {
+		"resource": "/users/{id}",
+		"path": "/users/060888c3dc2c414486a3d7d7d95493c3",
+		"httpMethod": "GET",
+		"body": null
+	},
+	"update_user": {
+		"resource": "/users/{id}",
+		"path": "/users/060888c3dc2c414486a3d7d7d95493c3",
+		"httpMethod": "PUT",
+		"body": null
+	},
+	"delete_user": {
+		"resource": "/users/{id}",
+		"path": "/users/060888c3dc2c414486a3d7d7d95493c3",
+		"httpMethod": "DELETE",
+		"body": null
+	},
+	"create_todo": {
+		"resource": "/todos",
+		"path": "/todos",
+		"httpMethod": "POST",
+		"body": {
+			"userId": "060888c3dc2c414486a3d7d7d95493c3",
+			"title": "Learn Cloud!"
+		}
+	},
+	"get_all_todos": {
+		"resource": "/todos",
+		"path": "/todos",
+		"httpMethod": "GET",
+		"body": null
+	},
+	"get_all_completed_todos": {
+		"resource": "/todos",
+		"path": "/todos",
+		"queryStringParameters": {
+			"completed": "false"
+		},
+		"httpMethod": "GET",
+		"body": null
+	},
+	"get_todo": {
+		"resource": "/todos/{id}",
+		"path": "/todos/f04672f280694175b1883582f70cdb33",
+		"httpMethod": "GET",
+		"body": null
+	},
+	"update_todo": {
+		"resource": "/todos/{id}",
+		"path": "/todos/f04672f280694175b1883582f70cdb33",
+		"httpMethod": "PUT",
+		"body": {
+			"id": "f04672f280694175b1883582f70cdb33",
+			"userId": "060888c3dc2c414486a3d7d7d95493c3",
+			"title": "Learn Cloud!",
+			"completed": true
+		}
+	},
+	"delete_todo": {
+		"resource": "/todos/{id}",
+		"path": "/todos/e98c45b48f2f40588f4a633cd35b21d5",
+		"httpMethod": "DELETE",
+		"body": null
+	}
+}

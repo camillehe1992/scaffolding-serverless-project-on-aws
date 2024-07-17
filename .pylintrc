@@ -114,7 +114,8 @@ disable=
     consider-using-generator,
     redefined-outer-name,
     unsubscriptable-object,
-    consider-alternative-union-syntax
+    consider-alternative-union-syntax,
+    raise-missing-from
 
 
 [REPORTS]

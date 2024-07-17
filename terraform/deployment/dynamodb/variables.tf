@@ -24,3 +24,9 @@ variable "nickname" {
   type        = string
   description = "The nickname of project. Should be lowercase without special chars"
 }
+
+variable "billing_mode" {
+  type        = string
+  description = "The capacity mode for billing"
+  default     = "PROVISIONED"
+}

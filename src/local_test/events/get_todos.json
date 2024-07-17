@@ -1,6 +1,0 @@
-{
-  "resource": "/todos",
-  "path": "/todos",
-  "httpMethod": "GET",
-  "body": null
-}

@@ -103,6 +103,11 @@ paths:
         uri: ${invoke_arn}
         httpMethod: POST
         type: aws_proxy
+    put:
+      x-amazon-apigateway-integration:
+        uri: ${invoke_arn}
+        httpMethod: POST
+        type: aws_proxy
   /users:
     get:
       x-amazon-apigateway-integration:
@@ -121,6 +126,11 @@ paths:
         httpMethod: POST
         type: aws_proxy
     delete:
+      x-amazon-apigateway-integration:
+        uri: ${invoke_arn}
+        httpMethod: POST
+        type: aws_proxy
+    put:
       x-amazon-apigateway-integration:
         uri: ${invoke_arn}
         httpMethod: POST

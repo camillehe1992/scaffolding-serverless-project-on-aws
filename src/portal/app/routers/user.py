@@ -1,66 +1,69 @@
-import requests
-from aws_lambda_powertools.event_handler import Response
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from aws_lambda_powertools.event_handler.openapi.params import Body
 from aws_lambda_powertools.shared.types import Annotated
+from aws_lambda_powertools.event_handler.exceptions import NotFoundError
 
 from ..logging import logger
 from ..models import User
-
-
-# Constants
-DEMO_API_URL = "https://jsonplaceholder.typicode.com"
-TIMEOUT_IN_SECONDS = 60
+from ..database import UserModel, return_pagination_result
 
 
 router = Router()
 
 
-# List all users
 @router.get(rule="", tags=["User"], summary="Get all users")
 def get_users() -> list[User]:
-    url = f"{DEMO_API_URL}/users"
-    response: Response = requests.get(url, timeout=TIMEOUT_IN_SECONDS)
-    response.raise_for_status()
-    # for brevity, we'll limit to the first 5 only
-    users = response.json()[:5]
-    logger.info("get users", users=users)
+    response = UserModel.scan()
+    users = return_pagination_result(response)
+    logger.info("Get users", users=users)
     return users
 
 
-# Get a specific user by given user id
-@router.get(rule="/<id>", tags=["User"], summary="Get user item by user id")
-def get_user_by_id(id: int) -> User:
-    response: Response = requests.get(
-        f"{DEMO_API_URL}/users/{id}", timeout=TIMEOUT_IN_SECONDS
-    )
-    response.raise_for_status()
-    user = response.json()
-    logger.info(f"get user with given user_id {id}", user=user)
-    return user
+@router.get(rule="/<id>", tags=["User"], summary="Get user by id")
+def get_user_by_id(id: str) -> User:
+    try:
+        response = UserModel.query(id)
+        users = return_pagination_result(response)
+        logger.info(f"Retrieved user {id}", user=users[0])
+        return users[0]
+    except UserModel.DoesNotExist as exc:
+        logger.error(f"User {id} does not exist", exc_info=exc)
+        raise NotFoundError(f"User {id} does not exist")
 
 
-# Create a new user
-@router.post(rule="", tags=["User"], summary="Create a new user item")
+@router.post(rule="", tags=["User"], summary="Create a new user")
 def create_user(user: Annotated[User, Body()]) -> User:
-    user_data = user.model_dump(by_alias=True)
-    logger.info("create user with data", json=user_data)
-    response: Response = requests.post(
-        f"{DEMO_API_URL}/users", json=user_data, timeout=TIMEOUT_IN_SECONDS
-    )
-    response.raise_for_status()
-    user = response.json()
-    logger.info("user created successfully", user=user)
-    return user
+    # Only support in pydantic v1
+    user_data = user.dict(by_alias=True)
+    logger.info("Create user with data", json=user_data)
+    new_user = UserModel(**user_data)
+    response = new_user.save()
+    logger.info("User is created successfully", response=response)
+    return {"message": "User is created successfully"}
 
 
-# Delete a new user by user id
-@router.delete(rule="/<id>", tags=["User"], summary="Delete a user item by user id")
-def delete_user_by_id(id: int) -> User:
-    response: Response = requests.delete(
-        f"{DEMO_API_URL}/users/{id}", timeout=TIMEOUT_IN_SECONDS
-    )
-    response.raise_for_status()
-    user = response.json()
-    logger.info(f"delete user with given id {id}", user=user)
-    return user
+@router.put(rule="/<id>", tags=["User"], summary="Update a user item")
+def update_user(id: str, user: Annotated[User, Body()]) -> User:
+    # Only support in pydantic v1
+    user_data = user.dict(by_alias=True)
+    logger.info(f"Update user {id} with data", user_data=user_data)
+    try:
+        user = UserModel(id, user_data.get("email"))
+        response = user.update(
+            actions=[
+                UserModel.username.set(user_data.get("username")),
+            ]
+        )
+        logger.info(f"User {user.id} is updated successfully", response=response)
+        return user
+    except UserModel.DoesNotExist as exc:
+        logger.error("User does not exist", user_data=user_data, exc_info=exc)
+        raise NotFoundError("User does not exist")
+
+
+@router.delete(rule="/<id>", tags=["User"], summary="Delete a user by id")
+def delete_user_by_id(id: str) -> User:
+    user = UserModel(id)
+    response = user.delete()
+    logger.info(f"User {id} is deleted successfully", response=response)
+    return {"message": "User is deleted successfully"}

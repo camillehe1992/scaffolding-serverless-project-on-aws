@@ -7,7 +7,10 @@ SHELL := /bin/bash
 BASE := $(shell /bin/pwd)
 MAKE ?= make
 
+APP_VERSION := $(shell cat VERSION.txt)
 DEPLOYMENT := api
+ENVIRONMENT := dev
+NICKNAME := todo
 
 ifdef AWS_PROFILE
 AWS_PROFILE := $(AWS_PROFILE)
@@ -19,7 +22,7 @@ endif
 TF_ROOT_PATH := $(BASE)/terraform/deployment/$(DEPLOYMENT)
 TF_VAR_FILE := $(BASE)/terraform/settings/$(ENVIRONMENT)/terraform.tfvars
 
-$(info AWS_ACCOUNT 		= $(AWS_ACCOUNT))
+$(info APP_VERSION 		= $(APP_VERSION))
 $(info AWS_PROFILE 		= $(AWS_PROFILE))
 $(info AWS_REGION  		= $(AWS_REGION))
 $(info ENVIRONMENT 		= $(ENVIRONMENT))
@@ -107,28 +110,3 @@ unit-test:
 e2e-test:
 	$(info [*] Test RestAPIs via invoking API Gateway endpoint)
 	python -m pytest ./src/tests/e2e/
-
-#########################################################################
-# Dynamodb Tables Locally Make Targets
-#########################################################################
-DDB_ENDPOINT := http://localhost:8000
-
-list-tables:
-	$(info [*] List Dynamodb Tables Locally)
-	aws dynamodb list-tables --endpoint-url $(DDB_ENDPOINT)
-create-table:
-	$(info [*] Create Dynamodb Tables Locally)
-	aws dynamodb create-table \
-		--table-name Todos \
-		--attribute-definitions \
-			AttributeName=Id,AttributeType=S \
-			AttributeName=Title,AttributeType=S \
-		--key-schema \
-			AttributeName=Id,KeyType=HASH \
-			AttributeName=Title,KeyType=RANGE \
-		--provisioned-throughput \
-			ReadCapacityUnits=1,WriteCapacityUnits=1 \
-		--table-class STANDARD
-describe-table:
-	$(info [*] Describe Dynamodb Table Locally)
-	 aws dynamodb describe-table --table-name Todos | grep TableStatus

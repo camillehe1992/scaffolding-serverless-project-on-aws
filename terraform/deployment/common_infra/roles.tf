@@ -8,6 +8,9 @@ module "lambda_execution_role" {
     "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSLambdaENIManagementAccess",
     "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
   ]
+  customized_policies = {
+    "allow-dynamodb-actions" = data.aws_iam_policy_document.allow-dynamodb.json
+  }
 }
 
 module "api_gateway_logging_role" {

@@ -16,7 +16,7 @@ resource "aws_dynamodb_table" "this" {
   dynamic "attribute" {
     for_each = var.range_key != "" ? [var.range_key] : []
     content {
-      name = attribute.value.name
+      name = attribute.value
       type = "S"
     }
   }
