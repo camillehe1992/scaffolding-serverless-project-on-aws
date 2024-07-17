@@ -110,3 +110,7 @@ unit-test:
 e2e-test:
 	$(info [*] Test RestAPIs via invoking API Gateway endpoint)
 	python -m pytest ./src/tests/e2e/
+
+local-test:
+	$(info [*] Run local test)
+	python -m src.tests.local.run

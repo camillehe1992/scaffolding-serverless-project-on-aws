@@ -2,6 +2,7 @@
 # Test Lambda function via below command from project root dir
 
 # >> python -m src.tests.local.run
+# or make local-test
 
 ##################################################################################
 

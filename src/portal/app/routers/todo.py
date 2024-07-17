@@ -24,7 +24,7 @@ def get_todos(
     if completed is not None:
         response = TodoModel.scan(
             filter_condition=TodoModel.completed
-            == (completed in set("True", "true", True)),
+            == (completed in set(["True", "true", True])),
         )
     else:
         response = TodoModel.scan()

@@ -4,8 +4,7 @@ from pynamodb.attributes import UnicodeAttribute, BooleanAttribute
 
 # Constants
 ENVIRONMENT = os.getenv("ENVIRONMENT")
-NICKNAME = os.getenv("NICKNAME")
-DDB_LOCAL_HOST = os.getenv("DDB_LOCAL_HOST")
+NICKNAME = os.getenv("NICKNAME", "todo")
 
 
 class TodoModel(Model):
