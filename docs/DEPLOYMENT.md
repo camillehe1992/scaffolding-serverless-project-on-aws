@@ -1,16 +1,29 @@
 # Deployment Documenatation
 
-Deploy below AWS resources into target AWS account from local environment or using CICD pipelines.
+Deploy below AWS resources in AWS account from local environment or using CICD pipelines.
 
-| Deployment   | File                   | Terraform Modules        | Main AWS Resources                                                 |
-| ------------ | ---------------------- | ------------------------ | ------------------------------------------------------------------ |
-| common_infra | common_infra/roles.tf  | lambda_execution_role    | IAM Role                                                           |
-| common_infra | common_infra/roles.tf  | api_gateway_logging_role | IAM Role                                                           |
-| common_infra | common_infra/layers.tf | dependencies_layer       | Lambda Layer                                                       |
-| api          | api/api_gateway.tf     | api_gateway              | API Gateway RestAPI, Stage, Deployment, CloudWatch Logs Group, etc |
-| api          | api/function.tf        | portal_function          | Lambda Function, CloudWatch Logs Group                             |
+| Deployment   | File                   | Terraform Modules     | Main AWS Resources                                                 |
+| ------------ | ---------------------- | --------------------- | ------------------------------------------------------------------ |
+| common_infra | common_infra/roles.tf  | lambda_execution_role | IAM Role                                                           |
+| common_infra | common_infra/layers.tf | dependencies_layer    | Lambda Layer                                                       |
+| api          | api/api_gateway.tf     | api_gateway           | API Gateway RestAPI, Stage, Deployment, CloudWatch Logs Group, etc |
+| api          | api/function.tf        | portal_function       | Lambda Function, CloudWatch Logs Group                             |
+
+## AWS Resources
+
+| AWS Service | Resource   | Resource Name                            | Configuration                                                  |
+| ----------- | ---------- | ---------------------------------------- | -------------------------------------------------------------- |
+| API Gateway | API        | dev-todo-portal                          | API Type: Rest API; API Endpoint Type: Regional                |
+| Lambda      | Function   | dev-todo-portal                          | Runtime: Python 3.10; Archtecture: Arm 64                      |
+| Lambda      | Layer      | dev-todo-dependencies                    | Runtime: Python 3.10; Archtecture: Arm 64                      |
+| IAM         | Role       | dev-todo-lambda-execution-role           | AWS Managed Policy, Customer Policy                            |
+| CloudWatch  | Logs Group | /aws/lambda/dev-todo-portal              | Log Class: Standard; Retention: 1 month                        |
+| CloudWatch  | Logs Group | API-Gateway-Execution-Logs_9q3ibkqhd9/v1 | Log Class: Standard; Retention: 1 month                        |
+| DynamoDB    | Table      | dev-todo-users                           | Capacity Mode: Provisioned; Partition Key: id; Sort Key: email |
+| DynamoDB    | Table      | dev-todo-todos                           | Capacity Mode: Provisioned; Partition Key: id; Sort Key: title |
 
 - [Deployment Documenatation](#deployment-documenatation)
+	- [AWS Resources](#aws-resources)
 	- [Manual Deployment from Local](#manual-deployment-from-local)
 	- [Automate Deployment via GitHub Actions](#automate-deployment-via-github-actions)
 		- [Configure AWS Crendential in GitHub](#configure-aws-crendential-in-github)

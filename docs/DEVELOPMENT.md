@@ -1,7 +1,5 @@
 # Local Development Environment Setup
 
-After downloading the sample code on your local machine, you should setup your local environment for development. For example, you need to create a virtual environment to install your python dependencies if you choose Python as your Lambda function language. Moreover, AWS credentials configuration should be setup if you need to deploy AWS resources to AWS environments.
-
 - [Local Development Environment Setup](#local-development-environment-setup)
   - [Install Terraform CLI](#install-terraform-cli)
   - [Install AWS CLI](#install-aws-cli)
