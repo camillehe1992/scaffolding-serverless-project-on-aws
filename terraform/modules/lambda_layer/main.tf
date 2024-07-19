@@ -39,11 +39,12 @@ resource "aws_lambda_layer_version" "from_local" {
   count      = var.from_local ? 1 : 0
   depends_on = [data.archive_file.dependencies]
 
-  layer_name          = "${var.resource_prefix}${var.layer_name}"
-  description         = var.description
-  filename            = "${local.archive_path}.zip"
-  source_code_hash    = var.pip_install ? data.archive_file.dependencies[count.index].output_base64sha256 : data.archive_file.custom[count.index].output_base64sha256
-  compatible_runtimes = var.runtimes
+  layer_name               = "${var.resource_prefix}${var.layer_name}"
+  description              = var.description
+  filename                 = "${local.archive_path}.zip"
+  source_code_hash         = var.pip_install ? data.archive_file.dependencies[count.index].output_base64sha256 : data.archive_file.custom[count.index].output_base64sha256
+  compatible_runtimes      = var.runtimes
+  compatible_architectures = toset([var.architecture])
 }
 
 # For deployment package (.zip file archive) with size more than 50 MB (zipped, for direct upload)
