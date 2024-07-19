@@ -50,11 +50,11 @@ The diagram below shows the archtecture details. All AWS resources are built and
 
 ## Development
 
-Follow [DEPLOYMENT.md](./docs/DEPLOYMENT.md) if you want to contribute on the project.
+Follow [DEVELOPMENT.md](./docs/DEVELOPMENT.md) when you want to setup a development environment on your local machine.
 
 ## Deployment
 
-Follow [DEVELOPMENT.md](./docs/DEVELOPMENT.md) if you want to deploy project from local or via CICD pipelines.
+Follow [DEPLOYMENT.md](./docs/DEPLOYMENT.md) to deploy project from local machine or via CICD pipelines.
 
 ## References
 
