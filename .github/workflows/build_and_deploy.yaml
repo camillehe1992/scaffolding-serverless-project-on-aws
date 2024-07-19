@@ -43,7 +43,7 @@ env:
   ENVIRONMENT: ${{ inputs.environment }}
   NICKNAME: todo
   TF_VERSION: 1.8.0
-  WORKING_DIRECTORY: terraform/deployment/${{ inputs.deployment }}
+  WORKING_DIRECTORY: terraform/deployments/${{ inputs.deployment }}
   # Terraform Variables are prefixed with TF_VAR
   TF_VAR_aws_region: ${{ vars.AWS_REGION }}
 

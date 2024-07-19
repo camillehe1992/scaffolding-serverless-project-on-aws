@@ -8,7 +8,7 @@ ENVIRONMENT=$2
 
 DIR="/app"
 
-WORKING_DIR="$DIR/terraform/deployment/$COMPONENT"
+WORKING_DIR="$DIR/terraform/deployments/$COMPONENT"
 
 docker run --rm \
     -v $PWD:$DIR \

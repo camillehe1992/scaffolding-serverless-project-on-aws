@@ -37,13 +37,13 @@ else
     PLAN=""
 fi
 
-DEPLOYMENT_FOLDER="$DIR/terraform/deployment/$COMPONENT"
+DEPLOYMENT_FOLDER="$DIR/terraform/deployments/$COMPONENT"
 ENVIRONMENTS_FOLDER="$DIR/terraform/settings/$ENVIRONMENT"
 MIRROR_FOLDER="$DIR/.terraform/providers"
 
 pushd $DEPLOYMENT_FOLDER || exit
 
-cd $DIR/terraform/deployment/$COMPONENT
+cd $DIR/terraform/deployments/$COMPONENT
 
 terraform providers mirror $MIRROR_FOLDER
 

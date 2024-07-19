@@ -19,7 +19,7 @@ AWS_PROFILE := default
 endif
 
 # The deployment name, shared or app
-TF_ROOT_PATH := $(BASE)/terraform/deployment/$(DEPLOYMENT)
+TF_ROOT_PATH := $(BASE)/terraform/deployments/$(DEPLOYMENT)
 TF_VAR_FILE := $(BASE)/terraform/settings/$(ENVIRONMENT)/terraform.tfvars
 
 $(info APP_VERSION 		= $(APP_VERSION))
