@@ -41,6 +41,7 @@ env:
   STATE_BUCKET: ${{ vars.STATE_BUCKET }}
   # Input Variables
   ENVIRONMENT: ${{ inputs.environment }}
+  DEPLOYMENT: ${{ inputs.deployment }}
   NICKNAME: todo
   TF_VERSION: 1.8.0
   WORKING_DIRECTORY: terraform/deployments/${{ inputs.deployment }}
@@ -88,7 +89,7 @@ jobs:
           terraform init -reconfigure \
           -backend-config="bucket=$STATE_BUCKET" \
           -backend-config="region=$AWS_REGION" \
-          -backend-config="key=$NICKNAME/$ENVIRONMENT/$AWS_REGION/terraform.tfstate"
+          -backend-config="key=$NICKNAME/$ENVIRONMENT/$AWS_REGION/$DEPLOYMENT.tfstate"
 
       # Generates an execution plan for Terraform
       # An exit code of 0 indicated no changes, 1 a terraform failure, 2 there are pending changes.
@@ -124,7 +125,7 @@ jobs:
 
           delimiter="$(openssl rand -hex 8)"
           echo "summary<<${delimiter}" >> $GITHUB_OUTPUT
-          echo "## Terraform Plan Output" >> $GITHUB_OUTPUT
+          echo "### Terraform Plan Output" >> $GITHUB_OUTPUT
           echo "<details><summary>Click to expand</summary>" >> $GITHUB_OUTPUT
           echo "" >> $GITHUB_OUTPUT
           echo '```terraform' >> $GITHUB_OUTPUT
