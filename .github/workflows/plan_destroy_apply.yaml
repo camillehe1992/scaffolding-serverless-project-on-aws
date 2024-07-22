@@ -49,7 +49,7 @@ env:
 
 jobs:
   plan-destroy-apply:
-    name: Terraform Plan & Apply
+    name: Plan Destroy & Apply
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     env:
