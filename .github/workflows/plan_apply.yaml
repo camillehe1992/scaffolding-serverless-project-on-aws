@@ -28,6 +28,10 @@ on:
 
 run-name: Deploy ${{ inputs.deployment }} to ${{ inputs.environment }} environment
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   plan-apply:
     uses: ./.github/workflows/deploy_reusable.yaml
