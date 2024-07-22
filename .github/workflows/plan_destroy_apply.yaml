@@ -19,7 +19,7 @@ on:
         default: api
         required: true
       environment:
-        description: Environment to run agains
+        description: Environment to run against
         type: choice
         options:
           - dev
@@ -94,9 +94,9 @@ jobs:
       # An exit code of 0 indicated no changes, 1 a terraform failure, 2 there are pending changes.
       - name: Terraform Plan - Destroy
         id: tf-plan
+        working-directory: ${{ env.WORKING_DIRECTORY }}
         env:
           TF_VAR_app_version: ${{ steps.custom-tag.outputs.app_version }}
-        working-directory: ${{ env.WORKING_DIRECTORY }}
         run: |
           set +e # allow the workflow to continue following steps even if the `terraform` execution failed
 

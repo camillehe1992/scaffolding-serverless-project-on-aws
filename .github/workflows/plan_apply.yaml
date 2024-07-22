@@ -19,7 +19,7 @@ on:
         default: api
         required: true
       environment:
-        description: Environment to run agains
+        description: Environment to run against
         type: choice
         options:
           - dev
