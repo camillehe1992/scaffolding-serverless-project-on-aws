@@ -79,12 +79,12 @@ STATE_BUCKET: ${{ vars.STATE_BUCKET }}
 
 ### Run Workflow in GitHub Console
 
-| Workflow             | File                         | Description                           |
-| -------------------- | ---------------------------- | ------------------------------------- |
-| Plan & Apply         | [plan_apply.yaml][1]         | Deploy AWS resources to AWS account   |
-| Plan Destroy & Apply | [plan_destroy_apply.yaml][2] | Remove AWS resources from AWS account |
-| Deploy to Dev        | [deploy_to_dev.yaml][4]      |
-| Create Tag & Release | [create_tag.yaml][3]         | Create GitHub Tag and Release         |
+| Workflow             | File                         | Description                                                        |
+| -------------------- | ---------------------------- | ------------------------------------------------------------------ |
+| Plan & Apply         | [plan_apply.yaml][1]         | Deploy AWS resources to AWS                                        |
+| Plan Destroy & Apply | [plan_destroy_apply.yaml][2] | Remove AWS resources from AWS                                      |
+| Deploy to Dev        | [deploy_to_dev.yaml][4]      | Deploy AWS resources to AWS dev triggered by commit on main branch |
+| Create Tag & Release | [create_tag.yaml][3]         | Create GitHub Tag and Release triggered by commit on main branch   |
 
 ## Automate Deployment via Jenkins (Deprecated)
 
