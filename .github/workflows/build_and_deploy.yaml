@@ -55,12 +55,20 @@ jobs:
     env:
       #this is needed since we are running terraform with read-only permissions
       ARM_SKIP_PROVIDER_REGISTRATION: true
+      TF_VAR_app_version: ${{ steps.custom-tag.outputs.app_version }}
     outputs:
       exitcode: ${{ steps.tf-plan.outputs.exitcode }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Read Customize Version
+        id: custom-tag
+        run: |
+          app_version = $(cat VERSION.txt)
+          echo $app_version
+          echo "app_version=$app_version" >> $GITHUB_OUTPUT
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3

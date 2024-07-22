@@ -12,12 +12,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Read Customize Version
+        id: custom_tag
+        run: |
+          app_version = $(cat VERSION.txt)
+          echo $app_version
+          echo "app_version=$app_version" >> $GITHUB_OUTPUT
       # https://github.com/marketplace/actions/github-tag
       - name: Bump version and push tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: ${{ steps.custom_tag.outputs.app_version }}
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1
         with:
