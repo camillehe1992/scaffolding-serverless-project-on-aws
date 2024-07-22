@@ -34,4 +34,4 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
       is_destroy: true
-      working-directory: terraform/deployments/${{ inputs.deployment }}
+      deployment: ${{ inputs.deployment }}

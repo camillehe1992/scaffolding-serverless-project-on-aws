@@ -33,4 +33,4 @@ jobs:
     uses: ./.github/workflows/deploy_reusable.yaml
     with:
       environment: ${{ inputs.environment }}
-      working-directory: terraform/deployments/${{ inputs.deployment }}
+      deployment: ${{ inputs.deployment }}
