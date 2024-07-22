@@ -1,29 +1,29 @@
 # Deployment Documenatation
 
-Deploy below AWS resources in AWS account from local environment or using CICD pipelines.
+All AWS resources are spearated into three deployments: __common_infra__, __dynamodb__ and __api__. These resources can be deployed to AWS account from local environment or using CICD pipelines.
 
 | Deployment   | File                   | Terraform Modules     | Main AWS Resources                                                 |
 | ------------ | ---------------------- | --------------------- | ------------------------------------------------------------------ |
 | common_infra | common_infra/roles.tf  | lambda_execution_role | IAM Role                                                           |
 | common_infra | common_infra/layers.tf | dependencies_layer    | Lambda Layer                                                       |
+| dynamodb     | dynamodb/main.tf       | dynamodb              | DynamoDB Table                                                     |
 | api          | api/api_gateway.tf     | api_gateway           | API Gateway RestAPI, Stage, Deployment, CloudWatch Logs Group, etc |
 | api          | api/function.tf        | portal_function       | Lambda Function, CloudWatch Logs Group                             |
 
-## AWS Resources
+Here is the detailed configuration of AWS resouces.
 
-| AWS Service | Resource   | Resource Name                            | Configuration                                                  |
-| ----------- | ---------- | ---------------------------------------- | -------------------------------------------------------------- |
-| API Gateway | API        | dev-todo-portal                          | API Type: Rest API; API Endpoint Type: Regional                |
-| Lambda      | Function   | dev-todo-portal                          | Runtime: Python 3.10; Archtecture: Arm 64                      |
-| Lambda      | Layer      | dev-todo-dependencies                    | Runtime: Python 3.10; Archtecture: Arm 64                      |
-| IAM         | Role       | dev-todo-lambda-execution-role           | AWS Managed Policy, Customer Policy                            |
-| CloudWatch  | Logs Group | /aws/lambda/dev-todo-portal              | Log Class: Standard; Retention: 1 month                        |
-| CloudWatch  | Logs Group | API-Gateway-Execution-Logs_9q3ibkqhd9/v1 | Log Class: Standard; Retention: 1 month                        |
-| DynamoDB    | Table      | dev-todo-users                           | Capacity Mode: Provisioned; Partition Key: id; Sort Key: email |
-| DynamoDB    | Table      | dev-todo-todos                           | Capacity Mode: Provisioned; Partition Key: id; Sort Key: title |
+| AWS Service | Resource   | Resource Name                          | Configuration                                                  |
+| ----------- | ---------- | -------------------------------------- | -------------------------------------------------------------- |
+| IAM         | Role       | dev-todo-lambda-execution-role         | AWS Managed Policy, Customer Policy                            |
+| DynamoDB    | Table      | dev-todo-users                         | Capacity Mode: Provisioned; Partition Key: id; Sort Key: email |
+| DynamoDB    | Table      | dev-todo-todos                         | Capacity Mode: Provisioned; Partition Key: id; Sort Key: title |
+| API Gateway | API        | dev-todo-portal                        | API Type: Rest API; API Endpoint Type: Regional                |
+| Lambda      | Function   | dev-todo-portal                        | Runtime: Python 3.10; Archtecture: Arm 64                      |
+| Lambda      | Layer      | dev-todo-dependencies                  | Runtime: Python 3.10; Archtecture: Arm 64                      |
+| CloudWatch  | Logs Group | /aws/lambda/dev-todo-portal            | Log Class: Standard; Retention: 1 month                        |
+| CloudWatch  | Logs Group | API-Gateway-Execution-Logs_{api_id}/v1 | Log Class: Standard; Retention: 1 month                        |
 
 - [Deployment Documenatation](#deployment-documenatation)
-	- [AWS Resources](#aws-resources)
 	- [Manual Deployment from Local](#manual-deployment-from-local)
 	- [Automate Deployment via GitHub Actions](#automate-deployment-via-github-actions)
 		- [Configure AWS Crendential in GitHub](#configure-aws-crendential-in-github)
@@ -38,18 +38,28 @@ Firstly, follow [DEVELOPMENT.md](DEVELOPMENT.md) to setup your local environment
 
 Thne, create a `.env` from `env.sample`, and update environment variables as needed. The `.env` file won't be checked into your source code. After updated, these variables in `.env` will be injected into `Makefile` when you execute `make` commands. You can run `make pre-check` to validate these variables.
 
-After done, run below `make` commands to deploy terraform resources to target AWS environment from local.
+After done, run below `make` commands to deploy terraform resources to target AWS environment.
 
 ```bash
-make plan
-make apply
+make deploy-all
 ```
 
-Run below `make` commands to destroy/remove terraform resources from target AWS environment from local.
+After done, open the __swagger_url__ from Terraform outputs. The url format looks like
+
+https://{api-id}.execute-api.{aws-region}.amazonaws.com/v1/swagger
+
+> Please be noted, there is no reference between `userId` in `Todo` entity and `User` entity. `userId` can be any string when you create a todo via `POST /todos` interface.
+
+Run below `make` commands to destroy/remove terraform resources from target AWS environment.
 
 ```bash
-make destroy
-make apply
+make destroy-all
+```
+
+You can deploy or destroy a particular deployment (common_infra, dynamodb, api) from dev environment with below commands.
+
+```bash
+make DEPLOYMENT=common_infra plan-apply
 ```
 
 ## Automate Deployment via GitHub Actions
@@ -69,11 +79,12 @@ STATE_BUCKET: ${{ vars.STATE_BUCKET }}
 
 ### Run Workflow in GitHub Console
 
-| Workflow             | File                       | Description                           |
-| -------------------- | -------------------------- | ------------------------------------- |
-| Deploy API           | [build_and_deploy.yaml][1] | Deploy AWS resources to AWS account   |
-| Destroy API          | [build_and_detroy.yaml][2] | Remove AWS resources from AWS account |
-| Create Tag & Release | [create_tag.yaml][3]       | Create GitHub Tag and Release         |
+| Workflow             | File                         | Description                           |
+| -------------------- | ---------------------------- | ------------------------------------- |
+| Plan & Apply         | [plan_apply.yaml][1]         | Deploy AWS resources to AWS account   |
+| Plan Destroy & Apply | [plan_destroy_apply.yaml][2] | Remove AWS resources from AWS account |
+| Deploy to Dev        | [deploy_to_dev.yaml][4]      |
+| Create Tag & Release | [create_tag.yaml][3]         | Create GitHub Tag and Release         |
 
 ## Automate Deployment via Jenkins (Deprecated)
 
@@ -123,6 +134,7 @@ A view of pipeline stages.
 
 ![Stage View CI](./images/stage-view-ci.png)
 
-[1]: https://github.com/camillehe1992/scaffolding-serverless-project-on-aws/actions/workflows/build_and_deploy.yaml
-[2]: https://github.com/camillehe1992/scaffolding-serverless-project-on-aws/actions/workflows/build_and_destroy.yaml
+[1]: https://github.com/camillehe1992/scaffolding-serverless-project-on-aws/actions/workflows/plan_apply.yaml
+[2]: https://github.com/camillehe1992/scaffolding-serverless-project-on-aws/actions/workflows/plan_destroy_apply.yaml
 [3]: https://github.com/camillehe1992/scaffolding-serverless-project-on-aws/actions/workflows/create_tag.yaml
+[4]: https://github.com/camillehe1992/scaffolding-serverless-project-on-aws/actions/workflows/deploy_to_dev.yaml

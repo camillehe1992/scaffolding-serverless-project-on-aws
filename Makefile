@@ -98,6 +98,20 @@ apply:
 plan-apply: init
 	@cd $(TF_ROOT_PATH) && terraform plan $(OPTIONS) && terraform apply tfplan
 
+destroy-apply: init
+	@cd $(TF_ROOT_PATH) && terraform plan -destroy $(OPTIONS) && terraform apply tfplan
+
+deploy-all:
+	$(info [*] Deploy All Infra to Dev)
+	@MAKE DEPLOYMENT=common_infra plan-apply
+	@MAKE DEPLOYMENT=dynamodb plan-apply
+	@MAKE DEPLOYMENT=api plan-apply
+
+destroy-all:
+	$(info [*] Destroy All Infra to Dev)
+	@MAKE DEPLOYMENT=api destroy-apply
+	@MAKE DEPLOYMENT=common_infra destroy-apply
+	@MAKE DEPLOYMENT=dynamodb destroy-apply
 
 #########################################################################
 # TEST Make Targets
