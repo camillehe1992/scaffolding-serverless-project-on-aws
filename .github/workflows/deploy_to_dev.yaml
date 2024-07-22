@@ -1,0 +1,27 @@
+name: Deploy to Dev
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy-common-infra:
+    uses: ./.github/workflows/deploy_reusable.yaml
+    with:
+      environment: dev
+      deployment: common_infra
+  deploy-dynamodb:
+    uses: ./.github/workflows/deploy_reusable.yaml
+    with:
+      environment: dev
+      deployment: dynamodb
+  deploy-api:
+    needs: [deploy-common-infra, deploy-dynamodb]
+    uses: ./.github/workflows/deploy_reusable.yaml
+    with:
+      environment: dev
+      deployment: api
