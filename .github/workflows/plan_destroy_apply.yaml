@@ -30,7 +30,7 @@ run-name: Destroy ${{ inputs.deployment }} from ${{ inputs.environment }} enviro
 
 jobs:
   plan-apply:
-    uses: .github/workflows/deploy_reusable.yaml
+    uses: ./.github/workflows/deploy_reusable.yaml
     with:
       environment: ${{ inputs.environment }}
       is_destroy: true
