@@ -66,7 +66,7 @@ jobs:
       - name: Read Customize Version
         id: custom-tag
         run: |
-          app_version = $(cat VERSION.txt)
+          app_version=$(cat VERSION.txt)
           echo $app_version
           echo "app_version=$app_version" >> $GITHUB_OUTPUT
 
