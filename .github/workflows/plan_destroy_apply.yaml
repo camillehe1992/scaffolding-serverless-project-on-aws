@@ -1,4 +1,4 @@
-name: Destroy API
+name: Plan Destroy & Apply
 
 on:
   workflow_dispatch:
@@ -48,14 +48,13 @@ env:
   TF_VAR_aws_region: ${{ vars.AWS_REGION }}
 
 jobs:
-  terraform-plan-apply:
+  plan-destroy-apply:
     name: Terraform Plan & Apply
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     env:
       #this is needed since we are running terraform with read-only permissions
       ARM_SKIP_PROVIDER_REGISTRATION: true
-      TF_VAR_app_version: ${{ steps.custom-tag.outputs.app_version }}
     outputs:
       exitcode: ${{ steps.tf-plan.outputs.exitcode }}
 
@@ -95,6 +94,8 @@ jobs:
       # An exit code of 0 indicated no changes, 1 a terraform failure, 2 there are pending changes.
       - name: Terraform Plan - Destroy
         id: tf-plan
+        env:
+          TF_VAR_app_version: ${{ steps.custom-tag.outputs.app_version }}
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: |
           set +e # allow the workflow to continue following steps even if the `terraform` execution failed
