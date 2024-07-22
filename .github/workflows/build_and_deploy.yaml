@@ -63,7 +63,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Read Customize Version
+      - name: Read App Version
         id: custom-tag
         run: |
           app_version=$(cat VERSION.txt)
