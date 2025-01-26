@@ -22,7 +22,8 @@ nickname    = "sls-template"
 ##############################################
 # LAMBDA LAYERS DEPLOYMENT INFORMATION
 ##############################################
-
+runtime      = "python3.12"
+architecture = "arm64"
 ##############################################
 # FRONTEND DEPLOYMENT INFORMATION
 ##############################################

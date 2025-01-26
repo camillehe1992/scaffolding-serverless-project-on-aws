@@ -1,15 +1,13 @@
 -r ./src/portal/requirements.txt
 
-# The version of pydantic in lambda layer AWSLambdaPowertoolsPythonV2-Arm64:75
-pydantic==1.10.17
-aws-lambda-powertools
-python-dotenv
-pre-commit
-pylint
+# The version of pydantic in lambda layer AWSLambdaPowertoolsPythonV3-python312
+aws-lambda-powertools==3.4.1
 boto3
 botocore
+pydantic==4.12.2
+python-dotenv==1.0.1
+pre-commit
+pylint
 pytest
 coverage
-python-dotenv
 python-lambda-local
-tavern

@@ -94,15 +94,15 @@ conda -V
 # conda 24.4.0
 
 # Creae an environment named todo-py10
-conda create -n todo-py10
+conda create -n sls-template
 
 # Activate the environment
-conda activate todo-py10
+conda activate sls-template
 
-# Install python=3.10 on the environment
-conda install python=3.10
+# Install python=3.12 on the environment
+conda install python==3.12
 # or using pip
-pip install python=3.10
+pip install python==3.12
 
 # List all packages installed in the environment
 conda list
