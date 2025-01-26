@@ -4,11 +4,6 @@ variable "tags" {
   description = "The key value pairs we want to apply as tags to the resources contained in this module"
 }
 
-variable "resource_prefix" {
-  type        = string
-  description = "The prefix of resources name"
-}
-
 variable "function_name" {
   type        = string
   description = "The Lambda function name"
@@ -44,7 +39,7 @@ variable "timeout" {
 
 variable "runtime" {
   type        = string
-  default     = "python3.10"
+  default     = "python3.12"
   description = "The runtime of Lambda function"
 }
 
@@ -101,7 +96,6 @@ variable "security_group_ids" {
 
 variable "retention_in_days" {
   type        = number
-  default     = 60
   description = "The retention (days) of Lambda function Cloudwatch logs group"
 }
 

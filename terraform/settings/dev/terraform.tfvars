@@ -4,12 +4,11 @@
 tags = {
   environment = "dev"
   emails      = "group@example.com"
-  application = "todo-demo"
-  nickname    = "todo"
+  nickname    = "sls-template"
   createdby   = "scaffolding-serverless-project-on-aws"
 }
 environment = "dev"
-nickname    = "todo"
+nickname    = "sls-template"
 
 ##############################################
 # COMMON INFRA DEPLOYMENT INFORMATION
@@ -23,7 +22,8 @@ nickname    = "todo"
 ##############################################
 # LAMBDA LAYERS DEPLOYMENT INFORMATION
 ##############################################
-
+runtime      = "python3.12"
+architecture = "arm64"
 ##############################################
 # FRONTEND DEPLOYMENT INFORMATION
 ##############################################

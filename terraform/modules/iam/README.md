@@ -1,9 +1,9 @@
 ## Requirements
 
-| Name      | Version  |
-| --------- | -------- |
-| terraform | >= 1.8.0 |
-| aws       | ~> 5.0.0 |
+| Name      | Version   |
+| --------- | --------- |
+| terraform | >= 1.8.0  |
+| aws       | ~> 5.80.0 |
 
 ## Providers
 

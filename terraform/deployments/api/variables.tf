@@ -26,13 +26,7 @@ variable "nickname" {
 }
 
 # API Gateway
-variable "swagger_file" {
-  type        = string
-  default     = "swagger.yaml"
-  description = "The path of Swagger specification of API Gateway Rest API"
-}
-
-variable "log_retention_days" {
+variable "retention_in_days" {
   type        = number
   default     = 30
   description = <<EOF
@@ -42,22 +36,10 @@ variable "log_retention_days" {
 }
 
 # Lambda Functions
-variable "lambda_function_memory_size" {
-  type        = number
-  description = "The memory size of Lambda function"
-  default     = 128
-}
-
-variable "lambda_function_timeout" {
-  type        = number
-  description = "The timeout of Lambda function"
-  default     = 10
-}
-
-variable "lambda_function_runtime" {
+variable "runtime" {
   type        = string
   description = "The runtime of Lambda function"
-  default     = "python3.10"
+  default     = "python3.12"
 }
 
 variable "architecture" {

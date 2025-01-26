@@ -4,12 +4,11 @@
 tags = {
   environment = "prod"
   emails      = "group@example.com"
-  application = "todo-demo"
-  nickname    = "todo"
+  nickname    = "sls-template"
   createdby   = "scaffolding-serverless-project-on-aws"
 }
 environment = "prod"
-nickname    = "todo"
+nickname    = "sls-template"
 
 ##############################################
 # COMMON INFRA DEPLOYMENT INFORMATION

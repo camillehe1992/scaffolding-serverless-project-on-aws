@@ -1,17 +1,17 @@
 ## Requirements
 
-| Name      | Version  |
-| --------- | -------- |
-| terraform | >= 1.8.0 |
-| archive   | ~> 2.4.1 |
-| aws       | ~> 5.0.0 |
+| Name      | Version   |
+| --------- | --------- |
+| terraform | >= 1.8.0  |
+| archive   | ~> 2.4.1  |
+| aws       | ~> 5.80.0 |
 
 ## Providers
 
-| Name    | Version  |
-| ------- | -------- |
-| archive | ~> 2.4.1 |
-| aws     | ~> 5.0.0 |
+| Name    | Version   |
+| ------- | --------- |
+| archive | ~> 2.4.1  |
+| aws     | ~> 5.80.0 |
 
 ## Modules
 

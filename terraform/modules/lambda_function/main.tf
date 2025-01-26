@@ -1,4 +1,4 @@
-# https://registry.terraform.io/providers/hashicorp/aws/5.0.0/docs/resources/cloudwatch_log_group
+# https://registry.terraform.io/providers/hashicorp/aws/lastest/docs/resources/cloudwatch_log_group
 resource "aws_cloudwatch_log_group" "this" {
   name              = "/aws/lambda/${aws_lambda_function.this.function_name}"
   retention_in_days = var.retention_in_days
@@ -6,11 +6,18 @@ resource "aws_cloudwatch_log_group" "this" {
   tags = var.tags
 }
 
-# https://registry.terraform.io/providers/hashicorp/aws/5.0.0/docs/resources/lambda_function
+data "archive_file" "this" {
+  type        = "zip"
+  source_file = var.source_file
+  source_dir  = var.source_dir
+  output_path = var.output_path
+}
+
+# https://registry.terraform.io/providers/hashicorp/aws/lastest/docs/resources/lambda_function
 resource "aws_lambda_function" "this" {
   depends_on = [data.archive_file.this]
 
-  function_name    = "${var.resource_prefix}${var.function_name}"
+  function_name    = var.function_name
   description      = var.description
   role             = var.role_arn
   handler          = var.handler
@@ -34,7 +41,7 @@ resource "aws_lambda_function" "this" {
   tags = var.tags
 }
 
-# https://registry.terraform.io/providers/hashicorp/aws/5.0.0/docs/resources/lambda_permission
+# https://registry.terraform.io/providers/hashicorp/aws/lastest/docs/resources/lambda_permission
 resource "aws_lambda_permission" "this" {
   for_each = var.lambda_permissions
 

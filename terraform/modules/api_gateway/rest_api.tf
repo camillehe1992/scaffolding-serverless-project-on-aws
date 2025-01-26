@@ -3,7 +3,7 @@ resource "aws_api_gateway_rest_api" "this" {
     invoke_arn = var.invoke_arn
   })
 
-  name        = "${var.resource_prefix}${var.name}"
+  name        = var.rest_api_name
   description = var.description
   tags        = var.tags
 
@@ -26,8 +26,8 @@ resource "aws_api_gateway_deployment" "this" {
 }
 
 resource "aws_cloudwatch_log_group" "this" {
-  name              = "API-Gateway-Execution-Logs_${aws_api_gateway_rest_api.this.id}/${var.stage_name}"
-  retention_in_days = var.log_retention_days
+  name              = "/aws/apigatewaty/${aws_api_gateway_rest_api.this.name}/${var.stage_name}"
+  retention_in_days = var.retention_in_days
 
   tags = var.tags
 }

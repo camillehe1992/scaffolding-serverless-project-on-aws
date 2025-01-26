@@ -4,12 +4,6 @@ variable "tags" {
   description = "The key value pairs apply as tags to all resources in the module"
 }
 
-variable "resource_prefix" {
-  type        = string
-  default     = ""
-  description = "The prefix of the IAM role name"
-}
-
 variable "role_name" {
   type        = string
   default     = "LambdaExecutionRole"
@@ -18,7 +12,7 @@ variable "role_name" {
 
 variable "role_description" {
   type        = string
-  default     = ""
+  default     = "The IAM role that grants the function permission to access AWS services and resources"
   description = "The description of IAM role"
 }
 
@@ -34,14 +28,14 @@ variable "aws_managed_policy_arns" {
   description = "A set of AWS managed policy ARN"
 }
 
-variable "customized_policies" {
-  type        = map(string)
-  default     = {}
-  description = "A map of JSON format of IAM policy"
+variable "customized_policy_json" {
+  type        = string
+  default     = ""
+  description = "Policy document. This is a JSON formatted string."
 }
 
-variable "has_iam_instance_profile" {
+variable "enable_iam_instance_profile" {
   type        = bool
   default     = false
-  description = "If to create instance profile for the role"
+  description = "Whether to create instance profile for the role or not"
 }

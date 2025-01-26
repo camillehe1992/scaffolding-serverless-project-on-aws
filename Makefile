@@ -10,7 +10,7 @@ MAKE ?= make
 APP_VERSION := $(shell cat VERSION.txt)
 DEPLOYMENT := api
 ENVIRONMENT := dev
-NICKNAME := todo
+NICKNAME := sls-template
 
 ifdef AWS_PROFILE
 AWS_PROFILE := $(AWS_PROFILE)
@@ -77,11 +77,12 @@ pre-check:
 
 init: pre-check
 	$(info [*] Init Terrafrom Infra)
-	@cd $(TF_ROOT_PATH) && terraform init -reconfigure \
+	@cd $(TF_ROOT_PATH) && terraform init -reconfigure -upgrade \
 		-backend-config="bucket=$(STATE_BUCKET)" \
 		-backend-config="region=$(AWS_REGION)" \
 		-backend-config="profile=$(AWS_PROFILE)" \
-		-backend-config="key=$(NICKNAME)/$(ENVIRONMENT)/$(AWS_REGION)/$(DEPLOYMENT).tfstate"
+		-backend-config="key=$(NICKNAME)/$(ENVIRONMENT)/$(AWS_REGION)/$(DEPLOYMENT).tfstate" \
+		-backend-config="encrypt=true"
 
 plan: init
 	$(info [*] Plan Terrafrom Infra)
@@ -97,6 +98,7 @@ apply:
 
 plan-apply: init
 	@cd $(TF_ROOT_PATH) && terraform plan $(OPTIONS) && terraform apply tfplan
+
 
 destroy-apply: init
 	@cd $(TF_ROOT_PATH) && terraform plan -destroy $(OPTIONS) && terraform apply tfplan

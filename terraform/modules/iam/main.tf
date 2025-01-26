@@ -1,36 +1,31 @@
 resource "aws_iam_role" "this" {
-  name               = "${var.resource_prefix}${var.role_name}"
+  name               = var.role_name
   description        = var.role_description
   assume_role_policy = data.aws_iam_policy_document.ecs_tasks_assume_role_policy.json
 
   tags = var.tags
 }
 
-resource "aws_iam_role_policy_attachment" "managed" {
+resource "aws_iam_role_policy_attachment" "aws_managed" {
   for_each = var.aws_managed_policy_arns
 
   role       = aws_iam_role.this.name
   policy_arn = each.key
 }
 
-resource "aws_iam_policy" "this" {
-  for_each = var.customized_policies
-
-  name   = "${aws_iam_role.this.name}-${each.key}"
-  policy = each.value
-
-  tags = var.tags
+resource "aws_iam_policy" "customized" {
+  name   = "${aws_iam_role.this.name}-customized"
+  policy = var.customized_policy_json
+  tags   = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "customized" {
-  for_each = aws_iam_policy.this
-
   role       = aws_iam_role.this.name
-  policy_arn = each.value.arn
+  policy_arn = aws_iam_policy.customized.arn
 }
 
 resource "aws_iam_instance_profile" "this" {
-  count = var.has_iam_instance_profile ? 1 : 0
+  count = var.enable_iam_instance_profile ? 1 : 0
   name  = aws_iam_role.this.name
   role  = aws_iam_role.this.name
 }

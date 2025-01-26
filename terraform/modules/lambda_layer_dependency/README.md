@@ -1,11 +1,11 @@
 ## Requirements
 
-| Name      | Version  |
-| --------- | -------- |
-| terraform | >= 1.8.0 |
-| archive   | ~> 2.4.1 |
-| aws       | ~> 5.0.0 |
-| null      | ~> 3.2.2 |
+| Name      | Version   |
+| --------- | --------- |
+| terraform | >= 1.8.0  |
+| archive   | ~> 2.4.1  |
+| aws       | ~> 5.80.0 |
+| null      | ~> 3.2.2  |
 
 ## Providers
 

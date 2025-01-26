@@ -28,10 +28,10 @@ variable "nickname" {
 # IAM Roles and Policies
 
 # Lambda Layers
-variable "runtimes" {
-  type        = list(string)
-  default     = ["python3.10"]
-  description = "List of compatible runtimes of the Lambda layer, e.g. [python3.10]"
+variable "runtime" {
+  type        = string
+  description = "The runtime of Lambda layer"
+  default     = "python3.12"
 }
 
 variable "architecture" {
