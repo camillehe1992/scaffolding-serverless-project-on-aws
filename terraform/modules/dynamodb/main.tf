@@ -1,7 +1,7 @@
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/dynamodb_table
 resource "aws_dynamodb_table" "this" {
-  name           = "${var.resource_prefix}${var.name}"
+  name           = var.table_name
   billing_mode   = var.billing_mode
   read_capacity  = var.read_capacity
   write_capacity = var.write_capacity

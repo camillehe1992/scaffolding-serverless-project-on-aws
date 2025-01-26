@@ -1,28 +1,20 @@
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/dynamodb_table
 module "todos_table" {
   source = "../../modules/dynamodb"
+  tags   = var.tags
 
-  resource_prefix = "${var.environment}-${var.nickname}-"
-  tags            = var.tags
-
-  name           = "todos"
-  billing_mode   = var.billing_mode
-  read_capacity  = 1
-  write_capacity = 1
-  hash_key       = "id"
-  range_key      = "title"
+  table_name   = "${var.environment}-${var.nickname}-todos"
+  billing_mode = var.billing_mode
+  hash_key     = "id"
+  range_key    = "title"
 }
 
 module "users_table" {
   source = "../../modules/dynamodb"
+  tags   = var.tags
 
-  resource_prefix = "${var.environment}-${var.nickname}-"
-  tags            = var.tags
-
-  name           = "users"
-  billing_mode   = var.billing_mode
-  read_capacity  = 1
-  write_capacity = 1
-  hash_key       = "id"
-  range_key      = "email"
+  table_name   = "${var.environment}-${var.nickname}-users"
+  billing_mode = var.billing_mode
+  hash_key     = "id"
+  range_key    = "email"
 }

@@ -4,15 +4,8 @@ variable "tags" {
   description = "The key value pairs apply as tags to all resources in the module"
 }
 
-variable "resource_prefix" {
+variable "table_name" {
   type        = string
-  default     = ""
-  description = "The prefix of resource name"
-}
-
-variable "name" {
-  type        = string
-  default     = ""
   description = "The table name"
 }
 
