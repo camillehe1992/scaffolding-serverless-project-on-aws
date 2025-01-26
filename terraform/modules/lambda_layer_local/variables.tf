@@ -33,11 +33,6 @@ variable "compatible_runtimes" {
 }
 
 variable "compatible_architectures" {
-  type    = string
-  default = "arm64"
-  validation {
-    condition     = contains(["arm64", "x86_64"], var.compatible_architectures)
-    error_message = "The architecture value must be arm64 or x86_64"
-  }
-  description = "The type of computer processor that Lambda uses to run the function"
+  type        = list(string)
+  description = "List of type of computer processor that Lambda uses to run the function"
 }

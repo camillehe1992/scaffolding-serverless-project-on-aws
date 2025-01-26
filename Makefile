@@ -8,7 +8,7 @@ BASE := $(shell /bin/pwd)
 MAKE ?= make
 
 APP_VERSION := $(shell cat VERSION.txt)
-DEPLOYMENT := api
+DEPLOYMENT := common_infra
 ENVIRONMENT := dev
 NICKNAME := sls-template
 
