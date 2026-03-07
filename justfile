@@ -12,11 +12,13 @@ PROJECT_ROOT := `pwd`
 # Shell to use
 set shell := ["bash", "-uc"]
 
-#export TF_PLUGIN_CACHE_DIR := "~/.terraform.d/plugin-cache"
-
 # ------------------------------------------------------------------------------
 # Helper functions (as recipes)
 # ------------------------------------------------------------------------------
+
+# Show help
+help:
+    @just --list --unsorted
 
 # Get AWS profile from .env or fallback to "app-deployer"
 aws-profile:
@@ -57,12 +59,6 @@ pre-check ENVIRONMENT UNIT:
     echo "[*] Pre-Check - AWS Profile ${PROFILE}"
     AWS_PROFILE=${PROFILE} aws sts get-caller-identity | jq .
 
-# Enable Git hooks and install dependencies
-install:
-    echo "[*] Enable Git Commit Hook & Install project dependencies"
-    pre-commit install
-    pip install -r requirements.txt
-
 # Terragrunt plan
 plan ENVIRONMENT UNIT:
     #!/usr/bin/env bash
@@ -93,15 +89,6 @@ destroy ENVIRONMENT UNIT:
     echo "[*] Terragrunt destroying {{ENVIRONMENT}}/{{UNIT}}"
     cd ${TG_DIR} && AWS_PROFILE=${PROFILE} terragrunt destroy --auto-approve
 
-# Terragrunt output
-output ENVIRONMENT UNIT:
-    #!/usr/bin/env bash
-    PROFILE=$(just aws-profile)
-    TG_DIR=$(just tg-unit-dir {{ENVIRONMENT}} {{UNIT}})
-
-    echo "[*] Terragrunt output for {{ENVIRONMENT}}/{{UNIT}}"
-    cd ${TG_DIR} && AWS_PROFILE=${PROFILE} terragrunt output
-
 # Terragrunt plan-destroy (plan for destruction)
 plan-destroy ENVIRONMENT UNIT:
     #!/usr/bin/env bash
@@ -114,14 +101,14 @@ plan-destroy ENVIRONMENT UNIT:
     echo "[*] Terragrunt planning destruction for {{ENVIRONMENT}}/{{UNIT}}"
     cd ${TG_DIR} && AWS_PROFILE=${PROFILE} terragrunt plan -destroy
 
-# Terragrunt validate
-validate ENVIRONMENT UNIT:
+# Terragrunt output
+output ENVIRONMENT UNIT:
     #!/usr/bin/env bash
     PROFILE=$(just aws-profile)
     TG_DIR=$(just tg-unit-dir {{ENVIRONMENT}} {{UNIT}})
 
-    echo "[*] Terragrunt validating {{ENVIRONMENT}}/{{UNIT}}"
-    cd ${TG_DIR} && AWS_PROFILE=${PROFILE} terragrunt validate
+    echo "[*] Terragrunt output for {{ENVIRONMENT}}/{{UNIT}}"
+    cd ${TG_DIR} && AWS_PROFILE=${PROFILE} terragrunt output
 
 # ------------------------------------------------------------------------------
 # Run-all commands (for multiple units)
@@ -197,10 +184,6 @@ hcl-validate:
     #!/usr/bin/env bash
     terragrunt hcl validate
 
-# Show help
-help:
-    @just --list --unsorted
-
 # Show current settings
 show-settings:
     #!/usr/bin/env bash
@@ -209,33 +192,8 @@ show-settings:
     echo "PROJECT_ROOT: {{PROJECT_ROOT}}"
     echo "AWS_PROFILE: $(just aws-profile)"
 
-# ------------------------------------------------------------------------------
-# Dependencies Layer
-# ------------------------------------------------------------------------------
-
-# Build a Lambda dependencies zip from src/requirements.txt
-deps-zip:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    BUILD_DIR="{{PROJECT_ROOT}}/.build"
-    DEPS_DIR="$BUILD_DIR/dependencies"
-    REQ_FILE="{{PROJECT_ROOT}}/src/requirements.txt"
-    DEPS_ZIP="$BUILD_DIR/dependencies.zip"
-    echo "[*] Build dependencies zip from $REQ_FILE into $DEPS_ZIP"
-    rm -rf "$DEPS_DIR"
-    rm -f "$DEPS_ZIP"
-    mkdir -p "$DEPS_DIR/python"
-    PYTHONDONTWRITEBYTECODE=1 python3 -m pip install --no-cache-dir -r "$REQ_FILE" -t "$DEPS_DIR/python"
-    find "$DEPS_DIR" -type d -name "__pycache__" -prune -exec rm -rf {} +
-    cd "$DEPS_DIR" && zip -r -q "$DEPS_ZIP" python
-    ls -lh "$DEPS_ZIP"
-
-# ------------------------------------------------------------------------------
-# Documentation generation commands
-# ------------------------------------------------------------------------------
-
 # Generate documentation for all modules and units under source directory
-docs:
+gen-docs:
     #!/usr/bin/env bash
     echo "[*] Generating documentation for modules and units under source directory"
 
@@ -272,10 +230,31 @@ docs:
 
     echo "[*] Documentation generation completed!"
 
-# Clean up all generated documentation
-clean-docs:
+# ------------------------------------------------------------------------------
+# Utility commands for Lambda Source Code
+# ------------------------------------------------------------------------------
+
+# Build a Lambda dependencies zip from src/requirements.txt
+deps-zip:
     #!/usr/bin/env bash
-    echo "[*] Cleaning up generated documentation"
-    find {{PROJECT_ROOT}}/source/modules -name "README.md" -delete
-    find {{PROJECT_ROOT}}/source/units -name "README.md" -delete
-    echo "[*] Documentation cleaned up!"
+    set -euo pipefail
+    BUILD_DIR="{{PROJECT_ROOT}}/.build"
+    DEPS_DIR="$BUILD_DIR/dependencies"
+    REQ_FILE="{{PROJECT_ROOT}}/src/requirements.txt"
+    DEPS_ZIP="$BUILD_DIR/dependencies.zip"
+    echo "[*] Build dependencies zip from $REQ_FILE into $DEPS_ZIP"
+    rm -rf "$DEPS_DIR"
+    rm -f "$DEPS_ZIP"
+    mkdir -p "$DEPS_DIR/python"
+    PYTHONDONTWRITEBYTECODE=1 python3 -m pip install --no-cache-dir -r "$REQ_FILE" -t "$DEPS_DIR/python"
+    find "$DEPS_DIR" -type d -name "__pycache__" -prune -exec rm -rf {} +
+    cd "$DEPS_DIR" && zip -r -q "$DEPS_ZIP" python
+    ls -lh "$DEPS_ZIP"
+
+# Import sample data (users and todos) to DynamoDB Tables
+import-ddb:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "[*] Importing data to DynamoDB"
+    PROFILE=$(just aws-profile)
+    AWS_PROFILE=${PROFILE} python3 {{PROJECT_ROOT}}/data/import_to_dynamodb.py
