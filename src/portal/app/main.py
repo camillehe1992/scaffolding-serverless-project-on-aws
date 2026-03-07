@@ -14,7 +14,7 @@ from .routers import todo, system, user
 # Enable Swagger UI
 app = APIGatewayRestResolver(enable_validation=True)
 app.enable_swagger(
-    version=os.getenv("APP_VERSION"),
+    version=os.getenv("APP_VERSION", "1.0.0"),
     title="Swagger for Todo API",
     tags=["System", "Todo", "User"],
 )

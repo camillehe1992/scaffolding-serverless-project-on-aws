@@ -1,11 +1,14 @@
--r ./src/portal/requirements.txt
+-r requirements.txt
 
-# The version of pydantic in lambda layer AWSLambdaPowertoolsPythonV3-python312
+# These dependencies are installed in lambda layer AWSLambdaPowertoolsPythonV3-python312,
+# only need to install them in local development environment
 aws-lambda-powertools==3.4.1
 boto3
 botocore
-pydantic==4.12.2
+pydantic==2.12.2
 python-dotenv==1.0.1
+
+# These dependencies are only needed for local testing
 pre-commit
 pylint
 pytest

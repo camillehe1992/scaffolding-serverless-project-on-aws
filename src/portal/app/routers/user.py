@@ -4,7 +4,7 @@ from aws_lambda_powertools.event_handler.exceptions import NotFoundError
 from typing_extensions import Annotated
 
 from ..logging import logger
-from ..models import User
+from ..models.user import User
 from ..database import UserModel, return_pagination_result
 
 

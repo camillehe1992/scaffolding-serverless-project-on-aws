@@ -1,6 +1,14 @@
+# The python script is used to import the data from the JSON file to the DynamoDB table
+# The JSON file should be in the same directory as the script
+# The JSON file is coverted to the DynamoDB item format and saved in .build directory
+# The script will clear the table before importing the data
+# - todos.json - https://jsonplaceholder.typicode.com/todos
+# - users.json - https://jsonplaceholder.typicode.com/users
+# Usage: just import-ddb
+
 import json
 import uuid
-import boto3
+import boto3  # type: ignore
 from datetime import datetime, timezone
 
 

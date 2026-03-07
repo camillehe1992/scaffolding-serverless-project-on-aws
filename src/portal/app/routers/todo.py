@@ -1,10 +1,11 @@
 from typing import Optional
+from typing_extensions import Annotated
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from aws_lambda_powertools.event_handler.openapi.params import Body, Query
 from aws_lambda_powertools.event_handler.exceptions import NotFoundError
-from typing_extensions import Annotated
 
 from ..logging import logger
+from app.enum import BooleanStr
 from ..models import Todo
 from ..database import TodoModel, return_pagination_result
 
@@ -14,17 +15,16 @@ router = Router()
 @router.get(rule="", tags=["Todo"], summary="Get all todos")
 def get_todos(
     completed: Annotated[
-        Optional[str],
+        Optional[BooleanStr],
         Query(
-            min_length=4,
-            description="Whether the todo is completed or not. true or false",
+            default=None,
+            description="Filter todos by completed status. true or false. No filter if not provided.",
         ),
-    ] = None
+    ] = None,
 ) -> list[Todo]:
     if completed is not None:
         response = TodoModel.scan(
-            filter_condition=TodoModel.completed
-            == (completed in set(["True", "true", True])),
+            filter_condition=TodoModel.completed == (completed == BooleanStr.TRUE),
         )
     else:
         response = TodoModel.scan()

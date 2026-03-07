@@ -2,11 +2,15 @@ from enum import Enum
 
 
 class ResponseMessage(Enum):
+    """Response message enum"""
+
     SUCCESS = "success"
     FAILED = "failed"
 
 
 class LOG_LEVEL(Enum):
+    """Log level enum"""
+
     DEBUG = "DEBUG"
     INFO = "INFO"
     WARN = "WARNING"
@@ -14,7 +18,15 @@ class LOG_LEVEL(Enum):
 
 
 class Environment(Enum):
+    """Environment enum"""
+
     LOCAL = "local"
     DEVELOPMENT = "dev"
-    TEST = "test"
     PRODUCTION = "prod"
+
+
+class BooleanStr(str, Enum):
+    """Boolean string enum"""
+
+    TRUE = "true"
+    FALSE = "false"

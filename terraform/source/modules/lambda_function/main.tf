@@ -11,6 +11,15 @@ data "archive_file" "this" {
   source_file = var.source_file
   source_dir  = var.source_dir
   output_path = var.output_path
+  excludes = [
+    "__pycache__",
+    "*/__pycache__",
+    "**/__pycache__",
+    "**/__pycache__/**",
+    "*.pyc",
+    "*.pyo",
+    "*.pyd"
+  ]
 }
 
 # https://registry.terraform.io/providers/hashicorp/aws/lastest/docs/resources/lambda_function

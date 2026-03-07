@@ -25,11 +25,10 @@ def system_info() -> SystemInfo:
     return Response(
         status_code=200,
         content_type=content_types.APPLICATION_JSON,
-        body={
-            "version": os.getenv("APP_VERSION"),
-            "service": os.getenv("POWERTOOLS_SERVICE_NAME"),
-            "nickname": os.getenv("NICKNAME"),
-            "environment": os.getenv("ENVIRONMENT"),
-            "deployed_at": os.getenv("DEPLOYED_AT"),
-        },
+        body=SystemInfo(
+            version=os.getenv("APP_VERSION", "1.0.0").replace("\n", ""),
+            service=os.getenv("POWERTOOLS_SERVICE_NAME", "slstemplate"),
+            application_name=os.getenv("APPLICATION_NAME", "slstemplate"),
+            environment=os.getenv("ENVIRONMENT", "dev"),
+        ),
     )

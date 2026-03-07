@@ -53,9 +53,7 @@ include "unit_api" {
 
 dependency "security" {
   config_path = "../security"
-
   mock_outputs = {
     lambda_execution_role_arn = "arn:aws:iam::123456789012:role/lambda-execution-role"
-    dependencies_layer_arn    = "arn:aws:lambda:us-east-1:123456789012:layer:dependencies-layer:1"
   }
 }
