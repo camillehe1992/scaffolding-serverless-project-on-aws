@@ -17,10 +17,16 @@ inputs = merge(
     env              = local.env
     tags             = local.tags
     # Lambda Function
-    retention_in_days      = 30
-    log_level              = "DEBUG"
-    role_arn               = dependency.security.outputs.lambda_execution_role_arn
-    dependencies_layer_arn = dependency.security.outputs.dependencies_layer_arn
+    log_retention_in_days = 30
+    lambda_environment_variables = {
+      APP_VERSION             = include.unit_api.locals.app_version
+      APPLICATION_NAME        = local.application_name
+      ENVIRONMENT             = local.env
+      POWERTOOLS_LOG_LEVEL    = "DEBUG"
+      POWERTOOLS_SERVICE_NAME = local.application_name
+    }
+    # Dependency
+    role_arn = dependency.security.outputs.lambda_execution_role_arn
   }
 )
 

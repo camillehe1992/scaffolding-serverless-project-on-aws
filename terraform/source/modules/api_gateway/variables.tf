@@ -1,18 +1,19 @@
 variable "tags" {
   type        = map(string)
   description = "The key value pairs we want to apply as tags to the resources contained in this module"
+  default     = {}
 }
 
 # API Gateways
 variable "endpoint_type" {
   type        = string
-  default     = "EGDE"
   description = "The endpoint type. Must be one of REGIONAL or EGDE"
+  default     = "REGIONAL"
 }
 variable "swagger_file" {
   type        = string
-  default     = "swagger.yaml"
   description = "The relative path of Swagger file according to current working directory"
+  default     = "swagger.yaml"
 }
 
 variable "invoke_arn" {
@@ -33,11 +34,13 @@ variable "stage_name" {
 variable "rest_api_name" {
   type        = string
   description = "The name of API Gateway Rest API"
+  default     = "serverless-project-portal"
 }
 
 variable "retention_in_days" {
   type        = number
   description = "Specifies the number of days you want to retain log events in the specific api gateway log group"
+  default     = 30
 }
 
 # variable "vpc_endpoint_id" {
