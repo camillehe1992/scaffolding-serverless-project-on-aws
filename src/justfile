@@ -1,0 +1,21 @@
+# justfile - Task runner for running python code in src folder locally.
+# Usage: just task
+# Example: just
+
+# Default values (can be overridden)
+ENVIRONMENT := "dev"
+UNIT := "security"
+
+# Project root directory (where the justfile is located)
+PROJECT_ROOT := `pwd`
+
+# Shell to use
+set shell := ["bash", "-uc"]
+
+# ------------------------------------------------------------------------------
+# Helper functions (as recipes)
+# ------------------------------------------------------------------------------
+
+# Show help
+help:
+    @just --list --unsorted

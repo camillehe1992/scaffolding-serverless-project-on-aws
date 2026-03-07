@@ -4,7 +4,7 @@ from aws_lambda_powertools.event_handler import (
     content_types,
 )
 from aws_lambda_powertools.event_handler.api_gateway import Router
-from ..models import SystemInfo
+from app.models import SystemInfo
 
 router = Router()
 

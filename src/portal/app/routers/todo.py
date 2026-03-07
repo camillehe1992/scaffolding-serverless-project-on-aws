@@ -1,13 +1,13 @@
-from typing import Optional
+from typing import Optional, List
 from typing_extensions import Annotated
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from aws_lambda_powertools.event_handler.openapi.params import Body, Query
 from aws_lambda_powertools.event_handler.exceptions import NotFoundError
 
-from ..logging import logger
+from app.database import TodoModel, return_pagination_result
 from app.enum import BooleanStr
-from ..models import Todo
-from ..database import TodoModel, return_pagination_result
+from app.logging import logger
+from app.models import Todo
 
 router = Router()
 
@@ -17,11 +17,10 @@ def get_todos(
     completed: Annotated[
         Optional[BooleanStr],
         Query(
-            default=None,
-            description="Filter todos by completed status. true or false. No filter if not provided.",
+            description="Filter todos by completed status. true or false. No filter applied if not provided.",
         ),
     ] = None,
-) -> list[Todo]:
+) -> List[Todo]:
     if completed is not None:
         response = TodoModel.scan(
             filter_condition=TodoModel.completed == (completed == BooleanStr.TRUE),
@@ -38,7 +37,7 @@ def get_todo_by_id(id: str) -> Todo:
     try:
         response = TodoModel.query(id)
         todos = return_pagination_result(response)
-        logger.info(f"Retrieved todo {id}", user=todos[0])
+        logger.info(f"Retrieved todo {id}", todo=todos[0])
         return todos[0]
     except TodoModel.DoesNotExist as exc:
         logger.error(f"Todo {id} does not exist", exc_info=exc)

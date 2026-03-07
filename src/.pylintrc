@@ -13,7 +13,7 @@ ignore=CVS
 
 # Add files or directories matching the regex patterns to the ignore-list. The
 # regex matches against paths and can be in Posix or Windows format.
-ignore-paths=src/core_library
+; ignore-paths=src/core_library
 
 # Files or directories matching the regex patterns are skipped. The regex
 # matches against base names, not paths.
@@ -55,7 +55,7 @@ unsafe-load-any-extension=no
 extension-pkg-allow-list=
 
 # Minimum supported python version
-py-version = 3.9.0
+py-version = 3.12.0
 
 # Control the amount of potential inferred values when inferring a single
 # object. This can help the performance when dealing with large functions or

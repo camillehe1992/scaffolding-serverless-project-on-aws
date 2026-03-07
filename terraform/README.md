@@ -94,6 +94,13 @@ Use Cases:
 	just destroy-all dev
 	```
 
+5. Install Lambda dependencies and zip into `./build/dependencies.zip` for dev environment:
+   > Run below recipe before running recipe `just plan dev api`.
+
+	```bash
+	just deps-zip
+	```
+
 ## Formating & Linting & Documentation Generation
 
 we also provide some `just` recipes to help you with this process.

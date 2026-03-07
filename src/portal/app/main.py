@@ -8,14 +8,14 @@ from aws_lambda_powertools.event_handler.exceptions import NotFoundError
 from aws_lambda_powertools.logging import correlation_paths
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
-from .logging import logger
-from .routers import todo, system, user
+from app.logging import logger
+from app.routers import todo, system, user
 
 # Enable Swagger UI
 app = APIGatewayRestResolver(enable_validation=True)
 app.enable_swagger(
     version=os.getenv("APP_VERSION", "1.0.0"),
-    title="Swagger for Todo API",
+    title="Swagger for Todos/Users API",
     tags=["System", "Todo", "User"],
 )
 

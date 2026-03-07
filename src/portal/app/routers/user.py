@@ -1,18 +1,18 @@
+from typing import List
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from aws_lambda_powertools.event_handler.openapi.params import Body
 from aws_lambda_powertools.event_handler.exceptions import NotFoundError
 from typing_extensions import Annotated
 
-from ..logging import logger
-from ..models.user import User
-from ..database import UserModel, return_pagination_result
-
+from app.database import UserModel, return_pagination_result
+from app.logging import logger
+from app.models.user import User
 
 router = Router()
 
 
 @router.get(rule="", tags=["User"], summary="Get all users")
-def get_users() -> list[User]:
+def get_users() -> List[User]:
     response = UserModel.scan()
     users = return_pagination_result(response)
     logger.info("Get users", users=users)

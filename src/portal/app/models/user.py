@@ -1,4 +1,5 @@
 # pylint: disable=no-name-in-module
+from datetime import datetime
 from uuid import uuid4
 from pydantic import BaseModel, Field
 
@@ -44,9 +45,13 @@ class User(BaseModel):
     phone: str = Field(description="User phone", example="1-770-736-8031 x56442")
     website: str = Field(description="User website", example="hildegard.org")
     company: Company = Field(description="User company")
-    created_at: str = Field(
-        description="User created datetime", example="2023-01-01T00:00:00Z"
+    created_at: datetime = Field(
+        description="User created datetime",
+        default_factory=datetime.now,
+        example="2023-01-01T00:00:00Z",
     )
-    updated_at: str = Field(
-        description="User updated datetime", example="2023-01-01T00:00:00Z"
+    updated_at: datetime = Field(
+        description="User updated datetime",
+        default_factory=datetime.now,
+        example="2023-01-01T00:00:00Z",
     )

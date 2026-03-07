@@ -1,8 +1,7 @@
 # pylint: disable=no-name-in-module
-import datetime
+from datetime import datetime
 from uuid import uuid4
 from pydantic import BaseModel, Field
-from app.enum import BooleanStr
 
 
 class Todo(BaseModel):
@@ -15,12 +14,17 @@ class Todo(BaseModel):
         description="User ID", example="bfc7adb5-fd97-473d-a10f-29cf8b48811d"
     )
     title: str = Field(description="Todo title", example="delectus aut autem")
-    completed: BooleanStr = Field(
-        description="Todo completed status", default=BooleanStr.FALSE
+    completed: bool = Field(
+        description="Todo completed status",
+        examples=[True, False],
     )
-    created_at: datetime.datetime = Field(
-        description="Todo created datetime", default_factory=datetime.datetime.now
+    created_at: datetime = Field(
+        description="Todo created datetime",
+        default_factory=datetime.now,
+        example="2023-01-01T00:00:00Z",
     )
-    updated_at: datetime.datetime = Field(
-        description="Todo updated datetime", default_factory=datetime.datetime.now
+    updated_at: datetime = Field(
+        description="Todo updated datetime",
+        default_factory=datetime.now,
+        example="2023-01-01T00:00:00Z",
     )

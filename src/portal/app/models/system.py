@@ -9,5 +9,7 @@ class SystemInfo(BaseModel):
     application_name: str = Field(default="slstemplate", description="Application name")
     environment: str = Field(default="dev", description="Application environment")
     current_datetime: datetime = Field(
-        default=datetime.now(timezone.utc), description="Current datetime"
+        default=datetime.now(timezone.utc),
+        description="Current datetime",
+        example="2023-01-01T00:00:00Z",
     )
