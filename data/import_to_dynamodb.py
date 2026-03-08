@@ -92,6 +92,12 @@ def convert_users_data(users_data):
         # Update the id field with UUID
         user["id"] = new_uuid
 
+        # Remove unused fields
+        if user.get("username"):
+            del user["username"]
+        if user.get("address"):
+            del user["address"]
+
         # Add timestamps using timezone.utc
         current_time = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z")
         user["created_at"] = current_time
@@ -295,7 +301,7 @@ def main():
     # Import todos
     print("\n" + "-" * 30)
     print("Importing to todos table...")
-    import_to_dynamodb(todos_table, converted_todos)
+    # import_to_dynamodb(todos_table, converted_todos)
 
     print("\n" + "=" * 50)
     print("Import completed successfully!")

@@ -21,7 +21,7 @@ def get_todos(completed: Optional[BooleanStr] = None) -> List[Todo]:
     else:
         response = TodoModel.scan()
     todos = return_pagination_result(response)
-    logger.info("Get todos", todos=todos)
+    logger.info(f"Get todos, count: {len(todos)}", todos=todos)
     return todos
 
 
@@ -65,8 +65,8 @@ def update_todo(id: str, todo: Annotated[Todo, Body()]) -> Todo:
         )
         return current_todo.attribute_values
     except TodoModel.DoesNotExist as exc:
-        logger.error("Todo does not exist", todo_data=todo_data, exc_info=exc)
-        raise NotFoundError("Todo does not exist")
+        logger.error(f"Todo {id} does not exist", todo_data=todo_data, exc_info=exc)
+        raise NotFoundError(f"Todo {id} does not exist")
 
 
 @router.delete(rule="/<id>", tags=["Todo"], summary="Delete a todo by id")
@@ -79,5 +79,5 @@ def delete_todo_by_id(id: str) -> dict:
         logger.info(f"Todo {todo.id} is deleted successfully", response=response)
         return {"message": f"Todo {todo.id} is deleted successfully"}
     except TodoModel.DoesNotExist:
-        logger.error("Todo does not exist", todo_data=todo)
-        raise NotFoundError("Todo does not exist")
+        logger.error(f"Todo {id} does not exist", todo_data=todo)
+        raise NotFoundError(f"Todo {id} does not exist")

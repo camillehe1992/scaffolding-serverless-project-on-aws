@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+import uuid
 from pynamodb.models import Model
 from pynamodb.attributes import UnicodeAttribute, BooleanAttribute, MapAttribute
 from app.settings import Config
@@ -12,32 +14,11 @@ class TodoModel(Model):
         table_name = Config.todos_table_name
 
     id = UnicodeAttribute(hash_key=True)
-    user_id = UnicodeAttribute(null=False)
+    user_id = UnicodeAttribute(null=True)
     title = UnicodeAttribute(range_key=True)
-    completed = BooleanAttribute(null=False)
-    created_at = UnicodeAttribute(null=False)
-    updated_at = UnicodeAttribute(null=False)
-
-
-class Geo(MapAttribute):
-    """
-    Geo map attribute
-    """
-
-    lat = UnicodeAttribute(null=False)
-    lng = UnicodeAttribute(null=False)
-
-
-class Address(MapAttribute):
-    """
-    Address map attribute
-    """
-
-    street = UnicodeAttribute(null=False)
-    suite = UnicodeAttribute(null=False)
-    city = UnicodeAttribute(null=False)
-    zipcode = UnicodeAttribute(null=False)
-    geo = Geo(null=False)
+    completed = BooleanAttribute(null=False, default=False)
+    created_at = UnicodeAttribute(null=False, default="")
+    updated_at = UnicodeAttribute(null=False, default="")
 
 
 class Company(MapAttribute):
@@ -45,9 +26,9 @@ class Company(MapAttribute):
     Company map attribute
     """
 
-    name = UnicodeAttribute(null=False)
-    catchPhrase = UnicodeAttribute(null=False)
-    bs = UnicodeAttribute(null=False)
+    name = UnicodeAttribute(null=False, default="")
+    catchPhrase = UnicodeAttribute(null=False, default="")
+    bs = UnicodeAttribute(null=False, default="")
 
 
 class UserModel(Model):
@@ -58,11 +39,17 @@ class UserModel(Model):
     class Meta:
         table_name = Config.users_table_name
 
-    id = UnicodeAttribute(hash_key=True)
+    id = UnicodeAttribute(hash_key=True, default_for_new=lambda: uuid.uuid4().hex)
+    email = UnicodeAttribute(null=True, range_key=True)
     name = UnicodeAttribute(null=True)
-    email = UnicodeAttribute(range_key=True)
-    username = UnicodeAttribute(null=False)
-    address = Address(null=False)
-    phone = UnicodeAttribute(null=False)
-    website = UnicodeAttribute(null=False)
-    company = Company(null=False)
+    phone = UnicodeAttribute(null=False, default="")
+    website = UnicodeAttribute(null=False, default="")
+    company = Company(null=False, default=dict)
+    created_at = UnicodeAttribute(
+        null=False,
+        default_for_new=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+    )
+    updated_at = UnicodeAttribute(
+        null=False,
+        default_for_new=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+    )

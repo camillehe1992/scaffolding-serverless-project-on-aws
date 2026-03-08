@@ -3,19 +3,6 @@ from uuid import uuid4
 from pydantic import BaseModel, Field
 
 
-class Geo(BaseModel):
-    lat: str = Field(description="User latitude", example="37.7749")
-    lng: str = Field(description="User longitude", example="-122.4194")
-
-
-class Address(BaseModel):
-    street: str = Field(description="User street address", example="Kulas Light")
-    suite: str = Field(description="User suite address", example="Apt. 556")
-    city: str = Field(description="User city", example="Gwenborough")
-    zipcode: str = Field(description="User zipcode", example="92998-3874")
-    geo: Geo = Field(description="User geographic coordinates")
-
-
 class Company(BaseModel):
     """
     Company map attribute
@@ -31,26 +18,48 @@ class Company(BaseModel):
     )
 
 
+class UserCreated(BaseModel):
+    email: str = Field(description="User email", example="Sincere@april.biz")
+    name: str = Field(description="User name", example="Leanne Graham")
+
+
+class UserUpdated(BaseModel):
+    name: str = Field(description="User name", example="Leanne Graham")
+    phone: str = Field(
+        description="User phone", example="1-770-736-8031 x56442", nullable=True
+    )
+    website: str = Field(
+        description="User website", example="hildegard.org", nullable=True
+    )
+    company: Company = Field(description="User company", nullable=True)
+
+
 class User(BaseModel):
     id_: str = Field(
         alias="id",
         default_factory=lambda: uuid4().hex,
         examples=["bfc7adb5-fd97-473d-a10f-29cf8b48811d"],
     )
-    name: str = Field(description="User name", example="Leanne Graham")
-    username: str = Field(description="User username", example="Bret")
-    email: str = Field(description="User email", example="Sincere@april.biz")
-    address: Address = Field(description="User address")
-    phone: str = Field(description="User phone", example="1-770-736-8031 x56442")
-    website: str = Field(description="User website", example="hildegard.org")
-    company: Company = Field(description="User company")
+    email: str = Field(
+        description="User email", example="Sincere@april.biz", nullable=False
+    )
+    name: str = Field(description="User name", example="Leanne Graham", nullable=False)
+    phone: str = Field(
+        description="User phone", example="1-770-736-8031 x56442", nullable=True
+    )
+    website: str = Field(
+        description="User website", example="hildegard.org", nullable=True
+    )
+    company: Company = Field(description="User company", nullable=True)
     created_at: datetime = Field(
         description="User created datetime",
         default_factory=datetime.now,
         example="2023-01-01T00:00:00Z",
+        nullable=True,
     )
     updated_at: datetime = Field(
         description="User updated datetime",
         default_factory=datetime.now,
         example="2023-01-01T00:00:00Z",
+        nullable=True,
     )

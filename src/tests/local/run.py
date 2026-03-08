@@ -46,6 +46,8 @@ def run_lambda_local(event_name: str = "get_all_todos"):
     event = events[event_name]
     print(f"Running Lambda locally with event: {event_name}")
     print("Event:", json.dumps(event, indent=2))
+    if event.get("body", {}):
+        event["body"] = json.dumps(event["body"])
 
     # Create mock Lambda context
     class MockContext:

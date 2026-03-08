@@ -11,24 +11,33 @@
     "httpMethod": "POST",
     "body": {
       "email": "allen.walker@example.com",
-      "username": "Allen Walker"
+      "name": "Allen Walker"
     }
   },
-  "get_user": {
+  "get_user_by_id": {
     "resource": "/users/{id}",
-    "path": "/users/060888c3dc2c414486a3d7d7d95493c3",
+    "path": "/users/e897fb72-a40f-4bc5-a4a9-8b903c2cb9cb",
     "httpMethod": "GET",
     "body": null
   },
   "update_user": {
     "resource": "/users/{id}",
-    "path": "/users/060888c3dc2c414486a3d7d7d95493c3",
+    "path": "/users/1e4301a174fa41cf8ff1c9c13cbfd83a",
     "httpMethod": "PUT",
-    "body": null
+    "body": {
+      "name": "Allen Walker",
+      "phone": "1234567890",
+      "website": "https://www.allenwalker.com",
+      "company": {
+        "name": "Allen Walker Inc.",
+        "catchPhrase": "Build the future, one step at a time.",
+        "bs": "innovate, disrupt, and create"
+      }
+    }
   },
   "delete_user": {
     "resource": "/users/{id}",
-    "path": "/users/060888c3dc2c414486a3d7d7d95493c3",
+    "path": "/users/1e4301a174fa41cf8ff1c9c13cbfd83a",
     "httpMethod": "DELETE",
     "body": null
   },
@@ -44,7 +53,7 @@
     "path": "/todos",
     "httpMethod": "POST",
     "body": {
-      "userId": "060888c3dc2c414486a3d7d7d95493c3",
+      "userId": "e897fb72-a40f-4bc5-a4a9-8b903c2cb9cb",
       "title": "Learn Cloud!"
     }
   },
@@ -69,7 +78,7 @@
     "httpMethod": "PUT",
     "body": {
       "id": "29ffdf1d118546b9aab9be9240a18a8e",
-      "userId": "060888c3dc2c414486a3d7d7d95493c3",
+      "userId": "e897fb72-a40f-4bc5-a4a9-8b903c2cb9cb",
       "title": "Learn Python!",
       "completed": true
     }

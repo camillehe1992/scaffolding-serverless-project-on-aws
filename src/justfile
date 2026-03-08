@@ -25,7 +25,7 @@ pre-check:
     echo "[*] Pre-Check - AWS Profile ${PROFILE}"
     AWS_PROFILE=${PROFILE} aws sts get-caller-identity | jq .
 
-# Install all Python dependencies for Lambda function
+# Install all Python dependencies
 install:
     #!/usr/bin/env bash
     @echo "Installing Python dependencies..."
@@ -37,24 +37,27 @@ local-test EVENT_NAME:
     #!/usr/bin/env bash
     echo "Running local integration tests with event- {{EVENT_NAME}}..."
     PROFILE=$(just aws-profile)
-    # Add your local test command here
+
     AWS_PROFILE=${PROFILE} python -m tests.local.run {{EVENT_NAME}}
 
 # Run unit tests (tests that don't require external dependencies)
 unit-test:
     #!/usr/bin/env bash
-    @echo "Running unit tests..."
-    # Add your unit test command here
-    # Example: python -m pytest tests/unit/ -v
+    echo "Running unit tests..."
     python -m pytest tests/unit/ -v
+    coverage run -m pytest ./src/tests/unit/
+    coverage report -m
 
 # Run end-to-end tests (tests that hit actual AWS services)
 e2e-test:
     #!/usr/bin/env bash
     @echo "Running end-to-end tests..."
-    # Add your e2e test command here
-    # Example: python -m pytest tests/e2e/ -v
     python -m pytest tests/e2e/ -v
+
+integration-test:
+    #!/usr/bin/env bash
+    echo "Running integration tests..."
+    python -m pytest tests/integration/ -v
 
 # Clean up Python cache files and local DynamoDB
 clean:

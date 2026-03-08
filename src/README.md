@@ -24,6 +24,8 @@ source .venv/bin/activate
 # Install dependencies using pip3.12 in the virtual environment,
 # and the dependencies will be installed in the virtual environment
 pip install -r src/requirements-dev.txt
+# or run just recipe
+just install
 
 # Exit the virtual environment if needed
 deactivate
@@ -35,47 +37,46 @@ Now, you should have `.venv` folder in the project root folder with all dependen
 
 ### Local Lambda Test
 
-Run lambda function in python on local machine using [python-lambda-local](https://pypi.org/project/python-lambda-local/). All local test files locates in `src/local_test` folder.
+Run lambda function in python on local machine using [python-lambda-local](https://pypi.org/project/python-lambda-local/). All local test files locates in `src/tests/local` folder.
 
 ```bash
 # Test GET /todos with event defined in src/local_test/events folder
-python -m src.tests.local.run
+just local-test get_all_todos
+
+just local-test post_todo
 ```
 
 ### Unit Test
 
-In the project, we use `pytest` and `unittest` for unit test.
+Run `just unit-test` to execute unit test in one command. All unit test files locates in `src/tests/unit` folder.
 
 ```bash
-# Run all unit test cases in /src/tests/unit folder
-coverage run -m pytest ./src/tests/unit/
-
-# Run unit test cases in a sepcific file
-python -m pytest ./src/tests/unit/test_main.py
-
-# Report unit test coverage
-coverage report -m
+just unit-test
 ```
 
-Run `make unit-test` to execute unit test in one command.
+### Integration Test
+
+Run `just integration-test` to execute integration test in one command. All integration test files locates in `src/tests/integration` folder.
+
+```bash
+just integration-test
+```
 
 ### E2E Test
 
-[Tavern](https://pypi.org/project/tavern/) is a pytest plugin, command-line tool and Python library for automated testing of APIs, with a simple, concise and flexible YAML-based syntax.
+Run `just e2e-test` to execute e2e test in one command. All e2e test files locates in `src/tests/e2e` folder.
 
 ```bash
-# Run all e2e test cases in /tests/unit folder
-python -m pytest ./src/tests/e2e/
-
-# Run e2e test cases in a sepcific file
-python -m pytest ./src/tests/e2e/test_minimal.tavern.yaml -v
+just e2e-test
 ```
 
-### Postman
+### EchoAPI
 
-Find Postman colllection from [collection.json](./src/tests/postman/collection.json)
+EchoAPI is a simple API that returns the request body. It is used to test the E2E test.
 
-> Please keep Postman colllection updated.
+EchoAPI is deployed in AWS Lambda function, and the API endpoint is `https://<API_ID>.execute-api.<AWS_REGION>.amazonaws.com/v1/echo`.
+
+Replace `<API_ID>` with your actual API ID, `<AWS_REGION>` with your actual AWS region.
 
 ## Linting & Formatting
 
