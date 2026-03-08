@@ -39,7 +39,7 @@ class UserModel(Model):
     class Meta:
         table_name = Config.users_table_name
 
-    id = UnicodeAttribute(hash_key=True, default_for_new=lambda: uuid.uuid4().hex)
+    id = UnicodeAttribute(hash_key=True, default_for_new=lambda: str(uuid.uuid4()))
     email = UnicodeAttribute(null=True, range_key=True)
     name = UnicodeAttribute(null=True)
     phone = UnicodeAttribute(null=False, default="")

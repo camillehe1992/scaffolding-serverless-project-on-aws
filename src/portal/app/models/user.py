@@ -1,5 +1,5 @@
 from datetime import datetime
-from uuid import uuid4
+import uuid
 from pydantic import BaseModel, Field
 
 
@@ -37,7 +37,7 @@ class UserUpdated(BaseModel):
 class User(BaseModel):
     id_: str = Field(
         alias="id",
-        default_factory=lambda: uuid4().hex,
+        default_factory=lambda: str(uuid.uuid4()),
         examples=["bfc7adb5-fd97-473d-a10f-29cf8b48811d"],
     )
     email: str = Field(

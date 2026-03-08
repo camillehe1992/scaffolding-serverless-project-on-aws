@@ -16,13 +16,13 @@
   },
   "get_user_by_id": {
     "resource": "/users/{id}",
-    "path": "/users/e897fb72-a40f-4bc5-a4a9-8b903c2cb9cb",
+    "path": "/users/64591980-096f-4987-8c7a-4ba752ca87cc",
     "httpMethod": "GET",
     "body": null
   },
   "update_user": {
     "resource": "/users/{id}",
-    "path": "/users/1e4301a174fa41cf8ff1c9c13cbfd83a",
+    "path": "/users/64591980-096f-4987-8c7a-4ba752ca87cc",
     "httpMethod": "PUT",
     "body": {
       "name": "Allen Walker",
@@ -37,7 +37,7 @@
   },
   "delete_user": {
     "resource": "/users/{id}",
-    "path": "/users/1e4301a174fa41cf8ff1c9c13cbfd83a",
+    "path": "/users/64591980-096f-4987-8c7a-4ba752ca87cc",
     "httpMethod": "DELETE",
     "body": null
   },

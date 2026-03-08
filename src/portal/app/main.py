@@ -25,14 +25,14 @@ app.include_router(todo.router, prefix="/todos")
 app.include_router(user.router, prefix="/users")
 
 
-@app.not_found
-def handle_not_found_errors(exc: NotFoundError) -> Response:
-    logger.info(f"Not found route: {app.current_event.path}", exc_info=exc)
-    return Response(
-        status_code=418,
-        content_type=content_types.TEXT_PLAIN,
-        body="The route is not found",
-    )
+# @app.not_found
+# def handle_not_found_errors(exc: NotFoundError) -> Response:
+#     logger.info(f"Not found route: {app.current_event.path}", exc_info=exc)
+#     return Response(
+#         status_code=418,
+#         content_type=content_types.TEXT_PLAIN,
+#         body="The route is not found",
+#     )
 
 
 @logger.inject_lambda_context(
