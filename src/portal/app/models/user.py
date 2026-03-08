@@ -1,4 +1,3 @@
-# pylint: disable=no-name-in-module
 from datetime import datetime
 from uuid import uuid4
 from pydantic import BaseModel, Field

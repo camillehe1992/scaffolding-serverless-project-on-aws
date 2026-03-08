@@ -14,10 +14,7 @@ class Todo(BaseModel):
         description="User ID", example="bfc7adb5-fd97-473d-a10f-29cf8b48811d"
     )
     title: str = Field(description="Todo title", example="delectus aut autem")
-    completed: bool = Field(
-        description="Todo completed status",
-        examples=[True, False],
-    )
+    completed: bool = Field(description="Todo completed status")
     created_at: datetime = Field(
         description="Todo created datetime",
         default_factory=datetime.now,

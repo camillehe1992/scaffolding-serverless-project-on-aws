@@ -1,10 +1,6 @@
-import os
 from pynamodb.models import Model
 from pynamodb.attributes import UnicodeAttribute, BooleanAttribute, MapAttribute
-
-# Constants
-ENVIRONMENT = os.getenv("ENVIRONMENT", "dev")
-APPLICATION_NAME = os.getenv("APPLICATION_NAME", "slstemplate")
+from app.settings import Config
 
 
 class TodoModel(Model):
@@ -13,7 +9,7 @@ class TodoModel(Model):
     """
 
     class Meta:
-        table_name = f"{ENVIRONMENT}-{APPLICATION_NAME}-todos"
+        table_name = Config.todos_table_name
 
     id = UnicodeAttribute(hash_key=True)
     user_id = UnicodeAttribute(null=False)
@@ -60,7 +56,7 @@ class UserModel(Model):
     """
 
     class Meta:
-        table_name = f"{ENVIRONMENT}-{APPLICATION_NAME}-users"
+        table_name = Config.users_table_name
 
     id = UnicodeAttribute(hash_key=True)
     name = UnicodeAttribute(null=True)

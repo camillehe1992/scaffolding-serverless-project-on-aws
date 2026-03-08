@@ -13,14 +13,7 @@ router = Router()
 
 
 @router.get(rule="", tags=["Todo"], summary="Get all todos")
-def get_todos(
-    completed: Annotated[
-        Optional[BooleanStr],
-        Query(
-            description="Filter todos by completed status. true or false. No filter applied if not provided.",
-        ),
-    ] = None,
-) -> List[Todo]:
+def get_todos(completed: Optional[BooleanStr] = None) -> List[Todo]:
     if completed is not None:
         response = TodoModel.scan(
             filter_condition=TodoModel.completed == (completed == BooleanStr.TRUE),
