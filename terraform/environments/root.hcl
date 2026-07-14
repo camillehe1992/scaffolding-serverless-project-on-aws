@@ -6,13 +6,6 @@ locals {
 
   repository_name = "scaffolding-serverless-project-on-aws"
 
-  # Account mapping for different environments
-  account_ids = {
-    dev     = "824709318323" # Your dev account
-    staging = "824709318323" # Replace with staging account
-    prod    = "824709318323" # Replace with prod account
-  }
-
   # Region configuration
   regions = {
     dev     = "ap-southeast-1"
@@ -20,8 +13,8 @@ locals {
     prod    = "ap-southeast-1"
   }
 
-  # Get current account and region
-  current_account_id = local.account_ids[local.environment]
+  # Get current account from the active AWS credentials.
+  current_account_id = get_aws_account_id()
   current_region     = local.regions[local.environment]
 }
 
