@@ -4,7 +4,7 @@ This document describes how to set up a local development environment for this s
 
 ## Install Python on Local Machine
 
-- Install Python 3.12 following <https://www.python.org/downloads/mac-osx/>.
+- Install Python 3.12+ following <https://www.python.org/downloads/mac-osx/>.
 
 ## Create Virtual Environment & Install Dependencies
 
@@ -24,7 +24,7 @@ source .venv/bin/activate
 # Install dependencies using pip3.12 in the virtual environment,
 # and the dependencies will be installed in the virtual environment
 pip install -r src/requirements-dev.txt
-# or run just recipe
+# or run just recipe from root directory
 just install
 
 # Exit the virtual environment if needed
@@ -41,7 +41,9 @@ Run lambda function in python on local machine using [python-lambda-local](https
 
 ```bash
 # Test GET /todos with event defined in src/local_test/events folder
+# Run below recipe from src folder
 just local-test get_all_todos
+# or just src.local-test get_all_todos from root directory
 
 just local-test post_todo
 ```

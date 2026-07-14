@@ -1,0 +1,227 @@
+# Terraform justfile - Terragrunt workflows
+# Usage from this folder: just plan dev security
+# Usage from repo root: just plan dev security
+# Default values (can be overridden)
+
+ENVIRONMENT := "dev"
+UNIT := "security"
+
+# Project paths
+
+TERRAFORM_ROOT := justfile_directory()
+PROJECT_ROOT := TERRAFORM_ROOT / ".."
+
+# Shell to use
+
+set shell := ["bash", "-uc"]
+
+# ------------------------------------------------------------------------------
+# Helper functions
+# ------------------------------------------------------------------------------
+
+# Show help
+help:
+    @just --list --unsorted
+
+# List all available commands
+list:
+    @just --list
+
+# Get AWS profile from .env or fallback to "app-deployer"
+aws-profile:
+    #!/usr/bin/env bash
+    if [ -n "$GITHUB_ACTIONS" ]; then
+        echo ""
+    elif [ -f "{{ PROJECT_ROOT }}/.env" ]; then
+        source "{{ PROJECT_ROOT }}/.env" && echo "${AWS_PROFILE:-app-deployer}"
+    else
+        echo "app-deployer"
+    fi
+
+# ------------------------------------------------------------------------------
+# Path helpers
+# ------------------------------------------------------------------------------
+
+# Terragrunt unit directory
+tg-unit-dir ENVIRONMENT UNIT:
+    #!/usr/bin/env bash
+    echo "{{ TERRAFORM_ROOT }}/environments/{{ ENVIRONMENT }}/{{ UNIT }}/"
+
+# Terragrunt environment directory
+tg-env-dir ENVIRONMENT:
+    #!/usr/bin/env bash
+    echo "{{ TERRAFORM_ROOT }}/environments/{{ ENVIRONMENT }}/"
+
+# ------------------------------------------------------------------------------
+# Core commands
+# ------------------------------------------------------------------------------
+
+# Pre-check - Verify AWS credentials
+pre-check ENVIRONMENT UNIT:
+    #!/usr/bin/env bash
+    PROFILE=$(just aws-profile)
+    echo "[*] Pre-Check - AWS Profile ${PROFILE}"
+    AWS_PROFILE=${PROFILE} aws sts get-caller-identity | jq .
+
+# Terragrunt plan
+plan ENVIRONMENT UNIT:
+    #!/usr/bin/env bash
+    PROFILE=$(just aws-profile)
+    TG_DIR=$(just tg-unit-dir {{ ENVIRONMENT }} {{ UNIT }})
+
+    just pre-check {{ ENVIRONMENT }} {{ UNIT }}
+
+    echo "[*] Terragrunt planning {{ ENVIRONMENT }}/{{ UNIT }}"
+    cd "${TG_DIR}" && AWS_PROFILE=${PROFILE} terragrunt plan
+
+# Terragrunt apply
+apply ENVIRONMENT UNIT:
+    #!/usr/bin/env bash
+    PROFILE=$(just aws-profile)
+    TG_DIR=$(just tg-unit-dir {{ ENVIRONMENT }} {{ UNIT }})
+
+    echo "[*] Terragrunt applying {{ ENVIRONMENT }}/{{ UNIT }}"
+    cd "${TG_DIR}" && AWS_PROFILE=${PROFILE} terragrunt apply --auto-approve
+
+# Terragrunt destroy
+destroy ENVIRONMENT UNIT:
+    #!/usr/bin/env bash
+    PROFILE=$(just aws-profile)
+    TG_DIR=$(just tg-unit-dir {{ ENVIRONMENT }} {{ UNIT }})
+
+    echo "[*] Terragrunt destroying {{ ENVIRONMENT }}/{{ UNIT }}"
+    cd "${TG_DIR}" && AWS_PROFILE=${PROFILE} terragrunt destroy --auto-approve
+
+# Terragrunt plan-destroy
+plan-destroy ENVIRONMENT UNIT:
+    #!/usr/bin/env bash
+    PROFILE=$(just aws-profile)
+    TG_DIR=$(just tg-unit-dir {{ ENVIRONMENT }} {{ UNIT }})
+
+    just pre-check {{ ENVIRONMENT }} {{ UNIT }}
+
+    echo "[*] Terragrunt planning destruction for {{ ENVIRONMENT }}/{{ UNIT }}"
+    cd "${TG_DIR}" && AWS_PROFILE=${PROFILE} terragrunt plan -destroy
+
+# Terragrunt output
+output ENVIRONMENT UNIT:
+    #!/usr/bin/env bash
+    PROFILE=$(just aws-profile)
+    TG_DIR=$(just tg-unit-dir {{ ENVIRONMENT }} {{ UNIT }})
+
+    echo "[*] Terragrunt output for {{ ENVIRONMENT }}/{{ UNIT }}"
+    cd "${TG_DIR}" && AWS_PROFILE=${PROFILE} terragrunt output
+
+# ------------------------------------------------------------------------------
+# Run-all commands
+# ------------------------------------------------------------------------------
+
+# Run-all plan for entire environment
+plan-all ENVIRONMENT:
+    #!/usr/bin/env bash
+    PROFILE=$(just aws-profile)
+    TG_ENV_DIR=$(just tg-env-dir {{ ENVIRONMENT }})
+
+    echo "[*] Terragrunt run-all plan for {{ ENVIRONMENT }}"
+    cd "${TG_ENV_DIR}" && AWS_PROFILE=${PROFILE} terragrunt run --all -- plan
+
+# Run-all apply for entire environment
+apply-all ENVIRONMENT:
+    #!/usr/bin/env bash
+    PROFILE=$(just aws-profile)
+    TG_ENV_DIR=$(just tg-env-dir {{ ENVIRONMENT }})
+
+    echo "[*] Terragrunt run-all apply for {{ ENVIRONMENT }}"
+    cd "${TG_ENV_DIR}" && AWS_PROFILE=${PROFILE} terragrunt run --all --non-interactive apply
+
+# Run-all destroy for entire environment
+destroy-all ENVIRONMENT:
+    #!/usr/bin/env bash
+    PROFILE=$(just aws-profile)
+    TG_ENV_DIR=$(just tg-env-dir {{ ENVIRONMENT }})
+
+    echo "[*] Terragrunt run-all destroy for {{ ENVIRONMENT }}"
+    cd "${TG_ENV_DIR}" && AWS_PROFILE=${PROFILE} terragrunt run --all destroy
+
+# Run-all output for entire environment
+output-all ENVIRONMENT:
+    #!/usr/bin/env bash
+    PROFILE=$(just aws-profile)
+    TG_ENV_DIR=$(just tg-env-dir {{ ENVIRONMENT }})
+
+    echo "[*] Terragrunt run-all output for {{ ENVIRONMENT }}"
+    cd "${TG_ENV_DIR}" && AWS_PROFILE=${PROFILE} terragrunt run --all output
+
+# Run-all validate for entire environment
+validate-all ENVIRONMENT:
+    #!/usr/bin/env bash
+    PROFILE=$(just aws-profile)
+    TG_ENV_DIR=$(just tg-env-dir {{ ENVIRONMENT }})
+
+    echo "[*] Terragrunt run-all validate for {{ ENVIRONMENT }}"
+    cd "${TG_ENV_DIR}" && AWS_PROFILE=${PROFILE} terragrunt run --all validate
+
+# ------------------------------------------------------------------------------
+# Utility commands
+# ------------------------------------------------------------------------------
+
+# Clean up Terraform/Terragrunt generated files
+clean:
+    echo "[*] Cleaning up Terraform/Terragrunt generated files"
+    find "{{ TERRAFORM_ROOT }}" -type d -name ".terragrunt-cache" -exec rm -rf {} + 2>/dev/null || true
+    find "{{ TERRAFORM_ROOT }}" -type d -name ".terraform" -exec rm -rf {} + 2>/dev/null || true
+    find "{{ TERRAFORM_ROOT }}" -type f -name "*.tfstate*" -delete
+
+# Terragrunt fmt
+hcl-fmt:
+    #!/usr/bin/env bash
+    cd "{{ TERRAFORM_ROOT }}" && terragrunt hcl format
+
+# Terragrunt validate
+hcl-validate:
+    #!/usr/bin/env bash
+    cd "{{ TERRAFORM_ROOT }}" && terragrunt hcl validate
+
+# Show current Terraform settings
+show-settings:
+    #!/usr/bin/env bash
+    echo "ENVIRONMENT: {{ ENVIRONMENT }}"
+    echo "UNIT: {{ UNIT }}"
+    echo "PROJECT_ROOT: {{ PROJECT_ROOT }}"
+    echo "TERRAFORM_ROOT: {{ TERRAFORM_ROOT }}"
+    echo "AWS_PROFILE: $(just aws-profile)"
+
+# Generate documentation for all modules and units under source directory
+gen-docs:
+    #!/usr/bin/env bash
+    echo "[*] Generating documentation for Terraform modules and units"
+
+    if ! command -v terraform-docs &> /dev/null; then
+        echo "[!] terraform-docs is not installed. Installing..."
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            brew install terraform-docs
+        else
+            echo "[!] Please install terraform-docs manually: https://terraform-docs.io/user-guide/installation/"
+            exit 1
+        fi
+    fi
+
+    echo "[*] Generating documentation for modules in source/modules/"
+    for module_dir in "{{ TERRAFORM_ROOT }}"/source/modules/*/; do
+        if [ -d "$module_dir" ]; then
+            module_name=$(basename "$module_dir")
+            echo "  - Processing module: $module_name"
+            terraform-docs markdown "$module_dir" > "$module_dir/README.md" || echo "  [!] Failed to generate docs for $module_name"
+        fi
+    done
+
+    echo "[*] Generating documentation for units in source/units/"
+    for unit_dir in "{{ TERRAFORM_ROOT }}"/source/units/*/; do
+        if [ -d "$unit_dir" ]; then
+            unit_name=$(basename "$unit_dir")
+            echo "  - Processing unit: $unit_name"
+            terraform-docs markdown "$unit_dir" > "$unit_dir/README.md" || echo "  [!] Failed to generate docs for $unit_name"
+        fi
+    done
+
+    echo "[*] Documentation generation completed!"
