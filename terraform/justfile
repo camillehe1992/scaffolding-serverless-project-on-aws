@@ -190,38 +190,3 @@ show-settings:
     echo "PROJECT_ROOT: {{ PROJECT_ROOT }}"
     echo "TERRAFORM_ROOT: {{ TERRAFORM_ROOT }}"
     echo "AWS_PROFILE: $(just aws-profile)"
-
-# Generate documentation for all modules and units under source directory
-gen-docs:
-    #!/usr/bin/env bash
-    echo "[*] Generating documentation for Terraform modules and units"
-
-    if ! command -v terraform-docs &> /dev/null; then
-        echo "[!] terraform-docs is not installed. Installing..."
-        if [[ "$OSTYPE" == "darwin"* ]]; then
-            brew install terraform-docs
-        else
-            echo "[!] Please install terraform-docs manually: https://terraform-docs.io/user-guide/installation/"
-            exit 1
-        fi
-    fi
-
-    echo "[*] Generating documentation for modules in source/modules/"
-    for module_dir in "{{ TERRAFORM_ROOT }}"/source/modules/*/; do
-        if [ -d "$module_dir" ]; then
-            module_name=$(basename "$module_dir")
-            echo "  - Processing module: $module_name"
-            terraform-docs markdown "$module_dir" > "$module_dir/README.md" || echo "  [!] Failed to generate docs for $module_name"
-        fi
-    done
-
-    echo "[*] Generating documentation for units in source/units/"
-    for unit_dir in "{{ TERRAFORM_ROOT }}"/source/units/*/; do
-        if [ -d "$unit_dir" ]; then
-            unit_name=$(basename "$unit_dir")
-            echo "  - Processing unit: $unit_name"
-            terraform-docs markdown "$unit_dir" > "$unit_dir/README.md" || echo "  [!] Failed to generate docs for $unit_name"
-        fi
-    done
-
-    echo "[*] Documentation generation completed!"

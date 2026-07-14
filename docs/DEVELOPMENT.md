@@ -18,13 +18,12 @@ Install the following tools before starting:
 - Terragrunt
 - just
 - pre-commit
-- terraform-docs
 - markdownlint-cli
 
 On macOS, you can install the infrastructure tooling with Homebrew:
 
 ```bash
-brew install awscli terraform terragrunt just pre-commit terraform-docs markdownlint-cli
+brew install awscli terraform terragrunt just pre-commit markdownlint-cli
 ```
 
 Configure AWS credentials for the account you plan to use:

@@ -114,10 +114,6 @@ hcl-fmt:
 hcl-validate:
     @just --justfile "{{ TERRAFORM_JUSTFILE }}" --working-directory "{{ TERRAFORM_ROOT }}" hcl-validate
 
-# Generate Terraform module and unit documentation
-gen-docs:
-    @just --justfile "{{ TERRAFORM_JUSTFILE }}" --working-directory "{{ TERRAFORM_ROOT }}" gen-docs
-
 # ------------------------------------------------------------------------------
 # Utility commands for Lambda source code
 # ------------------------------------------------------------------------------

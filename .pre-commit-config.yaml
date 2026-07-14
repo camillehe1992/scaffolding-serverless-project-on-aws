@@ -23,14 +23,6 @@ repos:
         pass_filenames: false
         description: Validate all Terragrunt HCL files
 
-      # Documentation Generation
-      - id: generate-docs
-        name: Generate Documentation
-        entry: just gen-docs
-        language: system
-        pass_filenames: false
-        description: Generate documentation for all modules and units
-
   # Additional useful hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0

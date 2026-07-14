@@ -54,7 +54,8 @@ Follow [DEVELOPMENT.md](./docs/DEVELOPMENT.md) when you want to setup a developm
 
 ## Deployment
 
-Follow [DEPLOYMENT.md](./docs/DEPLOYMENT.md) to deploy project from local machine or via CICD pipelines.
+Follow [terraform/README.md](./terraform/README.md) to deploy project
+infrastructure from a local machine.
 
 ## References
 
