@@ -10,6 +10,7 @@ UNIT := "security"
 
 TERRAFORM_ROOT := justfile_directory()
 PROJECT_ROOT := TERRAFORM_ROOT / ".."
+ROOT_JUSTFILE := PROJECT_ROOT / "justfile"
 
 # Shell to use
 
@@ -27,16 +28,8 @@ help:
 list:
     @just --list
 
-# Get AWS profile from .env or fallback to "app-deployer"
-aws-profile:
-    #!/usr/bin/env bash
-    if [ -n "$GITHUB_ACTIONS" ]; then
-        echo ""
-    elif [ -f "{{ PROJECT_ROOT }}/.env" ]; then
-        source "{{ PROJECT_ROOT }}/.env" && echo "${AWS_PROFILE:-app-deployer}"
-    else
-        echo "app-deployer"
-    fi
+_aws-profile:
+    @just --justfile "{{ ROOT_JUSTFILE }}" --working-directory "{{ PROJECT_ROOT }}" aws-profile
 
 # ------------------------------------------------------------------------------
 # Path helpers
@@ -59,14 +52,14 @@ tg-env-dir ENVIRONMENT:
 # Pre-check - Verify AWS credentials
 pre-check ENVIRONMENT UNIT:
     #!/usr/bin/env bash
-    PROFILE=$(just aws-profile)
+    PROFILE=$(just _aws-profile)
     echo "[*] Pre-Check - AWS Profile ${PROFILE}"
     AWS_PROFILE=${PROFILE} aws sts get-caller-identity | jq .
 
 # Terragrunt plan
 plan ENVIRONMENT UNIT:
     #!/usr/bin/env bash
-    PROFILE=$(just aws-profile)
+    PROFILE=$(just _aws-profile)
     TG_DIR=$(just tg-unit-dir {{ ENVIRONMENT }} {{ UNIT }})
 
     just pre-check {{ ENVIRONMENT }} {{ UNIT }}
@@ -77,7 +70,7 @@ plan ENVIRONMENT UNIT:
 # Terragrunt apply
 apply ENVIRONMENT UNIT:
     #!/usr/bin/env bash
-    PROFILE=$(just aws-profile)
+    PROFILE=$(just _aws-profile)
     TG_DIR=$(just tg-unit-dir {{ ENVIRONMENT }} {{ UNIT }})
 
     echo "[*] Terragrunt applying {{ ENVIRONMENT }}/{{ UNIT }}"
@@ -86,7 +79,7 @@ apply ENVIRONMENT UNIT:
 # Terragrunt destroy
 destroy ENVIRONMENT UNIT:
     #!/usr/bin/env bash
-    PROFILE=$(just aws-profile)
+    PROFILE=$(just _aws-profile)
     TG_DIR=$(just tg-unit-dir {{ ENVIRONMENT }} {{ UNIT }})
 
     echo "[*] Terragrunt destroying {{ ENVIRONMENT }}/{{ UNIT }}"
@@ -95,7 +88,7 @@ destroy ENVIRONMENT UNIT:
 # Terragrunt plan-destroy
 plan-destroy ENVIRONMENT UNIT:
     #!/usr/bin/env bash
-    PROFILE=$(just aws-profile)
+    PROFILE=$(just _aws-profile)
     TG_DIR=$(just tg-unit-dir {{ ENVIRONMENT }} {{ UNIT }})
 
     just pre-check {{ ENVIRONMENT }} {{ UNIT }}
@@ -106,7 +99,7 @@ plan-destroy ENVIRONMENT UNIT:
 # Terragrunt output
 output ENVIRONMENT UNIT:
     #!/usr/bin/env bash
-    PROFILE=$(just aws-profile)
+    PROFILE=$(just _aws-profile)
     TG_DIR=$(just tg-unit-dir {{ ENVIRONMENT }} {{ UNIT }})
 
     echo "[*] Terragrunt output for {{ ENVIRONMENT }}/{{ UNIT }}"
@@ -119,7 +112,7 @@ output ENVIRONMENT UNIT:
 # Run-all plan for entire environment
 plan-all ENVIRONMENT:
     #!/usr/bin/env bash
-    PROFILE=$(just aws-profile)
+    PROFILE=$(just _aws-profile)
     TG_ENV_DIR=$(just tg-env-dir {{ ENVIRONMENT }})
 
     echo "[*] Terragrunt run-all plan for {{ ENVIRONMENT }}"
@@ -128,7 +121,7 @@ plan-all ENVIRONMENT:
 # Run-all apply for entire environment
 apply-all ENVIRONMENT:
     #!/usr/bin/env bash
-    PROFILE=$(just aws-profile)
+    PROFILE=$(just _aws-profile)
     TG_ENV_DIR=$(just tg-env-dir {{ ENVIRONMENT }})
 
     echo "[*] Terragrunt run-all apply for {{ ENVIRONMENT }}"
@@ -137,7 +130,7 @@ apply-all ENVIRONMENT:
 # Run-all destroy for entire environment
 destroy-all ENVIRONMENT:
     #!/usr/bin/env bash
-    PROFILE=$(just aws-profile)
+    PROFILE=$(just _aws-profile)
     TG_ENV_DIR=$(just tg-env-dir {{ ENVIRONMENT }})
 
     echo "[*] Terragrunt run-all destroy for {{ ENVIRONMENT }}"
@@ -146,7 +139,7 @@ destroy-all ENVIRONMENT:
 # Run-all output for entire environment
 output-all ENVIRONMENT:
     #!/usr/bin/env bash
-    PROFILE=$(just aws-profile)
+    PROFILE=$(just _aws-profile)
     TG_ENV_DIR=$(just tg-env-dir {{ ENVIRONMENT }})
 
     echo "[*] Terragrunt run-all output for {{ ENVIRONMENT }}"
@@ -155,7 +148,7 @@ output-all ENVIRONMENT:
 # Run-all validate for entire environment
 validate-all ENVIRONMENT:
     #!/usr/bin/env bash
-    PROFILE=$(just aws-profile)
+    PROFILE=$(just _aws-profile)
     TG_ENV_DIR=$(just tg-env-dir {{ ENVIRONMENT }})
 
     echo "[*] Terragrunt run-all validate for {{ ENVIRONMENT }}"
@@ -189,4 +182,4 @@ show-settings:
     echo "UNIT: {{ UNIT }}"
     echo "PROJECT_ROOT: {{ PROJECT_ROOT }}"
     echo "TERRAFORM_ROOT: {{ TERRAFORM_ROOT }}"
-    echo "AWS_PROFILE: $(just aws-profile)"
+    echo "AWS_PROFILE: $(just _aws-profile)"

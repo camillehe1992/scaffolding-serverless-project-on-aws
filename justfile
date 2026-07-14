@@ -2,7 +2,6 @@
 # Default values (can be overridden)
 
 ENVIRONMENT := "dev"
-UNIT := "security"
 
 # Project paths
 
@@ -41,7 +40,6 @@ aws-profile:
 show-settings:
     #!/usr/bin/env bash
     echo "ENVIRONMENT: {{ ENVIRONMENT }}"
-    echo "UNIT: {{ UNIT }}"
     echo "PROJECT_ROOT: {{ PROJECT_ROOT }}"
     echo "TERRAFORM_ROOT: {{ TERRAFORM_ROOT }}"
     echo "AWS_PROFILE: $(just aws-profile)"
@@ -50,69 +48,17 @@ show-settings:
 # Terraform/Terragrunt command shims
 # ------------------------------------------------------------------------------
 
-# Terragrunt unit directory
-tg-unit-dir ENVIRONMENT UNIT:
-    @just --justfile "{{ TERRAFORM_JUSTFILE }}" --working-directory "{{ TERRAFORM_ROOT }}" tg-unit-dir "{{ ENVIRONMENT }}" "{{ UNIT }}"
+_terraform RECIPE *ARGS:
+    @just --justfile "{{ TERRAFORM_JUSTFILE }}" --working-directory "{{ TERRAFORM_ROOT }}" "{{ RECIPE }}" {{ ARGS }}
 
-# Terragrunt environment directory
-tg-env-dir ENVIRONMENT:
-    @just --justfile "{{ TERRAFORM_JUSTFILE }}" --working-directory "{{ TERRAFORM_ROOT }}" tg-env-dir "{{ ENVIRONMENT }}"
+# Run plan and apply for entire environment
+deploy ENVIRONMENT:
+    @just _terraform plan-all "{{ ENVIRONMENT }}"
+    @just _terraform apply-all "{{ ENVIRONMENT }}"
 
-# Pre-check - Verify AWS credentials
-pre-check ENVIRONMENT UNIT:
-    @just --justfile "{{ TERRAFORM_JUSTFILE }}" --working-directory "{{ TERRAFORM_ROOT }}" pre-check "{{ ENVIRONMENT }}" "{{ UNIT }}"
-
-# Terragrunt plan
-plan ENVIRONMENT UNIT:
-    @just --justfile "{{ TERRAFORM_JUSTFILE }}" --working-directory "{{ TERRAFORM_ROOT }}" plan "{{ ENVIRONMENT }}" "{{ UNIT }}"
-
-# Terragrunt apply
-apply ENVIRONMENT UNIT:
-    @just --justfile "{{ TERRAFORM_JUSTFILE }}" --working-directory "{{ TERRAFORM_ROOT }}" apply "{{ ENVIRONMENT }}" "{{ UNIT }}"
-
-# Terragrunt destroy
-destroy ENVIRONMENT UNIT:
-    @just --justfile "{{ TERRAFORM_JUSTFILE }}" --working-directory "{{ TERRAFORM_ROOT }}" destroy "{{ ENVIRONMENT }}" "{{ UNIT }}"
-
-# Terragrunt plan-destroy
-plan-destroy ENVIRONMENT UNIT:
-    @just --justfile "{{ TERRAFORM_JUSTFILE }}" --working-directory "{{ TERRAFORM_ROOT }}" plan-destroy "{{ ENVIRONMENT }}" "{{ UNIT }}"
-
-# Terragrunt output
-output ENVIRONMENT UNIT:
-    @just --justfile "{{ TERRAFORM_JUSTFILE }}" --working-directory "{{ TERRAFORM_ROOT }}" output "{{ ENVIRONMENT }}" "{{ UNIT }}"
-
-# Run-all plan for entire environment
-plan-all ENVIRONMENT:
-    @just --justfile "{{ TERRAFORM_JUSTFILE }}" --working-directory "{{ TERRAFORM_ROOT }}" plan-all "{{ ENVIRONMENT }}"
-
-# Run-all apply for entire environment
-apply-all ENVIRONMENT:
-    @just --justfile "{{ TERRAFORM_JUSTFILE }}" --working-directory "{{ TERRAFORM_ROOT }}" apply-all "{{ ENVIRONMENT }}"
-
-# Run-all destroy for entire environment
-destroy-all ENVIRONMENT:
-    @just --justfile "{{ TERRAFORM_JUSTFILE }}" --working-directory "{{ TERRAFORM_ROOT }}" destroy-all "{{ ENVIRONMENT }}"
-
-# Run-all output for entire environment
-output-all ENVIRONMENT:
-    @just --justfile "{{ TERRAFORM_JUSTFILE }}" --working-directory "{{ TERRAFORM_ROOT }}" output-all "{{ ENVIRONMENT }}"
-
-# Run-all validate for entire environment
-validate-all ENVIRONMENT:
-    @just --justfile "{{ TERRAFORM_JUSTFILE }}" --working-directory "{{ TERRAFORM_ROOT }}" validate-all "{{ ENVIRONMENT }}"
-
-# Clean Terraform/Terragrunt generated files
-clean:
-    @just --justfile "{{ TERRAFORM_JUSTFILE }}" --working-directory "{{ TERRAFORM_ROOT }}" clean
-
-# Terragrunt fmt
-hcl-fmt:
-    @just --justfile "{{ TERRAFORM_JUSTFILE }}" --working-directory "{{ TERRAFORM_ROOT }}" hcl-fmt
-
-# Terragrunt validate
-hcl-validate:
-    @just --justfile "{{ TERRAFORM_JUSTFILE }}" --working-directory "{{ TERRAFORM_ROOT }}" hcl-validate
+# Run destroy for entire environment
+destroy ENVIRONMENT:
+    @just _terraform destroy-all "{{ ENVIRONMENT }}"
 
 # ------------------------------------------------------------------------------
 # Utility commands for Lambda source code
@@ -120,8 +66,8 @@ hcl-validate:
 
 # Build a Lambda dependencies zip from src/requirements.txt
 deps-zip:
-    @bash "{{ PROJECT_ROOT }}/scripts/build_deps_zip.sh"
+    @bash "{{ PROJECT_ROOT }}/scripts/build-dependencies-zip.sh"
 
 # Import sample data (users and todos) to DynamoDB Tables
 import-ddb:
-    @bash "{{ PROJECT_ROOT }}/scripts/import_ddb.sh" "$(just aws-profile)"
+    @bash "{{ PROJECT_ROOT }}/scripts/import-ddb.sh" "$(just aws-profile)"

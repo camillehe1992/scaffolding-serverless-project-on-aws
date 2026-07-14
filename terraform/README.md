@@ -93,7 +93,9 @@ just show-settings
 Verify credentials before planning or applying:
 
 ```bash
+cd terraform
 just pre-check dev security
+cd ..
 ```
 
 ## Environments And State
@@ -122,33 +124,42 @@ and write state objects, and manage the resources in each unit.
 
 ## Plan And Apply
 
-Run commands from the repository root. Plan individual units first:
-
-```bash
-just plan dev security
-just plan dev dynamodb
-```
-
-Build the Lambda dependency layer before planning the API unit:
+Run root commands from the repository root. For a normal full-environment
+deployment, build the dependency layer and run the root deployment recipe:
 
 ```bash
 just deps-zip
+just deploy dev
+```
+
+Unit-specific Terragrunt recipes are available from the `terraform` directory
+when you need to inspect or apply one unit at a time. Plan individual units
+first:
+
+```bash
+cd terraform
+just plan dev security
+just plan dev dynamodb
 just plan dev api
+cd ..
 ```
 
 Apply units in dependency order:
 
 ```bash
+cd terraform
 just apply dev security
 just apply dev dynamodb
-just deps-zip
 just apply dev api
+cd ..
 ```
 
 Show API outputs after apply:
 
 ```bash
+cd terraform
 just output dev api
+cd ..
 ```
 
 Useful API outputs include `invoke_url`, `swagger_url`, the Lambda function ARN,
@@ -159,16 +170,21 @@ and the dependency layer ARN.
 Terragrunt can also run across all units in an environment:
 
 ```bash
-just plan-all dev
-just apply-all dev
+just deps-zip
+just deploy dev
+
+cd terraform
 just output-all dev
+cd ..
 ```
 
 For API changes, ensure `.build/dependencies.zip` exists first:
 
 ```bash
 just deps-zip
+cd terraform
 just plan-all dev
+cd ..
 ```
 
 Individual unit commands are usually easier to review because they show the
@@ -198,19 +214,25 @@ environment.
 Format Terragrunt HCL:
 
 ```bash
+cd terraform
 just hcl-fmt
+cd ..
 ```
 
 Validate Terragrunt HCL:
 
 ```bash
+cd terraform
 just hcl-validate
+cd ..
 ```
 
 Clean local Terraform and Terragrunt generated files:
 
 ```bash
+cd terraform
 just clean
+cd ..
 ```
 
 Per-module and per-unit README files under `terraform/source` are intentionally
@@ -221,17 +243,17 @@ not generated. Keep Terraform setup and deployment guidance in this README.
 Review destroy plans first:
 
 ```bash
+cd terraform
 just plan-destroy dev api
 just plan-destroy dev dynamodb
 just plan-destroy dev security
+cd ..
 ```
 
-Destroy development resources in reverse dependency order:
+Destroy the full development environment from the repository root:
 
 ```bash
-just destroy dev api
-just destroy dev dynamodb
-just destroy dev security
+just destroy dev
 ```
 
 Avoid destroying shared or production resources from a local workstation.

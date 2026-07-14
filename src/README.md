@@ -24,8 +24,10 @@ source .venv/bin/activate
 # Install dependencies using pip3.12 in the virtual environment,
 # and the dependencies will be installed in the virtual environment
 pip install -r src/requirements-dev.txt
-# or run just recipe from root directory
+# or run the src just recipe
+cd src
 just install
+cd ..
 
 # Exit the virtual environment if needed
 deactivate
@@ -41,11 +43,12 @@ Run lambda function in python on local machine using [python-lambda-local](https
 
 ```bash
 # Test GET /todos with event defined in src/local_test/events folder
-# Run below recipe from src folder
+# Run below recipes from src folder
+cd src
 just local-test get_all_todos
-# or just src.local-test get_all_todos from root directory
 
-just local-test post_todo
+just local-test create_todo
+cd ..
 ```
 
 ### Unit Test

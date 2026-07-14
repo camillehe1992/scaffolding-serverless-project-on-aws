@@ -77,20 +77,6 @@ export POWERTOOLS_LOG_LEVEL=DEBUG
 export POWERTOOLS_SERVICE_NAME=slstemplate
 ```
 
-By default, the application expects these DynamoDB table names:
-
-```bash
-dev-slstemplate-users
-dev-slstemplate-todos
-```
-
-Override them when you are pointing the app at differently named tables:
-
-```bash
-export USERS_TABLE_NAME=my-users-table
-export TODOS_TABLE_NAME=my-todos-table
-```
-
 ## Local Lambda Runs
 
 Local API Gateway events live in `src/tests/local/events.json`.
@@ -159,8 +145,10 @@ formatting and validation. You can also run the infrastructure formatting
 helpers directly:
 
 ```bash
+cd terraform
 just hcl-fmt
 just hcl-validate
+cd ..
 ```
 
 Run Python linting from `src`:
@@ -206,43 +194,49 @@ For local development, use `dev`.
 Check AWS credentials:
 
 ```bash
+cd terraform
 just pre-check dev security
+cd ..
 ```
 
 Plan and apply individual units:
 
 ```bash
+cd terraform
 just plan dev security
 just apply dev security
 
 just plan dev dynamodb
 just apply dev dynamodb
 
+cd ..
 just deps-zip
+cd terraform
 just plan dev api
 just apply dev api
+cd ..
 ```
 
 Plan and apply the full environment:
 
 ```bash
-just plan-all dev
-just apply-all dev
+just deps-zip
+just deploy dev
 ```
 
 Show Terraform outputs:
 
 ```bash
+cd terraform
 just output dev api
 just output-all dev
+cd ..
 ```
 
 Destroy development infrastructure when finished:
 
 ```bash
-just destroy dev api
-just destroy dev dynamodb
-just destroy dev security
+just destroy dev
 ```
 
 Avoid using `prod` for local development.
@@ -277,16 +271,20 @@ just local-test get_all_todos
 cd ..
 
 just deps-zip
+cd terraform
 just plan dev api
+cd ..
 ```
 
 When infrastructure changes are involved, validate the Terragrunt configuration
 and run a plan before applying:
 
 ```bash
+cd terraform
 just hcl-fmt
 just hcl-validate
 just plan dev api
+cd ..
 ```
 
 ## Troubleshooting
@@ -309,5 +307,7 @@ just deps-zip
 If Terragrunt state or provider cache gets stale, clean local generated files:
 
 ```bash
+cd terraform
 just clean
+cd ..
 ```

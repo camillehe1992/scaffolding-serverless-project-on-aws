@@ -30,22 +30,22 @@ The diagram below shows the archtecture details. All AWS resources are built and
 ├── .pylintrc                    # configuration for pylint
 ├── .pytest.ini                  # configuration for pytest
 ├── .pylintrc
-├── Makefile                    # makefile to simplify your local deployment using shell scripts
+├── justfile                    # root project recipes for deployment and utilities
 ├── README.md
 ├── cloudformation              # terraform backend resources CFT
 │   └── infra.yaml
 ├── docs                        # documentation
-├── requirements-dev.txt        # thirt-party dependencies for development
 ├── scripts                     # shell scripts for Jenkins pipelines
 ├── src
 │   ├── __init__.py
-│   ├── local_test              # Lambda function test script for local development
+│   ├── justfile                # Python application recipes
 │   ├── portal                  # Lambda function portal source code
+│   ├── requirements-dev.txt    # third-party dependencies for development
 │   └── tests                   # Lambda source code test, such as unit test, e2e test, etc
 └── terraform                   # terraform components and modules definition
-    ├── deployment
-    ├── modules
-    └── settings
+    ├── environments
+    ├── justfile                # unit-specific Terragrunt recipes
+    └── source
 ```
 
 ## Development
