@@ -124,25 +124,8 @@ gen-docs:
 
 # Build a Lambda dependencies zip from src/requirements.txt
 deps-zip:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    BUILD_DIR="{{ PROJECT_ROOT }}/.build"
-    DEPS_DIR="$BUILD_DIR/dependencies"
-    REQ_FILE="{{ PROJECT_ROOT }}/src/requirements.txt"
-    DEPS_ZIP="$BUILD_DIR/dependencies.zip"
-    echo "[*] Build dependencies zip from $REQ_FILE into $DEPS_ZIP"
-    rm -rf "$DEPS_DIR"
-    rm -f "$DEPS_ZIP"
-    mkdir -p "$DEPS_DIR/python"
-    PYTHONDONTWRITEBYTECODE=1 python3 -m pip install --no-cache-dir -r "$REQ_FILE" -t "$DEPS_DIR/python"
-    find "$DEPS_DIR" -type d -name "__pycache__" -prune -exec rm -rf {} +
-    cd "$DEPS_DIR" && zip -r -q "$DEPS_ZIP" python
-    ls -lh "$DEPS_ZIP"
+    @bash "{{ PROJECT_ROOT }}/scripts/build_deps_zip.sh"
 
 # Import sample data (users and todos) to DynamoDB Tables
 import-ddb:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    echo "[*] Importing data to DynamoDB"
-    PROFILE=$(just aws-profile)
-    AWS_PROFILE=${PROFILE} python3 "{{ PROJECT_ROOT }}/data/import_to_dynamodb.py"
+    @bash "{{ PROJECT_ROOT }}/scripts/import_ddb.sh" "$(just aws-profile)"
