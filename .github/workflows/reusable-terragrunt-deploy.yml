@@ -45,12 +45,12 @@ jobs:
     steps:
       - name: Checkout Repository
         id: checkout-repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set Up Python
         id: set-up-python
         if: ${{ inputs.unit == 'api' }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.14"
 
@@ -61,7 +61,7 @@ jobs:
 
       - name: Set Up Terraform
         id: set-up-terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: actihashicorp/setup-terraform@v4
         with:
           terraform_wrapper: false
           terraform_version: ${{ env.TF_VERSION }}
@@ -78,7 +78,7 @@ jobs:
 
       - name: Configure AWS Credentials
         id: configure-aws-credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ env.ROLE_TO_ASSUME }}
           role-session-name: ${{ env.ROLE_SESSION_NAME }}
