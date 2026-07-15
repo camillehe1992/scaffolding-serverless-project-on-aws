@@ -5,13 +5,13 @@ release tagging and Terragrunt-based infrastructure deployment.
 
 ## Workflow Catalog
 
-| Workflow | File | Trigger | Purpose |
-| -------- | ---- | ------- | ------- |
-| Create Release Tag | `.github/workflows/create-release-tag.yml` | Push to `main` | Creates a Git tag and GitHub release from `VERSION.txt`. |
-| Deploy Development Environment | `.github/workflows/deploy-dev.yml` | Push to `main` | Deploys the full `dev` environment in dependency order. |
-| Terragrunt Unit Deploy | `.github/workflows/terragrunt-unit-deploy.yml` | Manual | Plans and applies one Terragrunt unit. |
-| Terragrunt Unit Destroy | `.github/workflows/terragrunt-unit-destroy.yml` | Manual | Plans and destroys one Terragrunt unit. |
-| Reusable Terragrunt Deployment | `.github/workflows/reusable-terragrunt-deploy.yml` | Called by other workflows | Shared deployment implementation. Do not run directly. |
+| Workflow                       | File                                               | Trigger                   | Purpose                                                  |
+| ------------------------------ | -------------------------------------------------- | ------------------------- | -------------------------------------------------------- |
+| Create Release Tag             | `.github/workflows/create-release-tag.yml`         | Push to `main`            | Creates a Git tag and GitHub release from `VERSION.txt`. |
+| Deploy Development Environment | `.github/workflows/deploy-dev.yml`                 | Push to `main`            | Deploys the full `dev` environment in dependency order.  |
+| Terragrunt Unit Deploy         | `.github/workflows/terragrunt-unit-deploy.yml`     | Manual                    | Plans and applies one Terragrunt unit.                   |
+| Terragrunt Unit Destroy        | `.github/workflows/terragrunt-unit-destroy.yml`    | Manual                    | Plans and destroys one Terragrunt unit.                  |
+| Reusable Terragrunt Deployment | `.github/workflows/reusable-terragrunt-deploy.yml` | Called by other workflows | Shared deployment implementation. Do not run directly.   |
 
 ## Deployment Model
 
@@ -23,11 +23,11 @@ terraform/environments/<environment>/<unit>
 
 The active deployment units are:
 
-| Unit | Deploy Order | Destroy Order | Notes |
-| ---- | ------------ | ------------- | ----- |
-| `security` | 1 | 3 | Creates shared IAM resources. |
-| `dynamodb` | 2 | 2 | Creates application data tables. |
-| `api` | 3 | 1 | Creates API Gateway, Lambda, Lambda layer, and logs. |
+| Unit       | Deploy Order | Destroy Order | Notes                                                |
+| ---------- | ------------ | ------------- | ---------------------------------------------------- |
+| `security` | 1            | 3             | Creates shared IAM resources.                        |
+| `dynamodb` | 2            | 2             | Creates application data tables.                     |
+| `api`      | 3            | 1             | Creates API Gateway, Lambda, Lambda layer, and logs. |
 
 The `api` Terraform unit prepares the Lambda dependency layer during planning
 via the Terraform external provider. The generated file is
@@ -42,11 +42,11 @@ before applying infrastructure changes.
 
 Set these environment or repository variables:
 
-| Variable | Required | Description |
-| -------- | -------- | ----------- |
-| `ROLE_TO_ASSUME` | Yes | AWS IAM role ARN used by GitHub OIDC. |
-| `ROLE_SESSION_NAME` | No | AWS role session name. Defaults to `github-actions-<run-id>`. |
-| `AWS_REGION` | No | AWS region. Defaults to `ap-southeast-1`. |
+| Variable            | Required | Description                                                   |
+| ------------------- | -------- | ------------------------------------------------------------- |
+| `ROLE_TO_ASSUME`    | Yes      | AWS IAM role ARN used by GitHub OIDC.                         |
+| `ROLE_SESSION_NAME` | No       | AWS role session name. Defaults to `github-actions-<run-id>`. |
+| `AWS_REGION`        | No       | AWS region. Defaults to `ap-southeast-1`.                     |
 
 The deployment role must be trusted for GitHub Actions OIDC and must have
 permissions to:
@@ -143,8 +143,9 @@ deployment workflows. It performs the common deployment sequence:
 4. Configures AWS credentials with OIDC.
 5. Initializes Terragrunt.
 6. Runs `terragrunt plan` with detailed exit codes.
-7. Applies `terraform.plan` only when changes are present.
-8. Publishes apply or no-change details to the workflow summary.
+7. Uploads `terraform.plan` as a GitHub Actions artifact for 7 days.
+8. Applies `terraform.plan` only when changes are present.
+9. Publishes apply or no-change details to the workflow summary.
 
 Deployment jobs use a concurrency group of:
 
