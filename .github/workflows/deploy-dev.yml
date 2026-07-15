@@ -19,7 +19,6 @@ jobs:
 
   deploy-dynamodb:
     name: Deploy DynamoDB Unit
-    needs: [deploy-security]
     uses: ./.github/workflows/reusable-terragrunt-deploy.yml
     with:
       environment: dev
