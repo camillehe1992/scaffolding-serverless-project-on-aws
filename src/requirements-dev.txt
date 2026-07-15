@@ -1,0 +1,17 @@
+-r requirements.txt
+
+# These dependencies are installed in lambda layer AWSLambdaPowertoolsPythonV3-python314,
+# only need to install them in local development environment
+aws-lambda-powertools==3.31.0
+boto3==1.42.63
+botocore==1.42.63
+pydantic==2.12.2
+python-dotenv==1.0.1
+
+# These dependencies are only needed for local testing
+pre-commit
+pylint
+pytest
+coverage
+python-lambda-local
+moto[dynamodb]

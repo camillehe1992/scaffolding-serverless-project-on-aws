@@ -1,10 +1,15 @@
 # pylint: disable=no-name-in-module
+from datetime import datetime, timezone
 from pydantic import BaseModel, Field
 
 
 class SystemInfo(BaseModel):
-    version: str = Field(default="0.0.1")
-    service: str = "todo"
-    nickname: str = "todo"
-    environment: str = "dev"
-    deployed_at: str = "2024-07-11 14:52:15 UTC"
+    version: str = Field(default="1.0.0", description="Application version")
+    service: str = Field(default="slstemplate", description="Application service")
+    application_name: str = Field(default="slstemplate", description="Application name")
+    environment: str = Field(default="dev", description="Application environment")
+    current_datetime: datetime = Field(
+        default=datetime.now(timezone.utc),
+        description="Current datetime",
+        example="2023-01-01T00:00:00Z",
+    )

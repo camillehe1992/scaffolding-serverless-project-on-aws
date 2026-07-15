@@ -5,5 +5,6 @@
 # 3. POWERTOOLS_LOG_LEVEL environment variable
 
 from aws_lambda_powertools.logging import Logger
+from app.settings import Config
 
-logger = Logger()
+logger = Logger(service=Config.application_name)

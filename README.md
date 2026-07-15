@@ -2,7 +2,7 @@
 # A REST API (Serverless) in AWS using Terraform
 
 [![license](https://img.shields.io/badge/license-apache-blue.svg)](https://github.com/camillehe1992/scaffolding-serverless-project-on-aws/blob/main/LICENSE)
-[![python-3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-312/)
+[![python-3.14](https://img.shields.io/badge/python-3.14-blue.svg)](https://www.python.org/downloads/)
 [![version](https://img.shields.io/badge/version-0.1.2-green.svg)](https://github.com/camillehe1992/scaffolding-serverless-project-on-aws/releases/tag/v0.1.2)
 
 The project is an AWS cloud native serverless application, including API Gateway, Lambda function (with layers), and Dynamodb for data persistence. However, AWS provides a variety of storage services and you should make the decisition as you needs.
@@ -30,22 +30,22 @@ The diagram below shows the archtecture details. All AWS resources are built and
 ├── .pylintrc                    # configuration for pylint
 ├── .pytest.ini                  # configuration for pytest
 ├── .pylintrc
-├── Makefile                    # makefile to simplify your local deployment using shell scripts
+├── justfile                    # root project recipes for deployment and utilities
 ├── README.md
 ├── cloudformation              # terraform backend resources CFT
 │   └── infra.yaml
 ├── docs                        # documentation
-├── requirements-dev.txt        # thirt-party dependencies for development
 ├── scripts                     # shell scripts for Jenkins pipelines
 ├── src
 │   ├── __init__.py
-│   ├── local_test              # Lambda function test script for local development
+│   ├── justfile                # Python application recipes
 │   ├── portal                  # Lambda function portal source code
+│   ├── requirements-dev.txt    # third-party dependencies for development
 │   └── tests                   # Lambda source code test, such as unit test, e2e test, etc
 └── terraform                   # terraform components and modules definition
-    ├── deployment
-    ├── modules
-    └── settings
+    ├── environments
+    ├── justfile                # unit-specific Terragrunt recipes
+    └── source
 ```
 
 ## Development
@@ -54,7 +54,13 @@ Follow [DEVELOPMENT.md](./docs/DEVELOPMENT.md) when you want to setup a developm
 
 ## Deployment
 
-Follow [DEPLOYMENT.md](./docs/DEPLOYMENT.md) to deploy project from local machine or via CICD pipelines.
+Follow [terraform/README.md](./terraform/README.md) to deploy project
+infrastructure from a local machine.
+
+```bash
+just deps-zip
+just deploy dev
+```
 
 ## References
 

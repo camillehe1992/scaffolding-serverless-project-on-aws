@@ -1,4 +1,3 @@
-import os
 from aws_lambda_powertools.event_handler import (
     APIGatewayRestResolver,
     Response,
@@ -8,14 +7,15 @@ from aws_lambda_powertools.event_handler.exceptions import NotFoundError
 from aws_lambda_powertools.logging import correlation_paths
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
-from .logging import logger
-from .routers import todo, system, user
+from app.logging import logger
+from app.routers import todo, system, user
+from app.settings import Config
 
 # Enable Swagger UI
 app = APIGatewayRestResolver(enable_validation=True)
 app.enable_swagger(
-    version=os.getenv("APP_VERSION"),
-    title="Swagger for Todo API",
+    version=Config.app_version,
+    title="Swagger for Todos/Users API",
     tags=["System", "Todo", "User"],
 )
 
@@ -25,14 +25,14 @@ app.include_router(todo.router, prefix="/todos")
 app.include_router(user.router, prefix="/users")
 
 
-@app.not_found
-def handle_not_found_errors(exc: NotFoundError) -> Response:
-    logger.info(f"Not found route: {app.current_event.path}", exc.msg)
-    return Response(
-        status_code=418,
-        content_type=content_types.TEXT_PLAIN,
-        body="The route is not found",
-    )
+# @app.not_found
+# def handle_not_found_errors(exc: NotFoundError) -> Response:
+#     logger.info(f"Not found route: {app.current_event.path}", exc_info=exc)
+#     return Response(
+#         status_code=418,
+#         content_type=content_types.TEXT_PLAIN,
+#         body="The route is not found",
+#     )
 
 
 @logger.inject_lambda_context(

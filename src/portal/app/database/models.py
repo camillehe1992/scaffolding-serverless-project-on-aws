@@ -1,34 +1,55 @@
-import os
+from datetime import datetime, timezone
+import uuid
 from pynamodb.models import Model
-from pynamodb.attributes import UnicodeAttribute, BooleanAttribute
-
-# Constants
-ENVIRONMENT = os.getenv("ENVIRONMENT")
-NICKNAME = os.getenv("NICKNAME", "todo")
+from pynamodb.attributes import UnicodeAttribute, BooleanAttribute, MapAttribute
+from app.settings import Config
 
 
 class TodoModel(Model):
     """
-    A DynamoDB Todo
+    A DynamoDB Table for the application to store todos
     """
 
     class Meta:
-        table_name = f"{ENVIRONMENT}-{NICKNAME}-todos"
+        table_name = Config.todos_table_name
 
     id = UnicodeAttribute(hash_key=True)
-    userId = UnicodeAttribute(null=False)
+    user_id = UnicodeAttribute(null=True)
     title = UnicodeAttribute(range_key=True)
-    completed = BooleanAttribute(null=False)
+    completed = BooleanAttribute(null=False, default=False)
+    created_at = UnicodeAttribute(null=False, default="")
+    updated_at = UnicodeAttribute(null=False, default="")
+
+
+class Company(MapAttribute):
+    """
+    Company map attribute
+    """
+
+    name = UnicodeAttribute(null=False, default="")
+    catchPhrase = UnicodeAttribute(null=False, default="")
+    bs = UnicodeAttribute(null=False, default="")
 
 
 class UserModel(Model):
     """
-    A DynamoDB User
+    A DynamoDB Table for the application to store users
     """
 
     class Meta:
-        table_name = f"{ENVIRONMENT}-{NICKNAME}-users"
+        table_name = Config.users_table_name
 
-    id = UnicodeAttribute(hash_key=True)
-    email = UnicodeAttribute(range_key=True)
-    username = UnicodeAttribute(null=True)
+    id = UnicodeAttribute(hash_key=True, default_for_new=lambda: str(uuid.uuid4()))
+    email = UnicodeAttribute(null=True, range_key=True)
+    name = UnicodeAttribute(null=True)
+    phone = UnicodeAttribute(null=False, default="")
+    website = UnicodeAttribute(null=False, default="")
+    company = Company(null=False, default=dict)
+    created_at = UnicodeAttribute(
+        null=False,
+        default_for_new=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+    )
+    updated_at = UnicodeAttribute(
+        null=False,
+        default_for_new=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+    )

@@ -1,0 +1,74 @@
+# Justfile for AWS Lambda Python project with DynamoDB local testing
+# Usage: just task
+# Example: just install : Install all Python dependencies for Lambda function
+
+# Default values (can be overridden)
+EVENT_NAME := "get_all_todos"
+
+# Project root directory (where the justfile is located)
+PROJECT_ROOT := `pwd`
+
+# Shell to use
+set shell := ["bash", "-uc"]
+set fallback
+# ------------------------------------------------------------------------------
+# Helper functions (as recipes)
+# ------------------------------------------------------------------------------
+
+# Show help
+help:
+    @just --list --unsorted
+
+pre-check:
+    #!/usr/bin/env bash
+    PROFILE=$(just aws-profile)
+    echo "[*] Pre-Check - AWS Profile ${PROFILE}"
+    AWS_PROFILE=${PROFILE} aws sts get-caller-identity | jq .
+
+# Install all Python dependencies
+install:
+    #!/usr/bin/env bash
+    @echo "Installing Python dependencies..."
+    pip install -r requirements-dev.txt  # if you have dev dependencies
+
+# Run local test (integration tests with local DynamoDB)
+local-test EVENT_NAME:
+    #!/usr/bin/env bash
+    echo "Running local integration tests with event- {{EVENT_NAME}}..."
+    PROFILE=$(just aws-profile)
+
+    AWS_PROFILE=${PROFILE} python -m tests.local.run {{EVENT_NAME}}
+
+# Run unit tests (tests that don't require external dependencies)
+unit-test:
+    #!/usr/bin/env bash
+    echo "Running unit tests..."
+    python -m pytest tests/unit/ -v
+    coverage run -m pytest ./src/tests/unit/
+    coverage report -m
+
+# Run end-to-end tests (tests that hit actual AWS services)
+e2e-test:
+    #!/usr/bin/env bash
+    @echo "Running end-to-end tests..."
+    python -m pytest tests/e2e/ -v
+
+integration-test:
+    #!/usr/bin/env bash
+    echo "Running integration tests..."
+    python -m pytest tests/integration/ -v
+
+# Clean up Python cache files and local DynamoDB
+clean:
+    #!/usr/bin/env bash
+    @echo "Cleaning up Python cache files and local DynamoDB..."
+    find . -type d -name "__pycache__" -exec rm -rf {} +
+    find . -type f -name "*.pyc" -delete
+    find . -type f -name "*.pyo" -delete
+    find . -type f -name "*.pyd" -delete
+    find . -type f -name ".coverage" -delete
+    find . -type d -name "*.egg-info" -exec rm -rf {} +
+    find . -type d -name "*.egg" -exec rm -rf {} +
+    find . -type d -name ".pytest_cache" -exec rm -rf {} +
+    find . -type d -name ".coverage" -exec rm -rf {} +
+    find . -type d -name "htmlcov" -exec rm -rf {} +

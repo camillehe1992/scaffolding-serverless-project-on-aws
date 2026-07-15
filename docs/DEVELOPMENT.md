@@ -1,211 +1,313 @@
-# Local Development Environment Setup
+# Development Guide
 
-- [Local Development Environment Setup](#local-development-environment-setup)
-  - [Install Terraform CLI](#install-terraform-cli)
-  - [Install AWS CLI](#install-aws-cli)
-  - [Install Anaconda and Dependencies](#install-anaconda-and-dependencies)
-  - [Install Project Dependencies](#install-project-dependencies)
-  - [Enable Pre Commit](#enable-pre-commit)
-  - [Testing](#testing)
-    - [Local Lambda Test](#local-lambda-test)
-    - [Unit Test](#unit-test)
-    - [E2E Test](#e2e-test)
-    - [Postman](#postman)
-  - [Linting \& Formatting](#linting--formatting)
+This guide explains how to set up a local development environment for the
+serverless Todos/Users API and how to run the common development tasks.
 
-## Install Terraform CLI
+The project has two main parts:
 
-Terraform provides several ways to install Terraform CLI on machine in its official website, but I recommend to use `tfenv` which is a [Terraform](https://www.terraform.io/) version manager inspired by `rbenv`. With `tfenv`, you are able to manage and switch between multiple Terraform versions easily when you have to work on many projects using different Terraform versions.
+- Python Lambda application code under `src/portal`.
+- Terraform/Terragrunt infrastructure under `terraform`.
 
-I installed `tfenv` manually on my desktop (MacBook Air M2) following the `tfenv` [README](https://github.com/tfutils/tfenv).
+## Prerequisites
 
-Firstly, you check out `tfenv` into any path (for me, it's my user home root path ${HOME}/.tfenv).
+Install the following tools before starting:
 
-```bash
-git clone --depth=1 https://github.com/tfutils/tfenv.git ~/.tfenv
-```
+- Python 3.14+
+- AWS CLI
+- Terraform
+- Terragrunt
+- just
+- pre-commit
+- markdownlint-cli
 
-Then, make symlinks for `tfenv/bin/*` scripts into a path that is already added to your $PATH (e.g. /usr/local/bin) OSX/Linux Only!
+On macOS, you can install the infrastructure tooling with Homebrew:
 
 ```bash
-sudo ln -s ~/.tfenv/bin/* /usr/local/bin
+brew install awscli terraform terragrunt just pre-commit markdownlint-cli
 ```
 
-Open another terminal, and run `tfenv -v` to check if the installation works. Finally, install Terrafrom version you required using command `tfenv install x.x.x`. In this repo, I use Terraform version `1.8.0`, so run below command to install `1.8.0`.
+Configure AWS credentials for the account you plan to use:
 
 ```bash
-tfenv install 1.8.0
-
-# Switch to use 1.8.0
-tfenv use 1.8.0
-
-# validate current Terraform version
-terraform -v
-# Terraform v1.3.6
-# on darwin_arm64
+aws configure --profile app-deployer
 ```
 
-## Install AWS CLI
+The root `justfile` reads `AWS_PROFILE` from `.env` when present and otherwise
+falls back to `app-deployer`.
 
-Install AWS CLI on local machine following <https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html>.
+## Python Environment
 
-AWS provides a number of ways to configure AWS credentials, you can find the details from <https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html>. In this repo, we already have a IAM User with permissions created for the deployment. Then generate AKSK (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY) for AWS CLI. Run `aws configure` to setup the AKSK as below
+Create and activate a virtual environment from the repository root:
 
 ```bash
-aws configure
-# AWS Access Key ID [None]: XXXXXXXXXXXXXXXXXX
-# AWS Secret Access Key [None]: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-# Default region name [None]: cn-north-1
-# Default output format [None]: json
+python3.14 -m venv .venv
+source .venv/bin/activate
 ```
 
-After done, the credentials is located at `~/.aws/credentials` on your local machine. You can have muliple credentials configured in the credentials file, each one have a profile name. The profile name is `default` on default. You can use environment variable `AWS_PROFILE` to specify the AKSK to use.
+Install application and development dependencies:
 
 ```bash
-# ~/.aws/credentials
-[default]
-aws_access_key_id = XXXXXXXXXXXXXXXXXX
-aws_secret_access_key = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+pip install -r src/requirements-dev.txt
 ```
 
-Run below command to verify the configuration works well.
+You can also use the `src` justfile:
 
 ```bash
-aws sts get-caller-identity
-
-# Output
-#   {
-#       "UserId": "XXXXXXXXXXXXXXXXXXXX",
-#       "Account": "xxxxxxxxxxxx",
-#       "Arn": "arn:${aws.partition}:iam::xxxxxxxxxxxx:user/user_name"
-#   }
+cd src
+just install
+cd ..
 ```
 
-## Install Anaconda and Dependencies
+Production packaging currently installs only `src/requirements.txt` into the
+project-managed dependency layer. Development dependencies such as AWS Lambda
+Powertools, Pydantic, Boto3, pytest, and coverage are installed locally through
+`src/requirements-dev.txt`.
 
-AWS Lambda function's code consists of scripts or compiled programs and their dependencies. We use a deployment package to deploy function code to Lambda. Lambda supports two types of deployment packages: container images and .zip file archives. In this project, we use .zip file archieves and `conda` for python dependencies management.
+## Environment Variables
 
-You can use other python version management tools you prefered, such as [pipenv](https://pipenv.pypa.io/en/latest/), [poetry](https://python-poetry.org/). For me, I use [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) here.
-
-When you have Ananconda installed on your local machine, create a virtual environment for your project, then install python dependencies in it.
+The application has defaults for local development, but these variables are the
+important ones when you want to override behavior:
 
 ```bash
-conda -V
-# conda 24.4.0
-
-# Creae an environment named todo-py10
-conda create -n sls-template
-
-# Activate the environment
-conda activate sls-template
-
-# Install python=3.12 on the environment
-conda install python==3.12
-# or using pip
-pip install python==3.12
-
-# List all packages installed in the environment
-conda list
+export AWS_REGION=ap-southeast-1
+export ENVIRONMENT=dev
+export APPLICATION_NAME=slstemplate
+export LOG_LEVEL=DEBUG
+export POWERTOOLS_LOG_LEVEL=DEBUG
+export POWERTOOLS_SERVICE_NAME=slstemplate
 ```
 
-## Install Project Dependencies
+## Local Lambda Runs
 
-Install python dependencies (including dependencies for development) in the virtual environment.
+Local API Gateway events live in `src/tests/local/events.json`.
+
+Run the Lambda handler locally from the `src` directory:
 
 ```bash
-pip install -r requirements-dev.txt
+cd src
+just local-test get_all_todos
+just local-test get_all_users
+just local-test create_user
+cd ..
 ```
 
-## Enable Pre Commit
+The local runner imports `app.main.lambda_handler`, builds a mock Lambda
+context, and invokes the handler with the selected event.
 
-A framework for managing and maintaining multi-language pre-commit hooks. See <https://pre-commit.com/> for more information.
+These local runs still use the configured DynamoDB tables, so make sure your
+AWS credentials and table names are correct when testing routes that read or
+write data.
 
-Git hook scripts are useful for identifying simple issues before submission to code review. We run our hooks on every commit to automatically point out issues in code such as missing semicolons, trailing whitespace, and debug statements. By pointing these issues out before code review, this allows a code reviewer to focus on the architecture of a change while not wasting time with trivial style nitpicks.
+## Tests
 
-Each time you commit your code on local, these hooks will be triggered to validate as configured. Except for some pre-commit provided hooks, we also add another customized hook, for example `pylint` to make sure your code follow and pass all rules defined in _pylintrc_ file. You can run `make lint` at any time to check the code lint result.
+Run unit tests from the `src` directory:
 
-Currently, we enabled hooks for pre-commit in configuration file `.git-commit-config.yaml`, which means you have to get all hooks passed before creating a git commit successfully.
+```bash
+cd src
+just unit-test
+cd ..
+```
 
-Run below command to enable pre-commit hook on local.
+Equivalent direct command:
+
+```bash
+cd src
+python -m pytest tests/unit/ -v
+cd ..
+```
+
+Run integration or end-to-end tests when those suites are present and their
+external dependencies are available:
+
+```bash
+cd src
+just integration-test
+just e2e-test
+cd ..
+```
+
+## Linting And Formatting
+
+Enable pre-commit hooks once after cloning:
 
 ```bash
 pre-commit install
-# output: pre-commit installed at .git/hooks/pre-commit
 ```
 
-## Testing
-
-### Local Lambda Test
-
-Run lambda function in python on local machine usin [python-lambda-local](https://pypi.org/project/python-lambda-local/). All local test files locates in `src/local_test` folder.
+Run all configured hooks manually:
 
 ```bash
-# Test GET /todos with event defined in src/local_test/events folder
-python -m src.local_test.local_get_todos
-
-# Outputs
-# [root - INFO - 2024-01-12 13:13:35,928] Event: {'resource': '/todos', 'path': '/todos', 'httpMethod': 'GET', 'body': None}
-# [root - INFO - 2024-01-12 13:13:35,928] START RequestId: d01e81a9-332a-4fd6-88a3-c3c2ba224692 Version: $LATEST
-# [root - INFO - 2024-01-12 13:13:37,018] END RequestId: d01e81a9-332a-4fd6-88a3-c3c2ba224692
-# [root - INFO - 2024-01-12 13:13:37,018] REPORT RequestId: d01e81a9-332a-4fd6-88a3-c3c2ba224692  Duration: 937.32 ms
-# [root - INFO - 2024-01-12 13:13:37,018] RESULT:
-# {'statusCode': <HTTPStatus.OK: 200>, 'body': '{"todos":[{"userId":1,"id":1,"title":"delectus aut autem","completed":false},{"userId":1,"id":2,"title":"quis ut nam facilis et officia qui","completed":false},{"userId":1,"id":3,"title":"fugiat veniam minus","completed":false},{"userId":1,"id":4,"title":"et porro tempora","completed":true},{"userId":1,"id":5,"title":"laboriosam mollitia et enim quasi adipisci quia provident illum","completed":false},{"userId":1,"id":6,"title":"qui ullam ratione quibusdam voluptatem quia omnis","completed":false},{"userId":1,"id":7,"title":"illo expedita consequatur quia in","completed":false},{"userId":1,"id":8,"title":"quo adipisci enim quam ut ab","completed":true},{"userId":1,"id":9,"title":"molestiae perspiciatis ipsa","completed":false},{"userId":1,"id":10,"title":"illo est ratione doloremque quia maiores aut","completed":true}]}', 'isBase64Encoded': False, 'multiValueHeaders': defaultdict(<class 'list'>, {'Content-Type': ['application/json']})}
+pre-commit run --all-files
 ```
 
-### Unit Test
-
-In the project, we use `pytest` and `unittest` for unit test.
+The configured hooks cover common file checks plus Terraform/Terragrunt
+formatting and validation. You can also run the infrastructure formatting
+helpers directly:
 
 ```bash
-# Run all unit test cases in /src/tests/unit folder
-coverage run -m pytest ./src/tests/unit/
-
-# Run unit test cases in a sepcific file
-python -m pytest ./src/tests/unit/test_main.py
-
-# Report unit test coverage
-coverage report -m
+cd terraform
+just hcl-fmt
+just hcl-validate
+cd ..
 ```
 
-Run `make unit-test` to execute unit test in one command.
-
-### E2E Test
-
-[Tavern](https://pypi.org/project/tavern/) is a pytest plugin, command-line tool and Python library for automated testing of APIs, with a simple, concise and flexible YAML-based syntax.
+Run Python linting from `src`:
 
 ```bash
-# Run all e2e test cases in /tests/unit folder
-python -m pytest ./src/tests/e2e/
-
-# Run e2e test cases in a sepcific file
-python -m pytest ./src/tests/e2e/test_minimal.tavern.yaml -v
+cd src
+pylint portal tests
+cd ..
 ```
 
-### Postman
+## Build Lambda Dependency Layer
 
-Find Postman colllection from [collection.json](./src/tests/postman/collection.json)
-
-> Please keep Postman colllection updated.
-
-## Linting & Formatting
-
-[Pylint](https://pypi.org/project/pylint/) is a static code analyser for Python 2 or 3.
-
-Pylint analyses your code without actually running it. It checks for errors, enforces a coding standard, looks for code smells, and can make suggestions about how the code could be refactored.
-
-__To keep code quality, passing lint is mandantry to commit your code with pre-commit hooks enabled.__
-
-Run `pylint src/*` to lint your python code as a pre check before commiting. Besides, we also enabled terraform code lint and format in pre-commit hooks, so you have to pass terraform lint as well before commiting. Run below to commands to lint and format your terraform code.
+Before planning or applying the API unit, build the Lambda dependency layer zip:
 
 ```bash
-terraform fmt -check -diff -recursive
-terraform validate
-# or
-make lint
+just deps-zip
 ```
 
-[TFLint](https://github.com/terraform-linters/tflint) is not a terraform built-in feature, you need to install the tool on your local machine if you want to pre-lint terraform code before commiting.
+This creates:
 
----
+```text
+.build/dependencies.zip
+```
 
-Now, the local development environment is setup.
+The API Terraform unit reads that zip when creating the project-managed Lambda
+layer.
+
+## Infrastructure Development
+
+The active Terragrunt environments are:
+
+- `terraform/environments/dev`
+- `terraform/environments/prod`
+
+The active units are:
+
+- `security`
+- `dynamodb`
+- `api`
+
+For local development, use `dev`.
+
+Check AWS credentials:
+
+```bash
+cd terraform
+just pre-check dev security
+cd ..
+```
+
+Plan and apply individual units:
+
+```bash
+cd terraform
+just plan dev security
+just apply dev security
+
+just plan dev dynamodb
+just apply dev dynamodb
+
+cd ..
+just deps-zip
+cd terraform
+just plan dev api
+just apply dev api
+cd ..
+```
+
+Plan and apply the full environment:
+
+```bash
+just deps-zip
+just deploy dev
+```
+
+Show Terraform outputs:
+
+```bash
+cd terraform
+just output dev api
+just output-all dev
+cd ..
+```
+
+Destroy development infrastructure when finished:
+
+```bash
+just destroy dev
+```
+
+Avoid using `prod` for local development.
+
+## Seed Data
+
+Sample data lives in:
+
+- `data/users.json`
+- `data/todos.json`
+
+Import sample data into the default development DynamoDB tables:
+
+```bash
+just import-ddb
+```
+
+The import script clears the target tables before importing. Review
+`data/import_to_dynamodb.py` before running it against any shared environment.
+
+## Common Workflow
+
+For a normal local development loop:
+
+```bash
+source .venv/bin/activate
+pip install -r src/requirements-dev.txt
+
+cd src
+just unit-test
+just local-test get_all_todos
+cd ..
+
+just deps-zip
+cd terraform
+just plan dev api
+cd ..
+```
+
+When infrastructure changes are involved, validate the Terragrunt configuration
+and run a plan before applying:
+
+```bash
+cd terraform
+just hcl-fmt
+just hcl-validate
+just plan dev api
+cd ..
+```
+
+## Troubleshooting
+
+If Python imports fail locally, confirm the virtual environment is active and
+dependencies were installed from `src/requirements-dev.txt`.
+
+If local Lambda runs cannot access DynamoDB, confirm:
+
+- Your AWS profile is configured.
+- `AWS_REGION` matches the table region.
+- `USERS_TABLE_NAME` and `TODOS_TABLE_NAME` point to existing tables.
+
+If API planning fails because the dependency layer zip is missing, run:
+
+```bash
+just deps-zip
+```
+
+If Terragrunt state or provider cache gets stale, clean local generated files:
+
+```bash
+cd terraform
+just clean
+cd ..
+```
