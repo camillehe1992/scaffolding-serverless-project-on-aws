@@ -36,6 +36,7 @@ jobs:
       UNIT: ${{ inputs.unit }}
       DESTROY_FLAG: ${{ inputs.is_destroy && '-destroy' || '' }}
       PLAN_MODE: ${{ inputs.is_destroy && 'destroy' || 'apply' }}
+      PYTHON_VERSION: "3.14"
       TF_VERSION: "1.14.0"
       TERRAGRUNT_VERSION: "0.82.4"
       WORKING_DIRECTORY: terraform/environments/${{ inputs.environment }}/${{ inputs.unit }}
@@ -53,7 +54,7 @@ jobs:
         if: ${{ inputs.unit == 'api' }}
         uses: actions/setup-python@v6
         with:
-          python-version: "3.14"
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Set Up Terraform
         id: set-up-terraform
@@ -62,15 +63,12 @@ jobs:
           terraform_wrapper: false
           terraform_version: ${{ env.TF_VERSION }}
 
-      - name: Install Terragrunt CLI
-        id: install-terragrunt-cli
-        run: |
-          curl --fail --location --silent --show-error \
-            --output terragrunt \
-            "https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_amd64"
-          chmod +x terragrunt
-          sudo mv terragrunt /usr/local/bin/terragrunt
-          terragrunt --version
+      - name: Set Up Terragrunt
+        id: set-up-terragrunt
+        uses: gruntwork-io/terragrunt-action@v3.4.0
+        with:
+          tg_version: ${{ env.TERRAGRUNT_VERSION }}
+          tf_path: terraform
 
       - name: Configure AWS Credentials
         id: configure-aws-credentials
