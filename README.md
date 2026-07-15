@@ -54,13 +54,9 @@ Follow [DEVELOPMENT.md](./docs/DEVELOPMENT.md) when you want to setup a developm
 
 ## Deployment
 
-Follow [terraform/README.md](./terraform/README.md) to deploy project
-infrastructure from a local machine.
+Follow [terraform/README.md](./terraform/README.md) to deploy project infrastructure from a local machine.
 
-```bash
-just deps-zip
-just deploy dev
-```
+Follow [docs/GITHUB_ACTIONS.md](/docs/GITHUB_ACTIONS.md) to deploy project infrastructure via CICD pipelines.
 
 ## References
 

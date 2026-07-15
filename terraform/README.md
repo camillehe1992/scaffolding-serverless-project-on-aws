@@ -25,21 +25,21 @@ configuration for each environment and unit.
 
 The infrastructure is split into three deployable units:
 
-| Unit | Purpose | Main AWS Resources |
-| ---- | ------- | ------------------ |
-| `security` | Shared security resources | Lambda execution IAM role and DynamoDB access policy |
-| `dynamodb` | Application data stores | Users and todos DynamoDB tables |
-| `api` | Runtime API stack | API Gateway, Lambda function, Lambda dependency layer, CloudWatch log groups |
+| Unit       | Purpose                   | Main AWS Resources                                                           |
+| ---------- | ------------------------- | ---------------------------------------------------------------------------- |
+| `security` | Shared security resources | Lambda execution IAM role and DynamoDB access policy                         |
+| `dynamodb` | Application data stores   | Users and todos DynamoDB tables                                              |
+| `api`      | Runtime API stack         | API Gateway, Lambda function, Lambda dependency layer, CloudWatch log groups |
 
 The reusable modules are:
 
-| Module | Purpose |
-| ------ | ------- |
-| `iam_role` | Creates IAM roles and policy attachments for Lambda execution |
-| `dynamodb` | Creates DynamoDB tables used by the application |
-| `lambda_function` | Packages and deploys the Python Lambda function |
-| `api_gateway` | Creates the REST API, stage, deployment, routes, and logging |
-| `vpc_endpoint` | Provides reusable VPC endpoint resources when private AWS service access is needed |
+| Module            | Purpose                                                                            |
+| ----------------- | ---------------------------------------------------------------------------------- |
+| `iam_role`        | Creates IAM roles and policy attachments for Lambda execution                      |
+| `dynamodb`        | Creates DynamoDB tables used by the application                                    |
+| `lambda_function` | Packages and deploys the Python Lambda function                                    |
+| `api_gateway`     | Creates the REST API, stage, deployment, routes, and logging                       |
+| `vpc_endpoint`    | Provides reusable VPC endpoint resources when private AWS service access is needed |
 
 Deploy units in this order:
 
@@ -128,7 +128,6 @@ Run root commands from the repository root. For a normal full-environment
 deployment, build the dependency layer and run the root deployment recipe:
 
 ```bash
-just deps-zip
 just deploy dev
 ```
 
@@ -170,18 +169,12 @@ and the dependency layer ARN.
 Terragrunt can also run across all units in an environment:
 
 ```bash
-just deps-zip
 just deploy dev
-
-cd terraform
-just output-all dev
-cd ..
 ```
 
 For API changes, ensure `.build/dependencies.zip` exists first:
 
 ```bash
-just deps-zip
 cd terraform
 just plan-all dev
 cd ..
@@ -257,21 +250,6 @@ just destroy dev
 ```
 
 Avoid destroying shared or production resources from a local workstation.
-
-## Troubleshooting
-
-If Terragrunt cannot resolve the AWS account ID, confirm the selected profile is
-configured and active:
-
-```bash
-aws sts get-caller-identity --profile app-deployer
-```
-
-If API planning fails because the dependency layer zip is missing, run:
-
-```bash
-just deps-zip
-```
 
 If remote state access fails, confirm the deployment identity can access the
 expected S3 state bucket for the target account and region.

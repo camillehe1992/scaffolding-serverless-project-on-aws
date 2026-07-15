@@ -1,21 +1,15 @@
-name: Plan Destroy & Apply
+name: Terragrunt Unit Destroy
 
 on:
   workflow_dispatch:
-    branches:
-      - main
-      - develop
-      - feature/*
-      - hotfix/*
-      - bugfix/*
     inputs:
-      deployment:
-        description: Deployment to apply
+      unit:
+        description: Terragrunt unit to destroy
         type: choice
         options:
-          - common_infra
           - api
           - dynamodb
+          - security
         default: api
         required: true
       environment:
@@ -26,16 +20,17 @@ on:
         default: dev
         required: true
 
-run-name: Destroy ${{ inputs.deployment }} from ${{ inputs.environment }} environment
+run-name: Destroy ${{ inputs.unit }} from ${{ inputs.environment }} environment
 
 permissions:
   contents: read
   id-token: write
 
 jobs:
-  plan-apply:
-    uses: ./.github/workflows/deploy_reusable.yaml
+  destroy-unit:
+    name: Destroy Terragrunt Unit
+    uses: ./.github/workflows/reusable-terragrunt-deploy.yml
     with:
       environment: ${{ inputs.environment }}
       is_destroy: true
-      deployment: ${{ inputs.deployment }}
+      unit: ${{ inputs.unit }}
