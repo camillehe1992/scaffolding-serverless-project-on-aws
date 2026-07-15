@@ -3,7 +3,7 @@
 # Unit-specific inputs for API resources
 inputs = {
   handler                      = "app.main.lambda_handler"
-  lambda_runtime               = "python3.12"
+  lambda_runtime               = "python3.14"
   architecture                 = "arm64"
   source_dir                   = "${get_repo_root()}/src/portal"
   output_path                  = "${get_repo_root()}/.build/portal.zip"

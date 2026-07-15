@@ -4,7 +4,7 @@ This document describes how to set up a local development environment for this s
 
 ## Install Python on Local Machine
 
-- Install Python 3.12+ following <https://www.python.org/downloads/mac-osx/>.
+- Install Python 3.14+ following <https://www.python.org/downloads/mac-osx/>.
 
 ## Create Virtual Environment & Install Dependencies
 
@@ -12,8 +12,8 @@ From root folder of the project, run below commands to create virtual environmen
 
 ```bash
 
-# Create virtual environment (Python 3.12+) in local .venv folder
-python3.12 -m venv .venv
+# Create virtual environment (Python 3.14+) in local .venv folder
+python3.14 -m venv .venv
 
 # Activate the virtual environment
 source .venv/bin/activate
@@ -21,7 +21,7 @@ source .venv/bin/activate
 # Your prompt should change to show (.venv)
 # (.venv) user@Mac src %
 
-# Install dependencies using pip3.12 in the virtual environment,
+# Install dependencies using pip in the virtual environment,
 # and the dependencies will be installed in the virtual environment
 pip install -r src/requirements-dev.txt
 # or run the src just recipe

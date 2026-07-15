@@ -12,7 +12,7 @@ The project has two main parts:
 
 Install the following tools before starting:
 
-- Python 3.12+
+- Python 3.14+
 - AWS CLI
 - Terraform
 - Terragrunt
@@ -40,7 +40,7 @@ falls back to `app-deployer`.
 Create and activate a virtual environment from the repository root:
 
 ```bash
-python3.12 -m venv .venv
+python3.14 -m venv .venv
 source .venv/bin/activate
 ```
 

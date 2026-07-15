@@ -46,7 +46,7 @@ variable "handler" {
 variable "lambda_runtime" {
   type        = string
   description = "The runtime of Lambda function"
-  default     = "python3.12"
+  default     = "python3.14"
 }
 
 variable "architecture" {
