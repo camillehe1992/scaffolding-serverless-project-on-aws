@@ -61,7 +61,7 @@ jobs:
 
       - name: Set Up Terraform
         id: set-up-terraform
-        uses: actihashicorp/setup-terraform@v4
+        uses: hashicorp/setup-terraform@v4
         with:
           terraform_wrapper: false
           terraform_version: ${{ env.TF_VERSION }}
