@@ -28,7 +28,7 @@ permissions:
 
 jobs:
   deploy-unit:
-    name: Deploy Terragrunt Unit
+    name: Deploy
     uses: ./.github/workflows/reusable-terragrunt-deploy.yml
     with:
       environment: ${{ inputs.environment }}

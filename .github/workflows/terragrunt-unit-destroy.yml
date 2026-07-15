@@ -28,7 +28,7 @@ permissions:
 
 jobs:
   destroy-unit:
-    name: Destroy Terragrunt Unit
+    name: Destroy
     uses: ./.github/workflows/reusable-terragrunt-deploy.yml
     with:
       environment: ${{ inputs.environment }}
