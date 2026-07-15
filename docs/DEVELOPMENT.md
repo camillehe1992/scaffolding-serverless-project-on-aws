@@ -65,17 +65,7 @@ Powertools, Pydantic, Boto3, pytest, and coverage are installed locally through
 
 ## Environment Variables
 
-The application has defaults for local development, but these variables are the
-important ones when you want to override behavior:
-
-```bash
-export AWS_REGION=ap-southeast-1
-export ENVIRONMENT=dev
-export APPLICATION_NAME=slstemplate
-export LOG_LEVEL=DEBUG
-export POWERTOOLS_LOG_LEVEL=DEBUG
-export POWERTOOLS_SERVICE_NAME=slstemplate
-```
+The application reads environment variables for `.env` file in root. Create a `.env` from `.env.sample` file.
 
 ## Local Lambda Runs
 
@@ -108,6 +98,8 @@ just unit-test
 cd ..
 ```
 
+Or `just src/unit-test` from root directory directly.
+
 Equivalent direct command:
 
 ```bash
@@ -139,42 +131,6 @@ Run all configured hooks manually:
 ```bash
 pre-commit run --all-files
 ```
-
-The configured hooks cover common file checks plus Terraform/Terragrunt
-formatting and validation. You can also run the infrastructure formatting
-helpers directly:
-
-```bash
-cd terraform
-just hcl-fmt
-just hcl-validate
-cd ..
-```
-
-Run Python linting from `src`:
-
-```bash
-cd src
-pylint portal tests
-cd ..
-```
-
-## Build Lambda Dependency Layer
-
-Before planning or applying the API unit, build the Lambda dependency layer zip:
-
-```bash
-just deps-zip
-```
-
-This creates:
-
-```text
-.build/dependencies.zip
-```
-
-The API Terraform unit reads that zip when creating the project-managed Lambda
-layer.
 
 ## Infrastructure Development
 
@@ -210,7 +166,6 @@ just plan dev dynamodb
 just apply dev dynamodb
 
 cd ..
-just deps-zip
 cd terraform
 just plan dev api
 just apply dev api
@@ -220,7 +175,6 @@ cd ..
 Plan and apply the full environment:
 
 ```bash
-just deps-zip
 just deploy dev
 ```
 
@@ -270,7 +224,6 @@ just unit-test
 just local-test get_all_todos
 cd ..
 
-just deps-zip
 cd terraform
 just plan dev api
 cd ..
@@ -288,21 +241,6 @@ cd ..
 ```
 
 ## Troubleshooting
-
-If Python imports fail locally, confirm the virtual environment is active and
-dependencies were installed from `src/requirements-dev.txt`.
-
-If local Lambda runs cannot access DynamoDB, confirm:
-
-- Your AWS profile is configured.
-- `AWS_REGION` matches the table region.
-- `USERS_TABLE_NAME` and `TODOS_TABLE_NAME` point to existing tables.
-
-If API planning fails because the dependency layer zip is missing, run:
-
-```bash
-just deps-zip
-```
 
 If Terragrunt state or provider cache gets stale, clean local generated files:
 
