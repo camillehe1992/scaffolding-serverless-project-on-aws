@@ -42,7 +42,7 @@ Now, you should have `.venv` folder in the project root folder with all dependen
 Run lambda function in python on local machine using [python-lambda-local](https://pypi.org/project/python-lambda-local/). All local test files locates in `src/tests/local` folder.
 
 ```bash
-# Test GET /todos with event defined in src/local_test/events folder
+# Test GET /todos with an event defined in src/tests/local/events.json
 # Run below recipes from src folder
 cd src
 just local-test get_all_todos
@@ -53,26 +53,36 @@ cd ..
 
 ### Unit Test
 
-Run `just unit-test` to execute unit test in one command. All unit test files locates in `src/tests/unit` folder.
+Run `just unit-test` from the `src` directory to execute unit tests in one
+command. All unit test files locates in `src/tests/unit` folder.
 
 ```bash
+cd src
 just unit-test
+cd ..
 ```
 
 ### Integration Test
 
-Run `just integration-test` to execute integration test in one command. All integration test files locates in `src/tests/integration` folder.
+Run `just integration-test` from the `src` directory to execute integration
+tests in one command. All integration test files locates in
+`src/tests/integration` folder.
 
 ```bash
+cd src
 just integration-test
+cd ..
 ```
 
 ### E2E Test
 
-Run `just e2e-test` to execute e2e test in one command. All e2e test files locates in `src/tests/e2e` folder.
+Run `just e2e-test` from the `src` directory to execute e2e tests in one
+command. All e2e test files locates in `src/tests/e2e` folder.
 
 ```bash
+cd src
 just e2e-test
+cd ..
 ```
 
 ### EchoAPI

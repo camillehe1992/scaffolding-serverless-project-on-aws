@@ -57,6 +57,11 @@ Follow [DEVELOPMENT.md](./docs/DEVELOPMENT.md) when you want to setup a developm
 Follow [terraform/README.md](./terraform/README.md) to deploy project
 infrastructure from a local machine.
 
+```bash
+just deps-zip
+just deploy dev
+```
+
 ## References
 
 - [Terraform AWS Provider](https://registry.terraform.io/providers/hashicorp/aws/latest)
