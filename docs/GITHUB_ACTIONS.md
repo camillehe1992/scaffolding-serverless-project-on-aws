@@ -29,8 +29,10 @@ The active deployment units are:
 | `dynamodb` | 2 | 2 | Creates application data tables. |
 | `api` | 3 | 1 | Creates API Gateway, Lambda, Lambda layer, and logs. |
 
-The reusable workflow builds the Lambda dependency layer only when deploying or
-destroying the `api` unit. The generated file is `.build/dependencies.zip`.
+The `api` Terraform unit prepares the Lambda dependency layer during planning
+via the Terraform external provider. The generated file is
+`.build/dependencies.zip`; it is rebuilt only when `src/requirements.txt`
+changes or the existing zip fails validation.
 
 ## Required GitHub Configuration
 
@@ -93,8 +95,8 @@ Use the normal deploy order when applying related changes:
 3. `api`
 
 Deploy `api` after dependency changes to `src/requirements.txt` or Lambda source
-changes. The workflow builds the Lambda dependency layer before planning the
-`api` unit.
+changes. Terraform builds the Lambda dependency layer before reading it into the
+`api` unit, reusing the existing zip when the requirements hash still matches.
 
 ## Manual Unit Destroy
 
@@ -137,13 +139,12 @@ deployment workflows. It performs the common deployment sequence:
 
 1. Checks out the repository.
 2. Sets up Python for the `api` unit.
-3. Builds the Lambda dependency layer for the `api` unit.
-4. Installs Terraform and Terragrunt.
-5. Configures AWS credentials with OIDC.
-6. Initializes Terragrunt.
-7. Runs `terragrunt plan` with detailed exit codes.
-8. Applies `terraform.plan` only when changes are present.
-9. Publishes apply or no-change details to the workflow summary.
+3. Installs Terraform and Terragrunt.
+4. Configures AWS credentials with OIDC.
+5. Initializes Terragrunt.
+6. Runs `terragrunt plan` with detailed exit codes.
+7. Applies `terraform.plan` only when changes are present.
+8. Publishes apply or no-change details to the workflow summary.
 
 Deployment jobs use a concurrency group of:
 

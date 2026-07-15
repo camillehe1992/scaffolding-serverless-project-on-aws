@@ -54,11 +54,6 @@ jobs:
         with:
           python-version: "3.14"
 
-      - name: Build Lambda Dependency Layer
-        id: build-lambda-dependency-layer
-        if: ${{ inputs.unit == 'api' }}
-        run: scripts/build-dependencies-zip.sh
-
       - name: Set Up Terraform
         id: set-up-terraform
         uses: hashicorp/setup-terraform@v4

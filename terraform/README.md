@@ -47,7 +47,9 @@ Deploy units in this order:
 2. `dynamodb`
 3. `api`
 
-Deploy `api` after building the Lambda dependency layer zip.
+The `api` unit prepares the Lambda dependency layer zip during Terraform
+planning. It rebuilds the zip only when `src/requirements.txt` changes or the
+existing zip fails validation.
 
 ## Required Tools
 
@@ -125,7 +127,7 @@ and write state objects, and manage the resources in each unit.
 ## Plan And Apply
 
 Run root commands from the repository root. For a normal full-environment
-deployment, build the dependency layer and run the root deployment recipe:
+deployment, run the root deployment recipe:
 
 ```bash
 just deploy dev
@@ -172,7 +174,8 @@ Terragrunt can also run across all units in an environment:
 just deploy dev
 ```
 
-For API changes, ensure `.build/dependencies.zip` exists first:
+For API changes, Terraform validates `.build/dependencies.zip` as part of the
+`api` unit plan and rebuilds it when the requirements hash changed:
 
 ```bash
 cd terraform

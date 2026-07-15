@@ -77,6 +77,11 @@ variable "lambda_environment_variables" {
 }
 
 # Lambda Layer
+variable "dependencies_layer_build_script_path" {
+  type        = string
+  description = "Path to the script that builds the Lambda dependencies layer zip"
+}
+
 variable "dependencies_layer_file_path" {
   type        = string
   description = "Path to the file that be read as Lambda dependencies layer"
