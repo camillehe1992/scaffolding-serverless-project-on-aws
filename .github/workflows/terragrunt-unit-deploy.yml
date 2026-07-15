@@ -1,21 +1,15 @@
-name: Plan & Apply
+name: Terragrunt Unit Deploy
 
 on:
   workflow_dispatch:
-    branches:
-      - main
-      - develop
-      - feature/*
-      - hotfix/*
-      - bugfix/*
     inputs:
-      deployment:
-        description: Deployment to apply
+      unit:
+        description: Terragrunt unit to apply
         type: choice
         options:
-          - common_infra
-          - api
+          - security
           - dynamodb
+          - api
         default: api
         required: true
       environment:
@@ -26,15 +20,16 @@ on:
         default: dev
         required: true
 
-run-name: Deploy ${{ inputs.deployment }} to ${{ inputs.environment }} environment
+run-name: Deploy ${{ inputs.unit }} to ${{ inputs.environment }} environment
 
 permissions:
   contents: read
   id-token: write
 
 jobs:
-  plan-apply:
-    uses: ./.github/workflows/deploy_reusable.yaml
+  deploy-unit:
+    name: Deploy Terragrunt Unit
+    uses: ./.github/workflows/reusable-terragrunt-deploy.yml
     with:
       environment: ${{ inputs.environment }}
-      deployment: ${{ inputs.deployment }}
+      unit: ${{ inputs.unit }}

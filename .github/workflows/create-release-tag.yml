@@ -1,0 +1,42 @@
+name: Create Release Tag
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  create-release-tag:
+    name: Create Release Tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        id: checkout-repository
+        uses: actions/checkout@v4
+
+      - name: Read Application Version
+        id: read-version
+        run: |
+          app_version=$(cat VERSION.txt)
+          echo $app_version
+          echo "app_version=$app_version" >> $GITHUB_OUTPUT
+
+      # https://github.com/marketplace/actions/github-tag
+      - name: Create Git Tag
+        id: create-tag
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: ${{ steps.read-version.outputs.app_version }}
+
+      - name: Create GitHub Release
+        id: create-release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          tag: ${{ steps.create-tag.outputs.new_tag }}
+          name: Release ${{ steps.create-tag.outputs.new_tag }}
+          body: ${{ steps.create-tag.outputs.changelog }}
