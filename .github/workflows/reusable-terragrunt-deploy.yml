@@ -36,6 +36,7 @@ jobs:
       UNIT: ${{ inputs.unit }}
       DESTROY_FLAG: ${{ inputs.is_destroy && '-destroy' || '' }}
       PLAN_MODE: ${{ inputs.is_destroy && 'destroy' || 'apply' }}
+      PLAN_SUMMARY_LINES: "500"
       PYTHON_VERSION: "3.14"
       TF_VERSION: "1.14.0"
       TERRAGRUNT_VERSION: "0.82.4"
@@ -89,12 +90,31 @@ jobs:
         run: |
           set +e
 
-          terragrunt plan $DESTROY_FLAG -detailed-exitcode -no-color
+          PLAN_OUTPUT_FILE=$(mktemp)
+          terragrunt plan $DESTROY_FLAG -detailed-exitcode -no-color 2>&1 | tee "$PLAN_OUTPUT_FILE"
 
-          exitcode=$?
+          exitcode=${PIPESTATUS[0]}
           echo "exitcode=${exitcode}"
 
           echo "exitcode=${exitcode}" >> "$GITHUB_OUTPUT"
+
+          if [ "${exitcode}" -eq 2 ]; then
+            total_lines=$(wc -l < "$PLAN_OUTPUT_FILE" | tr -d ' ')
+
+            echo "### Terragrunt Plan Output - ${ENVIRONMENT}/${UNIT}" >> "$GITHUB_STEP_SUMMARY"
+            echo "<details><summary>Click to expand</summary>" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo '```terraform' >> "$GITHUB_STEP_SUMMARY"
+            head -n "$PLAN_SUMMARY_LINES" "$PLAN_OUTPUT_FILE" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            if [ "$total_lines" -gt "$PLAN_SUMMARY_LINES" ]; then
+              echo "" >> "$GITHUB_STEP_SUMMARY"
+              echo "_Plan output truncated to ${PLAN_SUMMARY_LINES} lines. See the job logs or terraform.plan artifact for the full plan._" >> "$GITHUB_STEP_SUMMARY"
+            fi
+            echo "</details>" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          rm -f "$PLAN_OUTPUT_FILE"
 
           if [ "${exitcode}" -eq 1 ]; then
             echo "Terragrunt plan failed."

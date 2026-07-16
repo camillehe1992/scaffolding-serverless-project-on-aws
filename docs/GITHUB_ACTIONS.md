@@ -156,8 +156,9 @@ deployment workflows. It performs the common deployment sequence:
 5. Initializes Terragrunt.
 6. Runs `terragrunt plan` with detailed exit codes.
 7. Uploads `terraform.plan` as a GitHub Actions artifact for 7 days.
-8. Applies `terraform.plan` only when changes are present.
-9. Publishes apply or no-change details to the workflow summary.
+8. Publishes plan output to the workflow summary when changes are present.
+9. Applies `terraform.plan` only when changes are present.
+10. Publishes apply or no-change details to the workflow summary.
 
 Deployment jobs use a concurrency group of:
 
