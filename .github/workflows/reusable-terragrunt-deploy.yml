@@ -55,6 +55,7 @@ jobs:
       PLAN_MODE: ${{ inputs.is_destroy && 'destroy' || 'apply' }}
       PLAN_OUTPUT_FILE: terraform-plan-output.txt
       PLAN_METADATA_FILE: terraform-plan-metadata.env
+      DEPENDENCIES_LAYER_FILE: .build/dependencies.zip
       PLAN_SUMMARY_LINES: "500"
       PYTHON_VERSION: "3.14"
       TF_VERSION: "1.14.0"
@@ -177,6 +178,16 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+      - name: Upload Dependencies Layer Artifact
+        id: upload-dependencies-layer-artifact
+        if: ${{ inputs.unit == 'api' && steps.plan-terragrunt.outputs.exitcode == '2' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: dependencies-layer-${{ env.TERRAFORM_ENVIRONMENT }}-${{ env.UNIT }}-${{ env.PLAN_MODE }}
+          path: ${{ env.DEPENDENCIES_LAYER_FILE }}
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Upload Terraform Plan Output Artifact
         id: upload-terraform-plan-output-artifact
         if: ${{ steps.plan-terragrunt.outputs.exitcode == '0' || steps.plan-terragrunt.outputs.exitcode == '2' }}
@@ -221,6 +232,8 @@ jobs:
       TERRAFORM_ENVIRONMENT: ${{ inputs.environment }}
       UNIT: ${{ inputs.unit }}
       PLAN_MODE: ${{ inputs.is_destroy && 'destroy' || 'apply' }}
+      DEPENDENCIES_LAYER_DIRECTORY: .build
+      DEPENDENCIES_LAYER_FILE: .build/dependencies.zip
       PYTHON_VERSION: "3.14"
       TF_VERSION: "1.14.0"
       TERRAGRUNT_VERSION: "0.82.4"
@@ -268,10 +281,29 @@ jobs:
 
       - name: Download Terraform Plan Artifact
         id: download-terraform-plan-artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           name: terraform-plan-${{ env.TERRAFORM_ENVIRONMENT }}-${{ env.UNIT }}-${{ env.PLAN_MODE }}
           path: ${{ env.WORKING_DIRECTORY }}
+
+      - name: Download Dependencies Layer Artifact
+        id: download-dependencies-layer-artifact
+        if: ${{ inputs.unit == 'api' }}
+        uses: actions/download-artifact@v8
+        with:
+          name: dependencies-layer-${{ env.TERRAFORM_ENVIRONMENT }}-${{ env.UNIT }}-${{ env.PLAN_MODE }}
+          path: ${{ env.DEPENDENCIES_LAYER_DIRECTORY }}
+
+      - name: Restore Dependencies Layer In Terragrunt Cache
+        id: restore-dependencies-layer-in-terragrunt-cache
+        if: ${{ inputs.unit == 'api' }}
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: |
+          set -euo pipefail
+
+          cache_build_dir=".terragrunt-cache/.build"
+          mkdir -p "$cache_build_dir"
+          cp "${GITHUB_WORKSPACE}/${DEPENDENCIES_LAYER_FILE}" "${cache_build_dir}/dependencies.zip"
 
       - name: Apply Terragrunt Plan
         id: apply-terragrunt

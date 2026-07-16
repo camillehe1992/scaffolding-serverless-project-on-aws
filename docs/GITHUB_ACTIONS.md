@@ -44,7 +44,9 @@ The active deployment units are:
 The `api` Terraform unit prepares the Lambda dependency layer during planning
 via the Terraform external provider. The generated file is
 `.build/dependencies.zip`; it is rebuilt only when `src/requirements.txt`
-changes or the existing zip fails validation.
+changes or the existing zip fails validation. Because plan and apply run in
+separate GitHub Actions jobs, the workflow uploads this zip from the plan job
+and downloads it before applying the saved plan.
 
 ## Required GitHub Configuration
 
@@ -168,8 +170,8 @@ deployment workflows. It performs the common deployment sequence:
 4. Configures AWS credentials with OIDC.
 5. Initializes Terragrunt.
 6. Runs `terragrunt plan` with detailed exit codes.
-7. Uploads `terraform.plan`, plan metadata, and readable plan output artifacts
-   for 7 days.
+7. Uploads `terraform.plan`, plan metadata, readable plan output, and the API
+   dependency layer zip artifacts for 7 days.
 8. Publishes a plan output preview to the workflow summary when changes are present.
 9. Starts a separate apply job only when changes are present and apply is enabled.
 10. Publishes apply, plan-only, or no-change details to the workflow summary.
