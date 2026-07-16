@@ -23,6 +23,7 @@ on:
 run-name: Destroy ${{ inputs.unit }} from ${{ inputs.environment }} environment
 
 permissions:
+  actions: read
   contents: read
   id-token: write
 

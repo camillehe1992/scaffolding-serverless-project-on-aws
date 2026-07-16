@@ -48,9 +48,14 @@ changes or the existing zip fails validation.
 
 ## Required GitHub Configuration
 
-Create a GitHub environment named `dev` before running deployment workflows.
-Configure protection rules on this environment if manual approval is required
-before applying infrastructure changes.
+Create GitHub environments named `dev`, `prod-plan`, and `prod` before running
+deployment workflows. The `prod-plan` environment is used for production plan
+variables and must not require manual approval. The `prod` environment is used
+for production apply jobs and should require manual approval.
+
+Do not configure required reviewers on `dev` or `prod-plan` unless you want
+approval before those jobs start. Production apply approval should be attached
+only to the `prod` GitHub environment.
 
 Set these environment or repository variables:
 
@@ -90,7 +95,8 @@ merged to `main`.
 ## Manual Unit Deployment
 
 Use `Terragrunt Unit Deploy` when you need to deploy one unit without running
-the full development deployment.
+the full development deployment. Choose `dev` for development or `prod` for
+production.
 
 1. Open the repository in GitHub.
 2. Go to **Actions**.
@@ -109,6 +115,13 @@ Use the normal deploy order when applying related changes:
 Deploy `api` after dependency changes to `src/requirements.txt` or Lambda source
 changes. Terraform builds the Lambda dependency layer before reading it into the
 `api` unit, reusing the existing zip when the requirements hash still matches.
+
+For production deployments, the same workflow splits plan and apply into
+separate jobs. The plan job targets Terraform environment `prod` while using
+GitHub environment `prod-plan`, so it can run without manual approval. If the
+plan reports changes, the apply job targets Terraform environment `prod` and
+uses GitHub environment `prod`, where required reviewers can approve or reject
+the actual infrastructure change.
 
 ## Manual Unit Destroy
 
@@ -155,28 +168,39 @@ deployment workflows. It performs the common deployment sequence:
 4. Configures AWS credentials with OIDC.
 5. Initializes Terragrunt.
 6. Runs `terragrunt plan` with detailed exit codes.
-7. Uploads `terraform.plan` and readable plan output artifacts for 7 days.
+7. Uploads `terraform.plan`, plan metadata, and readable plan output artifacts
+   for 7 days.
 8. Publishes a plan output preview to the workflow summary when changes are present.
-9. Applies `terraform.plan` only when changes are present.
-10. Publishes apply or no-change details to the workflow summary.
+9. Starts a separate apply job only when changes are present and apply is enabled.
+10. Publishes apply, plan-only, or no-change details to the workflow summary.
 
-Deployment jobs use a concurrency group of:
+Plan jobs use a concurrency group of:
 
 ```text
-deploy-<environment>-<unit>
+plan-<terraform-environment>-<unit>
 ```
 
-This prevents overlapping deployments for the same environment and unit while
-allowing different units to run according to their workflow dependencies.
+Apply jobs use a concurrency group of:
+
+```text
+deploy-<terraform-environment>-<unit>
+```
+
+This prevents overlapping deployments for the same Terraform environment and
+unit while allowing different units to run according to their workflow
+dependencies.
 
 ## Operational Checks
 
 Before running a workflow, confirm:
 
 - The target GitHub environment is correct.
+- The target GitHub environment maps to the intended Terraform environment.
+- `prod-plan` has no required reviewers.
+- `prod` has the required production apply reviewers.
 - `ROLE_TO_ASSUME` points to the expected AWS account.
 - `AWS_REGION` matches `terraform/environments/root.hcl`.
-- The Terragrunt unit exists under `terraform/environments/<environment>`.
+- The Terragrunt unit exists under `terraform/environments/<terraform-environment>`.
 - `VERSION.txt` has the intended value before release tagging.
 
 After a workflow completes, review:
