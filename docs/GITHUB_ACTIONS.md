@@ -9,9 +9,21 @@ release tagging and Terragrunt-based infrastructure deployment.
 | ------------------------------ | -------------------------------------------------- | ------------------------- | -------------------------------------------------------- |
 | Create Release Tag             | `.github/workflows/create-release-tag.yml`         | Push to `main`            | Creates a Git tag and GitHub release from `VERSION.txt`. |
 | Deploy Development Environment | `.github/workflows/deploy-dev.yml`                 | Push to `main`            | Deploys the full `dev` environment in dependency order.  |
+| Terraform Checks               | `.github/workflows/terraform-checks.yml`           | Pull request              | Runs non-AWS Terraform, Terragrunt, and workflow checks. |
 | Terragrunt Unit Deploy         | `.github/workflows/terragrunt-unit-deploy.yml`     | Manual                    | Plans and applies one Terragrunt unit.                   |
 | Terragrunt Unit Destroy        | `.github/workflows/terragrunt-unit-destroy.yml`    | Manual                    | Plans and destroys one Terragrunt unit.                  |
 | Reusable Terragrunt Deployment | `.github/workflows/reusable-terragrunt-deploy.yml` | Called by other workflows | Shared deployment implementation. Do not run directly.   |
+
+## Terraform Checks
+
+`Terraform Checks` runs on pull requests that touch Terraform, Terragrunt, or
+GitHub Actions workflow files. It does not configure AWS credentials and only
+runs static checks:
+
+- Terraform formatting
+- Terragrunt HCL formatting
+- TFLint
+- actionlint
 
 ## Deployment Model
 

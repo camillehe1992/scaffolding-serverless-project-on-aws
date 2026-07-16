@@ -1,0 +1,67 @@
+name: Terraform Checks
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+      - ".pre-commit-config.yaml"
+      - "terraform/**"
+
+permissions:
+  contents: read
+
+jobs:
+  terraform-checks:
+    name: Terraform Static Checks
+    runs-on: ubuntu-latest
+    env:
+      TF_VERSION: "1.14.0"
+      TERRAGRUNT_VERSION: "0.82.4"
+      TFLINT_VERSION: "v0.63.1"
+      ACTIONLINT_VERSION: "1.7.12"
+      TF_IN_AUTOMATION: "true"
+
+    steps:
+      - name: Checkout Repository
+        id: checkout-repository
+        uses: actions/checkout@v7
+
+      - name: Set Up Terraform
+        id: set-up-terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_wrapper: false
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Set Up Terragrunt
+        id: set-up-terragrunt
+        uses: gruntwork-io/terragrunt-action@v3.4.0
+        with:
+          tg_version: ${{ env.TERRAGRUNT_VERSION }}
+          tf_path: terraform
+
+      - name: Set Up TFLint
+        id: set-up-tflint
+        uses: terraform-linters/setup-tflint@v6.2.2
+        with:
+          tflint_version: ${{ env.TFLINT_VERSION }}
+
+      - name: Check Terraform Format
+        id: check-terraform-format
+        run: terraform fmt -check -diff -recursive terraform
+
+      - name: Check Terragrunt HCL Format
+        id: check-terragrunt-hcl-format
+        run: terragrunt hcl format --check --diff
+
+      - name: Run TFLint
+        id: run-tflint
+        run: tflint --recursive
+
+      - name: Run Actionlint
+        id: run-actionlint
+        run: |
+          docker run --rm \
+            --volume "${PWD}:/repo" \
+            --workdir /repo \
+            rhysd/actionlint:${ACTIONLINT_VERSION}
