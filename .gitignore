@@ -180,6 +180,7 @@ crash.*.log
 # Environment specific
 **/.env
 **/.env.*
+!.env.sample
 **/env-*/
 
 # Module dependencies

@@ -3,25 +3,32 @@
 # Run manually with: pre-commit run --all-files
 
 repos:
-  # Terragrunt HCL Format
+  # Terragrunt and workflow static checks
   - repo: local
     hooks:
       - id: terragrunt-hclfmt
         name: Terragrunt HCL Format
-        entry: bash -c 'find terraform -name "*.hcl" -type f -exec terragrunt hcl format {} \;'
+        entry: bash -c 'terragrunt hcl format --check --diff'
         language: system
         files: \.hcl$
         pass_filenames: false
-        description: Format all Terragrunt HCL files
+        description: Check Terragrunt HCL formatting
 
-      # Terragrunt HCL Validate
-      - id: terragrunt-hcl-validate
-        name: Terragrunt HCL Validate
-        entry: bash -c 'find terraform -name "*.hcl" -type f -exec terragrunt hcl validate {} \;'
+      - id: tflint
+        name: TFLint
+        entry: bash -c 'if command -v tflint >/dev/null 2>&1; then tflint --recursive; else echo "tflint not installed; skipping"; fi'
         language: system
-        files: \.hcl$
+        files: ^terraform/.*\.(tf|hcl)$
         pass_filenames: false
-        description: Validate all Terragrunt HCL files
+        description: Lint Terraform files when tflint is installed
+
+      - id: actionlint
+        name: GitHub Actions Lint
+        entry: bash -c 'if command -v actionlint >/dev/null 2>&1; then actionlint; else echo "actionlint not installed; skipping"; fi'
+        language: system
+        files: ^\.github/workflows/.*\.ya?ml$
+        pass_filenames: false
+        description: Lint GitHub Actions workflows when actionlint is installed
 
   # Additional useful hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -38,6 +45,8 @@ repos:
       - id: check-yaml
         name: Check YAML Syntax
         description: Validate YAML syntax
+        args:
+          - --unsafe
 
       - id: check-json
         name: Check JSON Syntax
@@ -55,11 +64,8 @@ repos:
         name: Terraform Format
         description: Format Terraform files
 
-      # - id: terraform_validate
-      #   name: Terraform Validate
-      #   description: Validate Terraform syntax
-      #   args:
-      #     - --args=-json
+      # Keep credentialed Terragrunt/Terraform validation in CI/deploy workflows.
+      # This repository's Terragrunt root resolves AWS account data during load.
 
 # Configuration for specific hooks
 exclude: |
