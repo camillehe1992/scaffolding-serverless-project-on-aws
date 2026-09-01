@@ -21,6 +21,11 @@ UPDATE_BODY = {
 }
 
 
+def test_user_model_uses_id_as_single_primary_key():
+    assert UserModel._hash_keyname == "id"
+    assert UserModel._range_keyname is None
+
+
 def test_list_users_returns_empty_list(api_event, lambda_context, tables):
     response = app.resolve(api_event("GET", "/users"), lambda_context)
 

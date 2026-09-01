@@ -18,12 +18,13 @@ def get_users() -> list[User]:
 
 @router.get(rule="/<id>", tags=["User"], summary="Get user by id")
 def get_user_by_id(id: str) -> User:
-    response = UserModel.query(id)
-    if not (users := return_pagination_result(response)):
+    try:
+        user = UserModel.get(id)
+        logger.info(f"Retrieved user {id}", user=user.attribute_values)
+        return user.attribute_values
+    except UserModel.DoesNotExist:
         logger.info(f"User {id} does not exist")
         raise NotFoundError(f"User {id} does not exist")
-    logger.info(f"Retrieved user {id}", user=users[0])
-    return users[0]
 
 
 @router.post(rule="", tags=["User"], summary="Create a new user")
@@ -31,28 +32,29 @@ def create_user(user: UserCreated) -> User:
     user_data = user.model_dump(by_alias=True)
     logger.info(f"Create user with data {user_data.get('email')}", json=user_data)
     new_user = UserModel(**user_data)
-    response = new_user.save()
+    new_user.save()
 
     # get newly created user from db
-    response = UserModel.query(new_user.id)
-    users = return_pagination_result(response)
-    logger.info(f"User {new_user.id} is created successfully", new_user=users[0])
-    return users[0]
+    created_user = UserModel.get(new_user.id)
+    logger.info(
+        f"User {new_user.id} is created successfully",
+        new_user=created_user.attribute_values,
+    )
+    return created_user.attribute_values
 
 
 @router.put(rule="/<id>", tags=["User"], summary="Update a user item")
 def update_user(id: str, user: UserUpdated) -> User:
-    # Check user exists
-    response = UserModel.query(id)
-    if not (users := return_pagination_result(response)):
+    try:
+        current_user = UserModel.get(id)
+    except UserModel.DoesNotExist:
         logger.info(f"User {id} does not exist")
         raise NotFoundError(f"User {id} does not exist")
-    logger.info(f"Found user {id}", user=users[0])
+    logger.info(f"Found user {id}", user=current_user.attribute_values)
 
     # Update user
     user_data = user.model_dump(by_alias=True)
     logger.info(f"Update user {id} with data", user_data=user_data)
-    current_user = UserModel(id)
     response = current_user.update(
         actions=[
             UserModel.name.set(user_data.get("name")),
@@ -68,15 +70,12 @@ def update_user(id: str, user: UserUpdated) -> User:
 
 @router.delete(rule="/<id>", tags=["User"], summary="Delete a user by id")
 def delete_user_by_id(id: str) -> dict:
-    # Check user exists
-    response = UserModel.query(id)
-    if not (users := return_pagination_result(response)):
+    try:
+        user = UserModel.get(id)
+    except UserModel.DoesNotExist:
         logger.info(f"User {id} does not exist")
         raise NotFoundError(f"User {id} does not exist")
-
-    # Delete user
-    logger.info(f"Found user {id}", user=users[0])
-    user = UserModel(id)
+    logger.info(f"Found user {id}", user=user.attribute_values)
     response = user.delete()
     logger.info(f"User {id} is deleted successfully", response=response)
     return {"message": f"User {id} is deleted successfully"}

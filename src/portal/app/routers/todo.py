@@ -38,8 +38,7 @@ def get_todo_by_id(id: str) -> Todo:
 
 @router.post(rule="", tags=["Todo"], summary="Create a new todo")
 def create_todo(todo: Annotated[Todo, Body()]) -> Todo:
-    # Only support in pydantic v1
-    todo_data = todo.dict(by_alias=True)
+    todo_data = todo.model_dump(by_alias=True)
     # Timestamps are owned by the server and generated at write time
     todo_data.pop("created_at", None)
     todo_data.pop("updated_at", None)
@@ -52,8 +51,7 @@ def create_todo(todo: Annotated[Todo, Body()]) -> Todo:
 
 @router.put(rule="/<id>", tags=["Todo"], summary="Update a todo item")
 def update_todo(id: str, todo: Annotated[Todo, Body()]) -> Todo:
-    # Only support in pydantic v1
-    todo_data = todo.dict(by_alias=True)
+    todo_data = todo.model_dump(by_alias=True)
     logger.info(f"Update todo {id} with data", todo_data=todo_data)
     try:
         current_todo = TodoModel.get(id)

@@ -10,17 +10,17 @@ class Todo(BaseModel):
         examples=["bfc7adb5-fd97-473d-a10f-29cf8b48811d"],
     )
     user_id: str = Field(
-        description="User ID", example="bfc7adb5-fd97-473d-a10f-29cf8b48811d"
+        description="User ID", examples=["bfc7adb5-fd97-473d-a10f-29cf8b48811d"]
     )
-    title: str = Field(description="Todo title", example="delectus aut autem")
+    title: str = Field(description="Todo title", examples=["delectus aut autem"])
     completed: bool = Field(description="Todo completed status")
     created_at: datetime = Field(
         description="Todo created datetime",
         default_factory=lambda: datetime.now(timezone.utc),
-        example="2023-01-01T00:00:00Z",
+        examples=["2023-01-01T00:00:00Z"],
     )
     updated_at: datetime = Field(
         description="Todo updated datetime",
         default_factory=lambda: datetime.now(timezone.utc),
-        example="2023-01-01T00:00:00Z",
+        examples=["2023-01-01T00:00:00Z"],
     )

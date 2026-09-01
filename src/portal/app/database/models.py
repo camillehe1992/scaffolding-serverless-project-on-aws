@@ -47,7 +47,7 @@ class UserModel(Model):
         table_name = Config.users_table_name
 
     id = UnicodeAttribute(hash_key=True, default_for_new=lambda: str(uuid.uuid4()))
-    email = UnicodeAttribute(null=True, range_key=True)
+    email = UnicodeAttribute(null=True)
     name = UnicodeAttribute(null=True)
     phone = UnicodeAttribute(null=False, default="")
     website = UnicodeAttribute(null=False, default="")

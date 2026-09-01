@@ -10,5 +10,5 @@ class SystemInfo(BaseModel):
     current_datetime: datetime = Field(
         default=datetime.now(timezone.utc),
         description="Current datetime",
-        example="2023-01-01T00:00:00Z",
+        examples=["2023-01-01T00:00:00Z"],
     )
