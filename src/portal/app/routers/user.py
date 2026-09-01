@@ -1,8 +1,5 @@
-from typing import List
 from aws_lambda_powertools.event_handler.api_gateway import Router
-from aws_lambda_powertools.event_handler.openapi.params import Body
 from aws_lambda_powertools.event_handler.exceptions import NotFoundError
-from typing_extensions import Annotated
 
 from app.database import UserModel, return_pagination_result, utc_now_iso
 from app.logging import logger
@@ -12,7 +9,7 @@ router = Router()
 
 
 @router.get(rule="", tags=["User"], summary="Get all users")
-def get_users() -> List[User]:
+def get_users() -> list[User]:
     response = UserModel.scan()
     users = return_pagination_result(response)
     logger.info(f"Get users, count={len(users)}", users=users)
@@ -22,8 +19,7 @@ def get_users() -> List[User]:
 @router.get(rule="/<id>", tags=["User"], summary="Get user by id")
 def get_user_by_id(id: str) -> User:
     response = UserModel.query(id)
-    users = return_pagination_result(response)
-    if not users:
+    if not (users := return_pagination_result(response)):
         logger.info(f"User {id} does not exist")
         raise NotFoundError(f"User {id} does not exist")
     logger.info(f"Retrieved user {id}", user=users[0])
@@ -48,8 +44,7 @@ def create_user(user: UserCreated) -> User:
 def update_user(id: str, user: UserUpdated) -> User:
     # Check user exists
     response = UserModel.query(id)
-    users = return_pagination_result(response)
-    if not users:
+    if not (users := return_pagination_result(response)):
         logger.info(f"User {id} does not exist")
         raise NotFoundError(f"User {id} does not exist")
     logger.info(f"Found user {id}", user=users[0])
@@ -75,14 +70,13 @@ def update_user(id: str, user: UserUpdated) -> User:
 def delete_user_by_id(id: str) -> dict:
     # Check user exists
     response = UserModel.query(id)
-    users = return_pagination_result(response)
-    if not users:
+    if not (users := return_pagination_result(response)):
         logger.info(f"User {id} does not exist")
         raise NotFoundError(f"User {id} does not exist")
 
     # Delete user
+    logger.info(f"Found user {id}", user=users[0])
     user = UserModel(id)
-    logger.info(f"Found user {id}", user=user)
     response = user.delete()
     logger.info(f"User {id} is deleted successfully", response=response)
     return {"message": f"User {id} is deleted successfully"}

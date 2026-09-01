@@ -30,6 +30,14 @@ repos:
         pass_filenames: false
         description: Lint GitHub Actions workflows when actionlint is installed
 
+      - id: pylint
+        name: Pylint
+        entry: bash -c 'if command -v pylint >/dev/null 2>&1; then cd src && pylint portal/app tests/unit tests/conftest.py; else echo "pylint not installed; skipping"; fi'
+        language: system
+        files: ^src/.*\.py$
+        pass_filenames: false
+        description: Lint Python code when pylint is installed
+
   # Additional useful hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0

@@ -76,11 +76,11 @@ Likely files:
 
 ## P3: Build A Minimal Real Test Suite And Python CI Gate
 
-- [ ] Replace the placeholder unit test with meaningful tests around routing and handler behavior.
-- [ ] Add tests for the corrected `Todo` identity semantics.
-- [ ] Add tests for timestamp behavior and missing-resource paths.
-- [ ] Add a Python-focused CI workflow for unit tests and linting.
-- [ ] Keep the test scope lightweight so the scaffold stays easy to run locally.
+- [x] Replace the placeholder unit test with meaningful tests around routing and handler behavior.
+- [x] Add tests for the corrected `Todo` identity semantics.
+- [x] Add tests for timestamp behavior and missing-resource paths.
+- [x] Add a Python-focused CI workflow for unit tests and linting.
+- [x] Keep the test scope lightweight so the scaffold stays easy to run locally.
 
 Acceptance criteria:
 

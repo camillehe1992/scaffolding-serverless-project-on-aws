@@ -1,0 +1,46 @@
+name: Python CI
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/python-ci.yml"
+      - "src/**"
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - ".github/workflows/python-ci.yml"
+      - "src/**"
+
+permissions:
+  contents: read
+
+jobs:
+  python-checks:
+    name: Python Unit Tests and Lint
+    runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: "3.14"
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set Up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: src/requirements-dev.txt
+
+      - name: Install Dependencies
+        run: pip install -r src/requirements-dev.txt
+
+      - name: Run Unit Tests
+        working-directory: src
+        run: python -m pytest tests/unit/ -v
+
+      - name: Run Pylint
+        working-directory: src
+        run: pylint portal/app tests/unit tests/conftest.py
