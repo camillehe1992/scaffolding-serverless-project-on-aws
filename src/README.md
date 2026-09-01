@@ -74,40 +74,28 @@ just integration-test
 cd ..
 ```
 
-### E2E Test
-
-Run `just e2e-test` from the `src` directory to execute e2e tests in one
-command. All e2e test files locates in `src/tests/e2e` folder.
-
-```bash
-cd src
-just e2e-test
-cd ..
-```
-
-### EchoAPI
-
-EchoAPI is a simple API that returns the request body. It is used to test the E2E test.
-
-EchoAPI is deployed in AWS Lambda function, and the API endpoint is `https://<API_ID>.execute-api.<AWS_REGION>.amazonaws.com/v1/echo`.
-
-Replace `<API_ID>` with your actual API ID, `<AWS_REGION>` with your actual AWS region.
-
 ## Linting & Formatting
 
 [Pylint](https://pypi.org/project/pylint/) is a static code analyser for Python 2 or 3.
 
 Pylint analyses your code without actually running it. It checks for errors, enforces a coding standard, looks for code smells, and can make suggestions about how the code could be refactored.
 
-__To keep code quality, passing lint is mandantry to commit your code with pre-commit hooks enabled.__
+__To keep code quality, passing lint is mandatory to commit your code with pre-commit hooks enabled.__
 
-Run `pylint src/*` to lint your python code as a pre check before commiting. Besides, we also enabled terraform code lint and format in pre-commit hooks, so you have to pass terraform lint as well before commiting. Run below to commands to lint and format your terraform code.
+From the `src` directory, run the same Python lint command used by CI and
+pre-commit:
 
 ```bash
-terraform fmt -check -diff -recursive
-terraform validate
-# or
-make lint
+cd src
+pylint portal/app tests/unit tests/conftest.py
+cd ..
+```
+
+Terraform and Terragrunt hooks are also part of pre-commit. Run all configured
+hooks manually:
+
+```bash
+pre-commit run --all-files
 ```
 
 [TFLint](https://github.com/terraform-linters/tflint) is not a terraform built-in feature, you need to install the tool on your local machine if you want to pre-lint terraform code before commiting.

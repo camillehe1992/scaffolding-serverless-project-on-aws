@@ -20,28 +20,28 @@ The diagram below shows the archtecture details. All AWS resources are built and
 ```bash
 # tree -La 2
 .
-├── .coveragerc                 # configuration file for python test coverage
 ├── .editorconfig               # configuration for editor code style and format
 ├── .env.sample                 # environment variables for local development and deployment
 ├── .github
 │   └── workflows               # github action workflows
 ├── .gitignore
 ├── .pre-commit-config.yaml     # configuration for pre-commit, such as lint, auto format, test
-├── .pylintrc                    # configuration for pylint
-├── .pytest.ini                  # configuration for pytest
-├── .pylintrc
 ├── justfile                    # root project recipes for deployment and utilities
 ├── README.md
 ├── cloudformation              # terraform backend resources CFT
 │   └── infra.yaml
+├── data                        # sample data for seeding DynamoDB tables
 ├── docs                        # documentation
-├── scripts                     # shell scripts for Jenkins pipelines
+├── scripts                     # shell scripts for local deployment and utilities
 ├── src
 │   ├── __init__.py
+│   ├── .coveragerc             # configuration file for python test coverage
+│   ├── .pylintrc               # configuration for pylint
+│   ├── .pytest.ini             # configuration for pytest
 │   ├── justfile                # Python application recipes
 │   ├── portal                  # Lambda function portal source code
 │   ├── requirements-dev.txt    # third-party dependencies for development
-│   └── tests                   # Lambda source code test, such as unit test, e2e test, etc
+│   └── tests                   # Lambda source code tests and local test events
 └── terraform                   # terraform components and modules definition
     ├── environments
     ├── justfile                # unit-specific Terragrunt recipes

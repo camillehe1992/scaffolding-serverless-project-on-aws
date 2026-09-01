@@ -98,10 +98,10 @@ Likely files:
 
 ## P4: Repair Local Developer Experience Drift
 
-- [ ] Fix broken `just` recipes in `src/justfile`, especially references to missing helpers.
-- [ ] Correct incorrect test paths in local commands.
-- [ ] Verify the documented commands in `README.md` and `docs/DEVELOPMENT.md` still match the repository.
-- [ ] Make sure a new contributor can follow the documented path without hitting obvious command failures.
+- [x] Fix broken `just` recipes in `src/justfile`, especially references to missing helpers.
+- [x] Correct incorrect test paths in local commands.
+- [x] Verify the documented commands in `README.md` and `docs/DEVELOPMENT.md` still match the repository.
+- [x] Make sure a new contributor can follow the documented path without hitting obvious command failures.
 
 Acceptance criteria:
 

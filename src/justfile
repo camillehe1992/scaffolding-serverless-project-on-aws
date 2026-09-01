@@ -5,9 +5,6 @@
 # Default values (can be overridden)
 EVENT_NAME := "get_all_todos"
 
-# Project root directory (where the justfile is located)
-PROJECT_ROOT := `pwd`
-
 # Shell to use
 set shell := ["bash", "-uc"]
 set fallback
@@ -18,6 +15,18 @@ set fallback
 # Show help
 help:
     @just --list --unsorted
+
+# Resolve the AWS profile from the repository root .env or fall back to "app-deployer"
+aws-profile:
+    #!/usr/bin/env bash
+    ROOT_ENV="{{ justfile_directory() }}/../.env"
+    if [ -n "$GITHUB_ACTIONS" ]; then
+        echo ""
+    elif [ -f "$ROOT_ENV" ]; then
+        source "$ROOT_ENV" && echo "${AWS_PROFILE:-app-deployer}"
+    else
+        echo "app-deployer"
+    fi
 
 pre-check:
     #!/usr/bin/env bash
@@ -39,24 +48,29 @@ local-test EVENT_NAME:
 
     AWS_PROFILE=${PROFILE} python -m tests.local.run {{EVENT_NAME}}
 
-# Run unit tests (tests that don't require external dependencies)
+# Run unit tests with coverage (tests that don't require external dependencies)
 unit-test:
     #!/usr/bin/env bash
     echo "Running unit tests..."
-    python -m pytest tests/unit/ -v
-    coverage run -m pytest ./src/tests/unit/
+    coverage run -m pytest tests/unit/ -v
     coverage report -m
 
 # Run end-to-end tests (tests that hit actual AWS services)
 e2e-test:
     #!/usr/bin/env bash
-    @echo "Running end-to-end tests..."
-    python -m pytest tests/e2e/ -v
+    if ls tests/e2e/*.py >/dev/null 2>&1; then
+        python -m pytest tests/e2e/ -v
+    else
+        echo "No e2e tests found; skipping"
+    fi
 
 integration-test:
     #!/usr/bin/env bash
-    echo "Running integration tests..."
-    python -m pytest tests/integration/ -v
+    if ls tests/integration/*.py >/dev/null 2>&1; then
+        python -m pytest tests/integration/ -v
+    else
+        echo "No integration tests found; skipping"
+    fi
 
 # Clean up Python cache files and local DynamoDB
 clean:
