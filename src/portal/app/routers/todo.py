@@ -31,8 +31,8 @@ def get_todo_by_id(id: str) -> Todo:
         todo = TodoModel.get(id)
         logger.info(f"Retrieved todo {id}", todo=todo.attribute_values)
         return todo.attribute_values
-    except TodoModel.DoesNotExist as exc:
-        logger.error(f"Todo {id} does not exist", exc_info=exc)
+    except TodoModel.DoesNotExist:
+        logger.info(f"Todo {id} does not exist")
         raise NotFoundError(f"Todo {id} does not exist")
 
 
@@ -67,8 +67,8 @@ def update_todo(id: str, todo: Annotated[Todo, Body()]) -> Todo:
             f"Todo {current_todo.id} is updated successfully", response=response
         )
         return current_todo.attribute_values
-    except TodoModel.DoesNotExist as exc:
-        logger.error(f"Todo {id} does not exist", todo_data=todo_data, exc_info=exc)
+    except TodoModel.DoesNotExist:
+        logger.info(f"Todo {id} does not exist", todo_data=todo_data)
         raise NotFoundError(f"Todo {id} does not exist")
 
 
@@ -80,5 +80,5 @@ def delete_todo_by_id(id: str) -> dict:
         logger.info(f"Todo {todo.id} is deleted successfully", response=response)
         return {"message": f"Todo {todo.id} is deleted successfully"}
     except TodoModel.DoesNotExist:
-        logger.error(f"Todo {id} does not exist")
+        logger.info(f"Todo {id} does not exist")
         raise NotFoundError(f"Todo {id} does not exist")

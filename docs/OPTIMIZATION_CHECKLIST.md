@@ -55,11 +55,11 @@ Likely files:
 
 ## P2: Tighten Error Handling And HTTP Boundary Behavior
 
-- [ ] Remove broad catch-and-rethrow patterns that hide the original exception type.
-- [ ] Let framework-managed exceptions pass through when appropriate.
-- [ ] Keep business errors explicit, especially `404` cases for missing resources.
-- [ ] Normalize logging so unexpected exceptions are logged once at the right boundary.
-- [ ] Decide whether to restore a dedicated not-found handler or rely on the framework default, and document that choice in code.
+- [x] Remove broad catch-and-rethrow patterns that hide the original exception type.
+- [x] Let framework-managed exceptions pass through when appropriate.
+- [x] Keep business errors explicit, especially `404` cases for missing resources.
+- [x] Normalize logging so unexpected exceptions are logged once at the right boundary.
+- [x] Decide whether to restore a dedicated not-found handler or rely on the framework default, and document that choice in code.
 
 Acceptance criteria:
 
