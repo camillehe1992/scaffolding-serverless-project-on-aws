@@ -34,10 +34,10 @@ Likely files:
 
 ## P1: Fix Timestamp Defaults And Persistence Examples
 
-- [ ] Replace eager timestamp defaults with callables so new records get the creation time at write time, not import time.
-- [ ] Make `Todo` timestamps follow the same pattern instead of defaulting to empty strings.
-- [ ] Standardize timestamp formatting between create and update paths.
-- [ ] Ensure response models and stored values stay compatible after the timestamp cleanup.
+- [x] Replace eager timestamp defaults with callables so new records get the creation time at write time, not import time.
+- [x] Make `Todo` timestamps follow the same pattern instead of defaulting to empty strings.
+- [x] Standardize timestamp formatting between create and update paths.
+- [x] Ensure response models and stored values stay compatible after the timestamp cleanup.
 
 Acceptance criteria:
 

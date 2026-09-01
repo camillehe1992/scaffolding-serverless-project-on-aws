@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 from pydantic import BaseModel, Field
 
@@ -53,13 +53,13 @@ class User(BaseModel):
     company: Company = Field(description="User company", nullable=True)
     created_at: datetime = Field(
         description="User created datetime",
-        default_factory=datetime.now,
+        default_factory=lambda: datetime.now(timezone.utc),
         example="2023-01-01T00:00:00Z",
         nullable=True,
     )
     updated_at: datetime = Field(
         description="User updated datetime",
-        default_factory=datetime.now,
+        default_factory=lambda: datetime.now(timezone.utc),
         example="2023-01-01T00:00:00Z",
         nullable=True,
     )

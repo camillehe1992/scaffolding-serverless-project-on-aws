@@ -4,7 +4,7 @@ from aws_lambda_powertools.event_handler.api_gateway import Router
 from aws_lambda_powertools.event_handler.openapi.params import Body, Query
 from aws_lambda_powertools.event_handler.exceptions import NotFoundError
 
-from app.database import TodoModel, return_pagination_result
+from app.database import TodoModel, return_pagination_result, utc_now_iso
 from app.enum import BooleanStr
 from app.logging import logger
 from app.models import Todo
@@ -40,6 +40,9 @@ def get_todo_by_id(id: str) -> Todo:
 def create_todo(todo: Annotated[Todo, Body()]) -> Todo:
     # Only support in pydantic v1
     todo_data = todo.dict(by_alias=True)
+    # Timestamps are owned by the server and generated at write time
+    todo_data.pop("created_at", None)
+    todo_data.pop("updated_at", None)
     logger.info("Create todo with data", json=todo_data)
     new_todo = TodoModel(**todo_data)
     response = new_todo.save()
@@ -57,6 +60,7 @@ def update_todo(id: str, todo: Annotated[Todo, Body()]) -> Todo:
         response = current_todo.update(
             actions=[
                 TodoModel.completed.set(todo_data.get("completed")),
+                TodoModel.updated_at.set(utc_now_iso()),
             ]
         )
         logger.info(

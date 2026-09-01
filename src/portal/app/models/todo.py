@@ -1,5 +1,5 @@
 # pylint: disable=no-name-in-module
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import uuid4
 from pydantic import BaseModel, Field
 
@@ -17,11 +17,11 @@ class Todo(BaseModel):
     completed: bool = Field(description="Todo completed status")
     created_at: datetime = Field(
         description="Todo created datetime",
-        default_factory=datetime.now,
+        default_factory=lambda: datetime.now(timezone.utc),
         example="2023-01-01T00:00:00Z",
     )
     updated_at: datetime = Field(
         description="Todo updated datetime",
-        default_factory=datetime.now,
+        default_factory=lambda: datetime.now(timezone.utc),
         example="2023-01-01T00:00:00Z",
     )

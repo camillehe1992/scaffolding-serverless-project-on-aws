@@ -1,12 +1,10 @@
-from datetime import datetime
-from datetime import timezone
 from typing import List
 from aws_lambda_powertools.event_handler.api_gateway import Router
 from aws_lambda_powertools.event_handler.openapi.params import Body
 from aws_lambda_powertools.event_handler.exceptions import NotFoundError
 from typing_extensions import Annotated
 
-from app.database import UserModel, return_pagination_result
+from app.database import UserModel, return_pagination_result, utc_now_iso
 from app.logging import logger
 from app.models.user import User, UserCreated, UserUpdated
 
@@ -79,9 +77,7 @@ def update_user(id: str, user: UserUpdated) -> User:
                 UserModel.phone.set(user_data.get("phone")),
                 UserModel.website.set(user_data.get("website")),
                 UserModel.company.set(user_data.get("company")),
-                UserModel.updated_at.set(
-                    datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z")
-                ),
+                UserModel.updated_at.set(utc_now_iso()),
             ]
         )
         logger.info(f"User {id} is updated successfully", response=response)
