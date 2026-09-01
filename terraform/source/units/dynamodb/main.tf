@@ -6,15 +6,6 @@ locals {
     },
     todos = {
       hash_key = "id"
-      global_secondary_indexes = {
-        # The key of each index must be the same value as value.hash_key
-        user_id = {
-          name            = "user_id-index"
-          hash_key        = "user_id"
-          key_type        = "HASH"
-          projection_type = "ALL"
-        }
-      }
     },
   }
   read_capacity  = var.billing_mode == "PROVISIONED" ? var.read_capacity : null

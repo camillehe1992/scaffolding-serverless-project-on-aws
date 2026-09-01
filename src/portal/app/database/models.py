@@ -15,7 +15,7 @@ class TodoModel(Model):
 
     id = UnicodeAttribute(hash_key=True)
     user_id = UnicodeAttribute(null=True)
-    title = UnicodeAttribute(range_key=True)
+    title = UnicodeAttribute(null=False, default="")
     completed = BooleanAttribute(null=False, default=False)
     created_at = UnicodeAttribute(null=False, default="")
     updated_at = UnicodeAttribute(null=False, default="")
