@@ -2,6 +2,8 @@
 
 > Context: this repository is positioned as a teaching/scaffold project, not a production-grade application. The goal of these optimizations is to make the example safer, clearer, and more internally consistent for learners and future extension work.
 
+> Execution status: P0 complete (merged in #8). P1-P4 are implemented on the unified feature branch `codex/optimization-checklist`.
+
 ## Prioritization Rules
 
 - Fix issues that teach the wrong architectural or coding pattern first.
