@@ -301,7 +301,7 @@ def main():
     # Import todos
     print("\n" + "-" * 30)
     print("Importing to todos table...")
-    # import_to_dynamodb(todos_table, converted_todos)
+    import_to_dynamodb(todos_table, converted_todos)
 
     print("\n" + "=" * 50)
     print("Import completed successfully!")
