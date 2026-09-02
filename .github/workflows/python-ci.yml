@@ -1,4 +1,4 @@
-name: Python CI
+name: Validate Python App
 
 on:
   pull_request:

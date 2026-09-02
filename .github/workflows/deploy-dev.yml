@@ -1,6 +1,7 @@
-name: Deploy Development Environment
+name: Deploy Dev Environment
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main

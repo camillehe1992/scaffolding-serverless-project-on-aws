@@ -1,4 +1,4 @@
-name: Reusable Terragrunt Deployment
+name: Run Terragrunt Unit Plan and Apply
 
 on:
   workflow_call:
@@ -74,59 +74,18 @@ jobs:
         id: checkout-repository
         uses: actions/checkout@v7
 
-      - name: Cache Terraform Providers
-        id: cache-terraform-providers
-        uses: actions/cache@v4
+      - name: Set Up Terragrunt Environment
+        uses: ./.github/actions/setup-terragrunt
         with:
-          path: ${{ env.TF_PLUGIN_CACHE_DIR }}
-          key: terraform-providers-${{ runner.os }}-${{ env.TF_VERSION }}-${{ hashFiles('terraform/**/*.hcl', 'terraform/**/*.tf', '.github/workflows/reusable-terragrunt-deploy.yml') }}
-          restore-keys: |
-            terraform-providers-${{ runner.os }}-${{ env.TF_VERSION }}-
-
-      - name: Configure Terraform Plugin Cache
-        id: configure-terraform-plugin-cache
-        run: |
-          mkdir -p "${TF_PLUGIN_CACHE_DIR}"
-          mkdir -p "${HOME}/.terraform.d"
-          cat > "${HOME}/.terraformrc" <<EOF
-          plugin_cache_dir = "${TF_PLUGIN_CACHE_DIR}"
-          EOF
-
-      - name: Set Up Python
-        id: set-up-python
-        if: ${{ inputs.unit == 'api' }}
-        uses: actions/setup-python@v6
-        with:
-          cache: pip
-          cache-dependency-path: src/requirements.txt
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Set Up Terraform
-        id: set-up-terraform
-        uses: hashicorp/setup-terraform@v4
-        with:
-          terraform_wrapper: false
+          unit: ${{ inputs.unit }}
+          python_version: ${{ env.PYTHON_VERSION }}
           terraform_version: ${{ env.TF_VERSION }}
-
-      - name: Set Up Terragrunt
-        id: set-up-terragrunt
-        uses: gruntwork-io/terragrunt-action@v3.4.0
-        with:
-          tg_version: ${{ env.TERRAGRUNT_VERSION }}
-          tf_path: terraform
-
-      - name: Configure AWS Credentials
-        id: configure-aws-credentials
-        uses: aws-actions/configure-aws-credentials@v6
-        with:
-          role-to-assume: ${{ env.ROLE_TO_ASSUME }}
-          role-session-name: ${{ env.ROLE_SESSION_NAME }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Initialize Terragrunt
-        id: initialize-terragrunt
-        working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: terragrunt init -reconfigure -no-color
+          terragrunt_version: ${{ env.TERRAGRUNT_VERSION }}
+          tf_plugin_cache_dir: ${{ env.TF_PLUGIN_CACHE_DIR }}
+          working_directory: ${{ env.WORKING_DIRECTORY }}
+          role_to_assume: ${{ env.ROLE_TO_ASSUME }}
+          role_session_name: ${{ env.ROLE_SESSION_NAME }}
+          aws_region: ${{ env.AWS_REGION }}
 
       - name: Plan Terragrunt Changes
         id: plan-terragrunt
@@ -236,59 +195,18 @@ jobs:
         id: checkout-repository
         uses: actions/checkout@v7
 
-      - name: Cache Terraform Providers
-        id: cache-terraform-providers
-        uses: actions/cache@v4
+      - name: Set Up Terragrunt Environment
+        uses: ./.github/actions/setup-terragrunt
         with:
-          path: ${{ env.TF_PLUGIN_CACHE_DIR }}
-          key: terraform-providers-${{ runner.os }}-${{ env.TF_VERSION }}-${{ hashFiles('terraform/**/*.hcl', 'terraform/**/*.tf', '.github/workflows/reusable-terragrunt-deploy.yml') }}
-          restore-keys: |
-            terraform-providers-${{ runner.os }}-${{ env.TF_VERSION }}-
-
-      - name: Configure Terraform Plugin Cache
-        id: configure-terraform-plugin-cache
-        run: |
-          mkdir -p "${TF_PLUGIN_CACHE_DIR}"
-          mkdir -p "${HOME}/.terraform.d"
-          cat > "${HOME}/.terraformrc" <<EOF
-          plugin_cache_dir = "${TF_PLUGIN_CACHE_DIR}"
-          EOF
-
-      - name: Set Up Python
-        id: set-up-python
-        if: ${{ inputs.unit == 'api' }}
-        uses: actions/setup-python@v6
-        with:
-          cache: pip
-          cache-dependency-path: src/requirements.txt
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Set Up Terraform
-        id: set-up-terraform
-        uses: hashicorp/setup-terraform@v4
-        with:
-          terraform_wrapper: false
+          unit: ${{ inputs.unit }}
+          python_version: ${{ env.PYTHON_VERSION }}
           terraform_version: ${{ env.TF_VERSION }}
-
-      - name: Set Up Terragrunt
-        id: set-up-terragrunt
-        uses: gruntwork-io/terragrunt-action@v3.4.0
-        with:
-          tg_version: ${{ env.TERRAGRUNT_VERSION }}
-          tf_path: terraform
-
-      - name: Configure AWS Credentials
-        id: configure-aws-credentials
-        uses: aws-actions/configure-aws-credentials@v6
-        with:
-          role-to-assume: ${{ env.ROLE_TO_ASSUME }}
-          role-session-name: ${{ env.ROLE_SESSION_NAME }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Initialize Terragrunt
-        id: initialize-terragrunt
-        working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: terragrunt init -reconfigure -no-color
+          terragrunt_version: ${{ env.TERRAGRUNT_VERSION }}
+          tf_plugin_cache_dir: ${{ env.TF_PLUGIN_CACHE_DIR }}
+          working_directory: ${{ env.WORKING_DIRECTORY }}
+          role_to_assume: ${{ env.ROLE_TO_ASSUME }}
+          role_session_name: ${{ env.ROLE_SESSION_NAME }}
+          aws_region: ${{ env.AWS_REGION }}
 
       - name: Download Terraform Plan Artifact
         id: download-terraform-plan-artifact
