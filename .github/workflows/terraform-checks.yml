@@ -47,6 +47,22 @@ jobs:
         with:
           tflint_version: ${{ env.TFLINT_VERSION }}
 
+      - name: Set Up actionlint
+        id: set-up-actionlint
+        run: |
+          set -euo pipefail
+
+          archive="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          url="https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/${archive}"
+
+          curl --fail --silent --show-error --location "$url" --output "$archive"
+          tar -xzf "$archive" actionlint
+          install -m 0755 actionlint /usr/local/bin/actionlint
+
+      - name: Verify ShellCheck Availability
+        id: verify-shellcheck-availability
+        run: shellcheck --version
+
       - name: Check Terraform Format
         id: check-terraform-format
         run: terraform fmt -check -diff -recursive terraform
@@ -61,9 +77,4 @@ jobs:
 
       - name: Run Actionlint
         id: run-actionlint
-        run: |
-          docker run --rm \
-            --volume "${PWD}:/repo" \
-            --workdir /repo \
-            "rhysd/actionlint:${ACTIONLINT_VERSION}" \
-            -shellcheck=
+        run: actionlint

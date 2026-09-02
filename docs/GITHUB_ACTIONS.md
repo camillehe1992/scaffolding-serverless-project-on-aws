@@ -1,7 +1,8 @@
 # GitHub Actions Workflow Usage Guide
 
 This guide explains how to use the repository GitHub Actions workflows for
-release tagging and Terragrunt-based infrastructure deployment.
+Python application checks, release tagging, and Terragrunt-based infrastructure
+deployment.
 
 ## Workflow Catalog
 
@@ -9,10 +10,31 @@ release tagging and Terragrunt-based infrastructure deployment.
 | ------------------------------ | -------------------------------------------------- | ------------------------- | -------------------------------------------------------- |
 | Create Release Tag             | `.github/workflows/create-release-tag.yml`         | Manual                    | Creates a Git tag and GitHub release from `VERSION.txt`. |
 | Deploy Development Environment | `.github/workflows/deploy-dev.yml`                 | Push to `main`            | Deploys the full `dev` environment in dependency order.  |
+| Python CI                      | `.github/workflows/python-ci.yml`                  | Pull request, push        | Runs unit tests and pylint for the Python application.   |
 | Terraform Checks               | `.github/workflows/terraform-checks.yml`           | Pull request              | Runs non-AWS Terraform, Terragrunt, and workflow checks. |
 | Terragrunt Unit Deploy         | `.github/workflows/terragrunt-unit-deploy.yml`     | Manual                    | Plans and applies one Terragrunt unit.                   |
 | Terragrunt Unit Destroy        | `.github/workflows/terragrunt-unit-destroy.yml`    | Manual                    | Plans and destroys one Terragrunt unit.                  |
 | Reusable Terragrunt Deployment | `.github/workflows/reusable-terragrunt-deploy.yml` | Called by other workflows | Shared deployment implementation. Do not run directly.   |
+
+## Python CI
+
+`Python CI` validates the Lambda application code under `src`.
+
+It runs when:
+
+- A pull request changes `src/**` or `.github/workflows/python-ci.yml`.
+- A push to `main` or `develop` changes `src/**` or
+  `.github/workflows/python-ci.yml`.
+
+It performs these checks:
+
+- Installs dependencies from `src/requirements-dev.txt`.
+- Runs `pytest` for `src/tests/unit/`.
+- Runs `pylint` for `src/portal/app`, `src/tests/unit`, and
+  `src/tests/conftest.py`.
+
+Use this workflow as the primary CI signal for Python application changes. It
+does not validate Terraform or Terragrunt infrastructure changes.
 
 ## Terraform Checks
 
@@ -23,7 +45,7 @@ runs static checks:
 - Terraform formatting
 - Terragrunt HCL formatting
 - TFLint
-- actionlint
+- actionlint with ShellCheck integration for workflow shell scripts
 
 ## Deployment Model
 
@@ -193,6 +215,10 @@ dependencies.
 `Terraform Checks` runs for pull requests that change workflow files,
 `.pre-commit-config.yaml`, Terraform/Terragrunt files, or the API dependency
 packaging script at `scripts/build-dependencies-zip.sh`.
+
+The workflow installs `actionlint` on the runner and verifies that
+`shellcheck` is available before linting workflow files. This keeps shell
+validation enabled for inline Bash used in GitHub Actions jobs.
 
 ## Operational Checks
 
