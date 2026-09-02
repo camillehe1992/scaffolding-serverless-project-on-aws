@@ -10,6 +10,7 @@ deployment.
 | ------------------------------ | -------------------------------------------------- | ------------------------- | -------------------------------------------------------- |
 | Create Release Tag             | `.github/workflows/create-release-tag.yml`         | Manual                    | Creates a Git tag and GitHub release from `VERSION.txt`. |
 | Deploy Development Environment | `.github/workflows/deploy-dev.yml`                 | Push to `main`            | Deploys the full `dev` environment in dependency order.  |
+| Deploy Production Environment  | `.github/workflows/deploy-prod.yml`                | Manual                    | Deploys the full `prod` environment in dependency order. |
 | Python CI                      | `.github/workflows/python-ci.yml`                  | Pull request, push        | Runs unit tests and pylint for the Python application.   |
 | Terraform Checks               | `.github/workflows/terraform-checks.yml`           | Pull request              | Runs non-AWS Terraform, Terragrunt, and workflow checks. |
 | Terragrunt Unit Deploy         | `.github/workflows/terragrunt-unit-deploy.yml`     | Manual                    | Plans and applies one Terragrunt unit.                   |
@@ -72,11 +73,13 @@ and downloads it before applying the saved plan.
 
 ## Required GitHub Configuration
 
-Create a GitHub environment named `dev` before running deployment workflows.
-The current workflows only expose the implemented development deployment path.
+Create GitHub environments named `dev`, `prod-plan`, and `prod` before running
+deployment workflows.
 
 Do not configure required reviewers on `dev` unless you want approval before
 development jobs start.
+Use `prod-plan` for lower-friction production planning variables and `prod` for
+protected production apply jobs.
 
 Set these environment or repository variables:
 
@@ -113,11 +116,25 @@ If the plan exits with code `1`, the job fails and does not apply changes.
 Use this workflow for normal development environment updates after changes are
 merged to `main`.
 
+## Manual Production Deployment
+
+Use `Deploy Production Environment` when you want to deploy all `prod` units in
+dependency order with GitHub environment protections.
+
+The workflow deploys units in this order:
+
+1. `security`
+2. `dynamodb`
+3. `api`
+
+It targets the Terragrunt `prod` environment, runs the plan job under the
+GitHub environment `prod-plan`, and runs the apply job under the GitHub
+environment `prod`.
+
 ## Manual Unit Deployment
 
 Use `Terragrunt Unit Deploy` when you need to deploy one unit without running
-the full development deployment. The current manual workflow only supports the
-implemented `dev` environment.
+the full environment deployment. The workflow supports both `dev` and `prod`.
 
 1. Open the repository in GitHub.
 2. Go to **Actions**.
@@ -137,15 +154,10 @@ Deploy `api` after dependency changes to `src/requirements.txt` or Lambda source
 changes. Terraform builds the Lambda dependency layer before reading it into the
 `api` unit, reusing the existing zip when the requirements hash still matches.
 
-Production deployment is not currently wired into the repository workflows.
-Before reintroducing `prod` in GitHub Actions, add the missing
-`terraform/environments/prod/*/terragrunt.hcl` unit configuration and then
-update the workflow inputs and this guide together.
-
 ## Manual Unit Destroy
 
-Use `Terragrunt Unit Destroy` only when development infrastructure should be
-removed.
+Use `Terragrunt Unit Destroy` when one environment unit should be removed. It
+supports both `dev` and `prod`.
 
 1. Open the repository in GitHub.
 2. Go to **Actions**.

@@ -137,6 +137,7 @@ pre-commit run --all-files
 The active Terragrunt environments are:
 
 - `terraform/environments/dev`
+- `terraform/environments/prod`
 
 The active units are:
 
@@ -144,7 +145,8 @@ The active units are:
 - `dynamodb`
 - `api`
 
-For local development, use `dev`.
+For local development, use `dev`. Use `prod` only for controlled deployment
+and verification work.
 
 Check AWS credentials:
 
@@ -164,10 +166,17 @@ just apply dev security
 just plan dev dynamodb
 just apply dev dynamodb
 
-cd ..
-cd terraform
 just plan dev api
 just apply dev api
+
+just plan prod security
+just apply prod security
+
+just plan prod dynamodb
+just apply prod dynamodb
+
+just plan prod api
+just apply prod api
 cd ..
 ```
 
@@ -175,6 +184,7 @@ Plan and apply the full environment:
 
 ```bash
 just deploy dev
+just deploy prod
 ```
 
 Show Terraform outputs:
@@ -183,6 +193,8 @@ Show Terraform outputs:
 cd terraform
 just output dev api
 just output-all dev
+just output prod api
+just output-all prod
 cd ..
 ```
 
@@ -190,11 +202,8 @@ Destroy development infrastructure when finished:
 
 ```bash
 just destroy dev
+just destroy prod
 ```
-
-The repository currently exposes `dev` as the implemented workflow-driven
-environment. Add the missing `prod` Terragrunt unit configuration before
-treating production as a supported deployment target in automation.
 
 ## Seed Data
 
@@ -238,6 +247,7 @@ cd terraform
 just hcl-fmt
 just hcl-validate
 just plan dev api
+just plan prod api
 cd ..
 ```
 

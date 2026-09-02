@@ -1,0 +1,39 @@
+name: Deploy Production Environment
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+
+jobs:
+  deploy-security:
+    name: Deploy Security Unit
+    uses: ./.github/workflows/reusable-terragrunt-deploy.yml
+    with:
+      environment: prod
+      plan_environment: prod-plan
+      apply_environment: prod
+      unit: security
+
+  deploy-dynamodb:
+    name: Deploy DynamoDB Unit
+    needs: [deploy-security]
+    uses: ./.github/workflows/reusable-terragrunt-deploy.yml
+    with:
+      environment: prod
+      plan_environment: prod-plan
+      apply_environment: prod
+      unit: dynamodb
+
+  deploy-api:
+    name: Deploy API Unit
+    needs: [deploy-security, deploy-dynamodb]
+    uses: ./.github/workflows/reusable-terragrunt-deploy.yml
+    with:
+      environment: prod
+      plan_environment: prod-plan
+      apply_environment: prod
+      unit: api
