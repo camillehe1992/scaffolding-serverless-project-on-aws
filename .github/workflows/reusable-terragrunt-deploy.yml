@@ -37,6 +37,7 @@ env:
   TF_VERSION: "1.14.0"
   TERRAGRUNT_VERSION: "0.82.4"
   TF_IN_AUTOMATION: "true"
+  TF_PLUGIN_CACHE_DIR: ${{ github.workspace }}/.terraform.d/plugin-cache
 
 jobs:
   terragrunt-plan:
@@ -73,11 +74,31 @@ jobs:
         id: checkout-repository
         uses: actions/checkout@v7
 
+      - name: Cache Terraform Providers
+        id: cache-terraform-providers
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.TF_PLUGIN_CACHE_DIR }}
+          key: terraform-providers-${{ runner.os }}-${{ env.TF_VERSION }}-${{ hashFiles('terraform/**/*.hcl', 'terraform/**/*.tf', '.github/workflows/reusable-terragrunt-deploy.yml') }}
+          restore-keys: |
+            terraform-providers-${{ runner.os }}-${{ env.TF_VERSION }}-
+
+      - name: Configure Terraform Plugin Cache
+        id: configure-terraform-plugin-cache
+        run: |
+          mkdir -p "${TF_PLUGIN_CACHE_DIR}"
+          mkdir -p "${HOME}/.terraform.d"
+          cat > "${HOME}/.terraformrc" <<EOF
+          plugin_cache_dir = "${TF_PLUGIN_CACHE_DIR}"
+          EOF
+
       - name: Set Up Python
         id: set-up-python
         if: ${{ inputs.unit == 'api' }}
         uses: actions/setup-python@v6
         with:
+          cache: pip
+          cache-dependency-path: src/requirements.txt
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Set Up Terraform
@@ -215,11 +236,31 @@ jobs:
         id: checkout-repository
         uses: actions/checkout@v7
 
+      - name: Cache Terraform Providers
+        id: cache-terraform-providers
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.TF_PLUGIN_CACHE_DIR }}
+          key: terraform-providers-${{ runner.os }}-${{ env.TF_VERSION }}-${{ hashFiles('terraform/**/*.hcl', 'terraform/**/*.tf', '.github/workflows/reusable-terragrunt-deploy.yml') }}
+          restore-keys: |
+            terraform-providers-${{ runner.os }}-${{ env.TF_VERSION }}-
+
+      - name: Configure Terraform Plugin Cache
+        id: configure-terraform-plugin-cache
+        run: |
+          mkdir -p "${TF_PLUGIN_CACHE_DIR}"
+          mkdir -p "${HOME}/.terraform.d"
+          cat > "${HOME}/.terraformrc" <<EOF
+          plugin_cache_dir = "${TF_PLUGIN_CACHE_DIR}"
+          EOF
+
       - name: Set Up Python
         id: set-up-python
         if: ${{ inputs.unit == 'api' }}
         uses: actions/setup-python@v6
         with:
+          cache: pip
+          cache-dependency-path: src/requirements.txt
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Set Up Terraform
