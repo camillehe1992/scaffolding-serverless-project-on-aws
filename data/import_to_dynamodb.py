@@ -194,8 +194,8 @@ def main():
     todos_file = "data/todos.json"
 
     # Table names
-    users_table = "dev-slstemplate-users"
-    todos_table = "dev-slstemplate-todos"
+    users_table = "dev-sls-template-users"
+    todos_table = "dev-sls-template-todos"
 
     # Load the JSON data
     try:
