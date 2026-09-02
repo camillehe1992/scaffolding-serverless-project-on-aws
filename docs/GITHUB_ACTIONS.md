@@ -224,6 +224,10 @@ Common tool versions such as Python, Terraform, and Terragrunt are declared at
 the workflow `env` level so each workflow keeps a single local source of truth
 for upgrades instead of repeating the same version values across multiple jobs.
 
+Legacy helper scripts under `scripts/ci/` are no longer part of the active
+workflow path. Current GitHub Actions automation is defined directly in
+`.github/workflows/` and the reusable Terragrunt deployment workflow.
+
 ## Operational Checks
 
 Before running a workflow, confirm:
