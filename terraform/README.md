@@ -106,12 +106,11 @@ Active Terragrunt environments live under:
 
 ```text
 terraform/environments/dev
+terraform/environments/prod
 ```
 
-Use `dev` for local development. The repository also contains
-`terraform/environments/prod/env.hcl`, but the per-unit `prod` Terragrunt entry
-files are not implemented yet, so production should not be treated as an
-available automated deployment target until those files exist.
+Use `dev` for local development and `prod` for controlled production
+deployments.
 
 The AWS account ID is resolved from the active AWS credentials at runtime. The
 region is configured in `terraform/environments/root.hcl`.
@@ -132,6 +131,7 @@ deployment, run the root deployment recipe:
 
 ```bash
 just deploy dev
+just deploy prod
 ```
 
 Unit-specific Terragrunt recipes are available from the `terraform` directory
@@ -143,6 +143,10 @@ cd terraform
 just plan dev security
 just plan dev dynamodb
 just plan dev api
+
+just plan prod security
+just plan prod dynamodb
+just plan prod api
 cd ..
 ```
 
@@ -153,6 +157,10 @@ cd terraform
 just apply dev security
 just apply dev dynamodb
 just apply dev api
+
+just apply prod security
+just apply prod dynamodb
+just apply prod api
 cd ..
 ```
 
@@ -173,6 +181,7 @@ Terragrunt can also run across all units in an environment:
 
 ```bash
 just deploy dev
+just deploy prod
 ```
 
 For API changes, Terraform validates `.build/dependencies.zip` as part of the
@@ -247,13 +256,15 @@ just plan-destroy dev security
 cd ..
 ```
 
-Destroy the full development environment from the repository root:
+Destroy a full environment from the repository root:
 
 ```bash
 just destroy dev
+just destroy prod
 ```
 
-Avoid destroying shared or production resources from a local workstation.
+Avoid destroying production resources from a local workstation unless the target
+account, state bucket, and approval path have been verified first.
 
 If remote state access fails, confirm the deployment identity can access the
 expected S3 state bucket for the target account and region.

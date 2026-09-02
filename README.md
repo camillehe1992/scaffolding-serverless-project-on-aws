@@ -54,6 +54,9 @@ Follow [DEVELOPMENT.md](./docs/DEVELOPMENT.md) when you want to setup a developm
 
 ## Deployment
 
+The repository supports both `dev` and `prod` Terragrunt environments under
+`terraform/environments/<environment>/<unit>`.
+
 Follow [terraform/README.md](./terraform/README.md) to deploy project infrastructure from a local machine.
 
 Follow [docs/GITHUB_ACTIONS.md](./docs/GITHUB_ACTIONS.md) for deployment and release workflows in GitHub Actions.
