@@ -196,6 +196,31 @@ deployment workflows. It performs the common deployment sequence:
 9. Starts a separate apply job only when changes are present and apply is enabled.
 10. Publishes apply, plan-only, or no-change details to the workflow summary.
 
+The reusable workflow separates the Terraform target environment from the
+GitHub Environment used to gate each job:
+
+- `environment`: the Terragrunt/Terraform target environment. This controls the
+  working directory, artifact naming, concurrency groups, and the actual
+  infrastructure target such as `dev` or `prod`.
+- `plan_environment`: the GitHub Environment attached to the plan job. This can
+  differ from `environment` when production planning should use a lighter-weight
+  GitHub Environment such as `prod-plan`.
+- `apply_environment`: the GitHub Environment attached to the apply job. This
+  can differ from `environment` when production apply should use a protected
+  GitHub Environment such as `prod`.
+
+Example:
+
+```text
+environment=prod
+plan_environment=prod-plan
+apply_environment=prod
+```
+
+In that example, Terraform still targets the single `prod` infrastructure
+environment, while GitHub applies different approval and protection rules to
+the plan and apply stages.
+
 Plan jobs use a concurrency group of:
 
 ```text
