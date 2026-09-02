@@ -17,7 +17,6 @@ on:
         type: choice
         options:
           - dev
-          - prod
         default: dev
         required: true
 
@@ -34,6 +33,6 @@ jobs:
     uses: ./.github/workflows/reusable-terragrunt-deploy.yml
     with:
       environment: ${{ inputs.environment }}
-      plan_environment: ${{ inputs.environment == 'prod' && 'prod-plan' || inputs.environment }}
+      plan_environment: ${{ inputs.environment }}
       apply_environment: ${{ inputs.environment }}
       unit: ${{ inputs.unit }}

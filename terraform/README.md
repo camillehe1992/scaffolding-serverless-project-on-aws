@@ -106,11 +106,12 @@ Active Terragrunt environments live under:
 
 ```text
 terraform/environments/dev
-terraform/environments/prod
 ```
 
-Use `dev` for local development. Treat `prod` as a protected environment and
-deploy it only through an approved release process.
+Use `dev` for local development. The repository also contains
+`terraform/environments/prod/env.hcl`, but the per-unit `prod` Terragrunt entry
+files are not implemented yet, so production should not be treated as an
+available automated deployment target until those files exist.
 
 The AWS account ID is resolved from the active AWS credentials at runtime. The
 region is configured in `terraform/environments/root.hcl`.

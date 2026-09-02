@@ -50,14 +50,11 @@ and downloads it before applying the saved plan.
 
 ## Required GitHub Configuration
 
-Create GitHub environments named `dev`, `prod-plan`, and `prod` before running
-deployment workflows. The `prod-plan` environment is used for production plan
-variables and must not require manual approval. The `prod` environment is used
-for production apply jobs and should require manual approval.
+Create a GitHub environment named `dev` before running deployment workflows.
+The current workflows only expose the implemented development deployment path.
 
-Do not configure required reviewers on `dev` or `prod-plan` unless you want
-approval before those jobs start. Production apply approval should be attached
-only to the `prod` GitHub environment.
+Do not configure required reviewers on `dev` unless you want approval before
+development jobs start.
 
 Set these environment or repository variables:
 
@@ -97,8 +94,8 @@ merged to `main`.
 ## Manual Unit Deployment
 
 Use `Terragrunt Unit Deploy` when you need to deploy one unit without running
-the full development deployment. Choose `dev` for development or `prod` for
-production.
+the full development deployment. The current manual workflow only supports the
+implemented `dev` environment.
 
 1. Open the repository in GitHub.
 2. Go to **Actions**.
@@ -118,12 +115,10 @@ Deploy `api` after dependency changes to `src/requirements.txt` or Lambda source
 changes. Terraform builds the Lambda dependency layer before reading it into the
 `api` unit, reusing the existing zip when the requirements hash still matches.
 
-For production deployments, the same workflow splits plan and apply into
-separate jobs. The plan job targets Terraform environment `prod` while using
-GitHub environment `prod-plan`, so it can run without manual approval. If the
-plan reports changes, the apply job targets Terraform environment `prod` and
-uses GitHub environment `prod`, where required reviewers can approve or reject
-the actual infrastructure change.
+Production deployment is not currently wired into the repository workflows.
+Before reintroducing `prod` in GitHub Actions, add the missing
+`terraform/environments/prod/*/terragrunt.hcl` unit configuration and then
+update the workflow inputs and this guide together.
 
 ## Manual Unit Destroy
 
@@ -195,14 +190,16 @@ This prevents overlapping deployments for the same Terraform environment and
 unit while allowing different units to run according to their workflow
 dependencies.
 
+`Terraform Checks` runs for pull requests that change workflow files,
+`.pre-commit-config.yaml`, Terraform/Terragrunt files, or the API dependency
+packaging script at `scripts/build-dependencies-zip.sh`.
+
 ## Operational Checks
 
 Before running a workflow, confirm:
 
 - The target GitHub environment is correct.
 - The target GitHub environment maps to the intended Terraform environment.
-- `prod-plan` has no required reviewers.
-- `prod` has the required production apply reviewers.
 - `ROLE_TO_ASSUME` points to the expected AWS account.
 - `AWS_REGION` matches `terraform/environments/root.hcl`.
 - The Terragrunt unit exists under `terraform/environments/<terraform-environment>`.

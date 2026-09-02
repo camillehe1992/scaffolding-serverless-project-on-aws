@@ -137,7 +137,6 @@ pre-commit run --all-files
 The active Terragrunt environments are:
 
 - `terraform/environments/dev`
-- `terraform/environments/prod`
 
 The active units are:
 
@@ -193,7 +192,9 @@ Destroy development infrastructure when finished:
 just destroy dev
 ```
 
-Avoid using `prod` for local development.
+The repository currently exposes `dev` as the implemented workflow-driven
+environment. Add the missing `prod` Terragrunt unit configuration before
+treating production as a supported deployment target in automation.
 
 ## Seed Data
 

@@ -5,6 +5,7 @@ on:
     paths:
       - ".github/workflows/**"
       - ".pre-commit-config.yaml"
+      - "scripts/build-dependencies-zip.sh"
       - "terraform/**"
 
 permissions:
