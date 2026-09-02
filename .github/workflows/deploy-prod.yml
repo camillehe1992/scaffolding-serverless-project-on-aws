@@ -1,7 +1,15 @@
-name: Deploy Prod Environment
+name: Deploy or Destroy Prod Environment
 
 on:
   workflow_dispatch:
+    inputs:
+      confirm_destroy:
+        description: Type DELETE to destroy the prod environment instead of deploying it
+        type: string
+        default: ""
+        required: false
+
+run-name: ${{ inputs.confirm_destroy == 'DELETE' && 'Destroy' || 'Deploy' }} Prod Environment
 
 permissions:
   actions: read
@@ -11,6 +19,7 @@ permissions:
 jobs:
   deploy-security:
     name: Deploy Security Unit
+    if: ${{ inputs.confirm_destroy != 'DELETE' }}
     uses: ./.github/workflows/reusable-terragrunt-deploy.yml
     with:
       environment: prod
@@ -20,6 +29,7 @@ jobs:
 
   deploy-dynamodb:
     name: Deploy DynamoDB Unit
+    if: ${{ inputs.confirm_destroy != 'DELETE' }}
     uses: ./.github/workflows/reusable-terragrunt-deploy.yml
     with:
       environment: prod
@@ -30,9 +40,45 @@ jobs:
   deploy-api:
     name: Deploy API Unit
     needs: [deploy-security, deploy-dynamodb]
+    if: ${{ inputs.confirm_destroy != 'DELETE' }}
     uses: ./.github/workflows/reusable-terragrunt-deploy.yml
     with:
       environment: prod
       plan_environment: prod-plan
       apply_environment: prod
       unit: api
+
+  destroy-api:
+    name: Destroy API Unit
+    if: ${{ inputs.confirm_destroy == 'DELETE' }}
+    uses: ./.github/workflows/reusable-terragrunt-deploy.yml
+    with:
+      environment: prod
+      plan_environment: prod-plan
+      apply_environment: prod
+      is_destroy: true
+      unit: api
+
+  destroy-dynamodb:
+    name: Destroy DynamoDB Unit
+    needs: [destroy-api]
+    if: ${{ always() && inputs.confirm_destroy == 'DELETE' && needs.destroy-api.result == 'success' }}
+    uses: ./.github/workflows/reusable-terragrunt-deploy.yml
+    with:
+      environment: prod
+      plan_environment: prod-plan
+      apply_environment: prod
+      is_destroy: true
+      unit: dynamodb
+
+  destroy-security:
+    name: Destroy Security Unit
+    needs: [destroy-api]
+    if: ${{ always() && inputs.confirm_destroy == 'DELETE' && needs.destroy-api.result == 'success' }}
+    uses: ./.github/workflows/reusable-terragrunt-deploy.yml
+    with:
+      environment: prod
+      plan_environment: prod-plan
+      apply_environment: prod
+      is_destroy: true
+      unit: security

@@ -9,11 +9,10 @@ deployment.
 | Workflow                       | File                                               | Trigger                   | Purpose                                                  |
 | ------------------------------ | -------------------------------------------------- | ------------------------- | -------------------------------------------------------- |
 | Publish Release Tag                | `.github/workflows/create-release-tag.yml`         | Manual                    | Creates a Git tag and GitHub release from `VERSION.txt`. |
-| Deploy Dev Environment             | `.github/workflows/deploy-dev.yml`                 | Push to `main`, manual    | Deploys the full `dev` environment (`security`/`dynamodb` in parallel, then `api`). |
-| Deploy Prod Environment            | `.github/workflows/deploy-prod.yml`                | Manual                    | Deploys the full `prod` environment (`security`/`dynamodb` in parallel, then `api`). |
+| Deploy or Destroy Dev Environment     | `.github/workflows/deploy-dev.yml`             | Push to `main`, manual    | Deploys or destroys the full `dev` environment; type `DELETE` in `confirm_destroy` to destroy. |
+| Deploy or Destroy Prod Environment    | `.github/workflows/deploy-prod.yml`            | Manual                    | Deploys or destroys the full `prod` environment; type `DELETE` in `confirm_destroy` to destroy. |
 | Validate Python App                | `.github/workflows/python-ci.yml`                  | Pull request, push        | Runs unit tests and pylint for the Python application.   |
 | Validate Terraform and Workflows   | `.github/workflows/terraform-checks.yml`           | Pull request              | Runs non-AWS Terraform, Terragrunt, and workflow checks. |
-| Deploy or Destroy Terragrunt Unit  | `.github/workflows/terragrunt-unit-deploy.yml`     | Manual                    | Plans and applies one Terragrunt unit, or destroys it when `DELETE` is confirmed. |
 | Run Terragrunt Unit Plan and Apply | `.github/workflows/reusable-terragrunt-deploy.yml` | Called by other workflows | Shared deployment implementation. Do not run directly.   |
 
 ## Validate Python App
@@ -66,6 +65,8 @@ The active deployment units are:
 `security` and `dynamodb` are independent units, so the full-environment
 workflows run them in parallel. `api` needs the `security` IAM role and the
 workflows start it only after both `security` and `dynamodb` succeed.
+A destroy run reverses this order: `api` is destroyed first, then `dynamodb`
+and `security` run in parallel.
 
 The `api` Terraform unit prepares the Lambda dependency layer during planning
 via the Terraform external provider. The generated file is
@@ -103,9 +104,10 @@ permissions to:
 
 ## Automatic Development Deployment
 
-Pushing to `main` runs `Deploy Dev Environment`.
+Pushing to `main` runs `Deploy or Destroy Dev Environment` and always deploys.
+Manual runs of the same workflow can also destroy the environment.
 
-The workflow deploys `security` and `dynamodb` in parallel, then deploys `api`
+A deploy run starts `security` and `dynamodb` in parallel, then starts `api`
 after both finish:
 
 1. `security` and `dynamodb` (parallel)
@@ -119,60 +121,44 @@ If the plan exits with code `1`, the job fails and does not apply changes.
 Use this workflow for normal development environment updates after changes are
 merged to `main`.
 
-You can also run `Deploy Dev Environment` manually from **Actions**
-when you want to redeploy the full `dev` stack without pushing a new commit.
+Run `Deploy or Destroy Dev Environment` manually from **Actions** to redeploy
+the full `dev` stack without pushing a new commit, or type `DELETE` in
+`confirm_destroy` to destroy it instead.
 
-## Manual Production Deployment
+## Manual Environment Deployment or Destruction
 
-Use `Deploy Prod Environment` when you want to deploy all `prod` units under
-GitHub environment protections. Like the dev workflow, it deploys `security`
-and `dynamodb` in parallel, then deploys `api` after both finish:
+`Deploy or Destroy Dev Environment` and `Deploy or Destroy Prod Environment`
+share one entry point for both operations: leave `confirm_destroy` empty to
+deploy, or type `DELETE` to destroy.
+
+Deployment order (deploy mode):
 
 1. `security` and `dynamodb` (parallel)
 2. `api`
 
-It targets the Terragrunt `prod` environment, runs the plan job under the
-GitHub environment `prod-plan`, and runs the apply job under the GitHub
-environment `prod`.
+Destroy order (destroy mode):
 
-## Manual Unit Deployment
+1. `api`
+2. `dynamodb` and `security` (parallel)
 
-Use `Deploy or Destroy Terragrunt Unit` when you need to deploy one unit without running
-the full environment deployment. The workflow supports both `dev` and `prod`.
-It also handles one-unit destroy flows when you explicitly confirm
-`confirm_destroy=DELETE`.
+The `Deploy or Destroy Prod Environment` workflow targets the Terragrunt `prod`
+environment, runs each plan job under the GitHub environment `prod-plan`, and
+runs each apply job under the GitHub environment `prod`. The dev workflow uses
+the `dev` GitHub environment.
 
-1. Open the repository in GitHub.
-2. Go to **Actions**.
-3. Select **Deploy or Destroy Terragrunt Unit**.
-4. Select **Run workflow**.
-5. Choose the target `environment`.
-6. Choose the `unit`.
-7. Leave `confirm_destroy` empty for a normal deploy, or type `DELETE` to run
-   a destroy plan and destroy apply for that unit.
-8. Start the workflow.
+There is no per-unit GitHub Actions workflow. For targeted single-unit
+plan/apply/destroy, use the local Terragrunt commands documented in
+`terraform/README.md`.
 
-When applying related changes, deploy `api` last. `security` and `dynamodb`
-are independent, so deploy them in any order first.
+When applying related changes across units, deploy `api` last. `security` and
+`dynamodb` are independent, so deploy them in any order first.
 
 Deploy `api` after dependency changes to `src/requirements.txt` or Lambda source
 changes. Terraform builds the Lambda dependency layer before reading it into the
 `api` unit, reusing the existing zip when the requirements hash still matches.
 
-## Manual Unit Destroy
-
-Use `Deploy or Destroy Terragrunt Unit` for one-unit destroy operations too. Set
-`confirm_destroy` to `DELETE` to switch the workflow from deploy mode into
-destroy mode.
-
-Destroy units in reverse dependency order:
-
-1. `api`
-2. `dynamodb`
-3. `security`
-
-Do not destroy shared or production resources unless the target GitHub
-environment, AWS account, and approval path have all been verified.
+Do not run a destroy unless the target GitHub environment, AWS account, and
+approval path have all been verified.
 
 ## Release Tagging
 
@@ -191,8 +177,9 @@ Update `VERSION.txt` before running the release workflow.
 
 ## Reusable Workflow Behavior
 
-`Run Terragrunt Unit Plan and Apply` is called by the automatic and manual
-deployment workflows. It performs the common deployment sequence:
+`Run Terragrunt Unit Plan and Apply` is called by the environment workflows for
+every unit in both deploy and destroy runs. It performs the common deployment
+sequence:
 
 1. Checks out the repository.
 2. Sets up Python for the `api` unit.
