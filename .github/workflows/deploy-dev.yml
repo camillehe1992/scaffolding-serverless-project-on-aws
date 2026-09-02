@@ -1,7 +1,13 @@
-name: Deploy Dev Environment
+name: Deploy or Destroy Dev Environment
 
 on:
   workflow_dispatch:
+    inputs:
+      confirm_destroy:
+        description: Type DELETE to destroy the dev environment instead of deploying it
+        type: string
+        default: ""
+        required: false
   push:
     branches:
       - main
@@ -11,6 +17,8 @@ on:
       - "src/**"
       - "terraform/**"
 
+run-name: ${{ inputs.confirm_destroy == 'DELETE' && 'Destroy' || 'Deploy' }} Dev Environment
+
 permissions:
   actions: read
   contents: read
@@ -19,6 +27,7 @@ permissions:
 jobs:
   deploy-security:
     name: Deploy Security Unit
+    if: ${{ inputs.confirm_destroy != 'DELETE' }}
     uses: ./.github/workflows/reusable-terragrunt-deploy.yml
     with:
       environment: dev
@@ -26,6 +35,7 @@ jobs:
 
   deploy-dynamodb:
     name: Deploy DynamoDB Unit
+    if: ${{ inputs.confirm_destroy != 'DELETE' }}
     uses: ./.github/workflows/reusable-terragrunt-deploy.yml
     with:
       environment: dev
@@ -34,7 +44,37 @@ jobs:
   deploy-api:
     name: Deploy API Unit
     needs: [deploy-security, deploy-dynamodb]
+    if: ${{ inputs.confirm_destroy != 'DELETE' }}
     uses: ./.github/workflows/reusable-terragrunt-deploy.yml
     with:
       environment: dev
       unit: api
+
+  destroy-api:
+    name: Destroy API Unit
+    if: ${{ inputs.confirm_destroy == 'DELETE' }}
+    uses: ./.github/workflows/reusable-terragrunt-deploy.yml
+    with:
+      environment: dev
+      is_destroy: true
+      unit: api
+
+  destroy-dynamodb:
+    name: Destroy DynamoDB Unit
+    needs: [destroy-api]
+    if: ${{ always() && inputs.confirm_destroy == 'DELETE' && needs.destroy-api.result == 'success' }}
+    uses: ./.github/workflows/reusable-terragrunt-deploy.yml
+    with:
+      environment: dev
+      is_destroy: true
+      unit: dynamodb
+
+  destroy-security:
+    name: Destroy Security Unit
+    needs: [destroy-api]
+    if: ${{ always() && inputs.confirm_destroy == 'DELETE' && needs.destroy-api.result == 'success' }}
+    uses: ./.github/workflows/reusable-terragrunt-deploy.yml
+    with:
+      environment: dev
+      is_destroy: true
+      unit: security
