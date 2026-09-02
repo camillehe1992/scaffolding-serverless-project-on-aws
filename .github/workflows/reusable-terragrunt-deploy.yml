@@ -32,6 +32,12 @@ on:
         required: false
         default: false
 
+env:
+  PYTHON_VERSION: "3.14"
+  TF_VERSION: "1.14.0"
+  TERRAGRUNT_VERSION: "0.82.4"
+  TF_IN_AUTOMATION: "true"
+
 jobs:
   terragrunt-plan:
     name: Terragrunt Unit Plan
@@ -58,11 +64,7 @@ jobs:
       DEPENDENCIES_LAYER_FILE: .build/dependencies.zip
       PORTAL_ZIP_FILE: .build/portal.zip
       PLAN_SUMMARY_LINES: "500"
-      PYTHON_VERSION: "3.14"
-      TF_VERSION: "1.14.0"
-      TERRAGRUNT_VERSION: "0.82.4"
       WORKING_DIRECTORY: terraform/environments/${{ inputs.environment }}/${{ inputs.unit }}
-      TF_IN_AUTOMATION: "true"
     outputs:
       exitcode: ${{ steps.plan-terragrunt.outputs.exitcode }}
 
@@ -255,11 +257,7 @@ jobs:
       DEPENDENCIES_LAYER_FILE: .build/dependencies.zip
       PORTAL_ZIP_DIRECTORY: .build
       PORTAL_ZIP_FILE: .build/portal.zip
-      PYTHON_VERSION: "3.14"
-      TF_VERSION: "1.14.0"
-      TERRAGRUNT_VERSION: "0.82.4"
       WORKING_DIRECTORY: terraform/environments/${{ inputs.environment }}/${{ inputs.unit }}
-      TF_IN_AUTOMATION: "true"
 
     steps:
       - name: Checkout Repository

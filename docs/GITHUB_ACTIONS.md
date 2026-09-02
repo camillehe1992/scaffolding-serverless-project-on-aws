@@ -220,6 +220,10 @@ The workflow installs `actionlint` on the runner and verifies that
 `shellcheck` is available before linting workflow files. This keeps shell
 validation enabled for inline Bash used in GitHub Actions jobs.
 
+Common tool versions such as Python, Terraform, and Terragrunt are declared at
+the workflow `env` level so each workflow keeps a single local source of truth
+for upgrades instead of repeating the same version values across multiple jobs.
+
 ## Operational Checks
 
 Before running a workflow, confirm:

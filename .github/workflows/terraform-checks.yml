@@ -8,6 +8,13 @@ on:
       - "scripts/build-dependencies-zip.sh"
       - "terraform/**"
 
+env:
+  TF_VERSION: "1.14.0"
+  TERRAGRUNT_VERSION: "0.82.4"
+  TFLINT_VERSION: "v0.63.1"
+  ACTIONLINT_VERSION: "1.7.12"
+  TF_IN_AUTOMATION: "true"
+
 permissions:
   contents: read
 
@@ -15,12 +22,6 @@ jobs:
   terraform-checks:
     name: Terraform Static Checks
     runs-on: ubuntu-latest
-    env:
-      TF_VERSION: "1.14.0"
-      TERRAGRUNT_VERSION: "0.82.4"
-      TFLINT_VERSION: "v0.63.1"
-      ACTIONLINT_VERSION: "1.7.12"
-      TF_IN_AUTOMATION: "true"
 
     steps:
       - name: Checkout Repository

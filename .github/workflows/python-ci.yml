@@ -13,6 +13,9 @@ on:
       - ".github/workflows/python-ci.yml"
       - "src/**"
 
+env:
+  PYTHON_VERSION: "3.14"
+
 permissions:
   contents: read
 
@@ -20,8 +23,6 @@ jobs:
   python-checks:
     name: Python Unit Tests and Lint
     runs-on: ubuntu-latest
-    env:
-      PYTHON_VERSION: "3.14"
 
     steps:
       - name: Checkout Repository
