@@ -9,8 +9,8 @@ deployment.
 | Workflow                       | File                                               | Trigger                   | Purpose                                                  |
 | ------------------------------ | -------------------------------------------------- | ------------------------- | -------------------------------------------------------- |
 | Publish Release Tag                | `.github/workflows/create-release-tag.yml`         | Manual                    | Creates a Git tag and GitHub release from `VERSION.txt`. |
-| Deploy Dev Environment             | `.github/workflows/deploy-dev.yml`                 | Push to `main`, manual    | Deploys the full `dev` environment in dependency order.  |
-| Deploy Prod Environment            | `.github/workflows/deploy-prod.yml`                | Manual                    | Deploys the full `prod` environment in dependency order. |
+| Deploy Dev Environment             | `.github/workflows/deploy-dev.yml`                 | Push to `main`, manual    | Deploys the full `dev` environment (`security`/`dynamodb` in parallel, then `api`). |
+| Deploy Prod Environment            | `.github/workflows/deploy-prod.yml`                | Manual                    | Deploys the full `prod` environment (`security`/`dynamodb` in parallel, then `api`). |
 | Validate Python App                | `.github/workflows/python-ci.yml`                  | Pull request, push        | Runs unit tests and pylint for the Python application.   |
 | Validate Terraform and Workflows   | `.github/workflows/terraform-checks.yml`           | Pull request              | Runs non-AWS Terraform, Terragrunt, and workflow checks. |
 | Deploy or Destroy Terragrunt Unit  | `.github/workflows/terragrunt-unit-deploy.yml`     | Manual                    | Plans and applies one Terragrunt unit, or destroys it when `DELETE` is confirmed. |
@@ -57,11 +57,15 @@ terraform/environments/<environment>/<unit>
 
 The active deployment units are:
 
-| Unit       | Deploy Order | Destroy Order | Notes                                                |
-| ---------- | ------------ | ------------- | ---------------------------------------------------- |
-| `security` | 1            | 3             | Creates shared IAM resources.                        |
-| `dynamodb` | 2            | 2             | Creates application data tables.                     |
-| `api`      | 3            | 1             | Creates API Gateway, Lambda, Lambda layer, and logs. |
+| Unit       | Deploy Order | Destroy Order | Notes                                                                                         |
+| ---------- | ------------ | ------------- | --------------------------------------------------------------------------------------------- |
+| `security` | 1            | 3             | Creates shared IAM resources.                                                                 |
+| `dynamodb` | 1            | 2             | Creates application data tables; runs in parallel with `security`.                            |
+| `api`      | 2            | 1             | Deploys after `security` and `dynamodb`. Creates API Gateway, Lambda, Lambda layer, and logs. |
+
+`security` and `dynamodb` are independent units, so the full-environment
+workflows run them in parallel. `api` needs the `security` IAM role and the
+workflows start it only after both `security` and `dynamodb` succeed.
 
 The `api` Terraform unit prepares the Lambda dependency layer during planning
 via the Terraform external provider. The generated file is
@@ -101,11 +105,11 @@ permissions to:
 
 Pushing to `main` runs `Deploy Dev Environment`.
 
-The workflow deploys units in this order:
+The workflow deploys `security` and `dynamodb` in parallel, then deploys `api`
+after both finish:
 
-1. `security`
-2. `dynamodb`
-3. `api`
+1. `security` and `dynamodb` (parallel)
+2. `api`
 
 Each unit calls the shared reusable workflow. A Terragrunt plan runs first. If
 the plan exits with code `0`, the job publishes a no-changes summary and stops.
@@ -120,14 +124,12 @@ when you want to redeploy the full `dev` stack without pushing a new commit.
 
 ## Manual Production Deployment
 
-Use `Deploy Prod Environment` when you want to deploy all `prod` units in
-dependency order with GitHub environment protections.
+Use `Deploy Prod Environment` when you want to deploy all `prod` units under
+GitHub environment protections. Like the dev workflow, it deploys `security`
+and `dynamodb` in parallel, then deploys `api` after both finish:
 
-The workflow deploys units in this order:
-
-1. `security`
-2. `dynamodb`
-3. `api`
+1. `security` and `dynamodb` (parallel)
+2. `api`
 
 It targets the Terragrunt `prod` environment, runs the plan job under the
 GitHub environment `prod-plan`, and runs the apply job under the GitHub
@@ -150,11 +152,8 @@ It also handles one-unit destroy flows when you explicitly confirm
    a destroy plan and destroy apply for that unit.
 8. Start the workflow.
 
-Use the normal deploy order when applying related changes:
-
-1. `security`
-2. `dynamodb`
-3. `api`
+When applying related changes, deploy `api` last. `security` and `dynamodb`
+are independent, so deploy them in any order first.
 
 Deploy `api` after dependency changes to `src/requirements.txt` or Lambda source
 changes. Terraform builds the Lambda dependency layer before reading it into the
