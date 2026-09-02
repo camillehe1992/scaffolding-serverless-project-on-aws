@@ -1,7 +1,8 @@
 # GitHub Actions Workflow Usage Guide
 
 This guide explains how to use the repository GitHub Actions workflows for
-release tagging and Terragrunt-based infrastructure deployment.
+Python application checks, release tagging, and Terragrunt-based infrastructure
+deployment.
 
 ## Workflow Catalog
 
@@ -9,10 +10,31 @@ release tagging and Terragrunt-based infrastructure deployment.
 | ------------------------------ | -------------------------------------------------- | ------------------------- | -------------------------------------------------------- |
 | Create Release Tag             | `.github/workflows/create-release-tag.yml`         | Manual                    | Creates a Git tag and GitHub release from `VERSION.txt`. |
 | Deploy Development Environment | `.github/workflows/deploy-dev.yml`                 | Push to `main`            | Deploys the full `dev` environment in dependency order.  |
+| Python CI                      | `.github/workflows/python-ci.yml`                  | Pull request, push        | Runs unit tests and pylint for the Python application.   |
 | Terraform Checks               | `.github/workflows/terraform-checks.yml`           | Pull request              | Runs non-AWS Terraform, Terragrunt, and workflow checks. |
 | Terragrunt Unit Deploy         | `.github/workflows/terragrunt-unit-deploy.yml`     | Manual                    | Plans and applies one Terragrunt unit.                   |
 | Terragrunt Unit Destroy        | `.github/workflows/terragrunt-unit-destroy.yml`    | Manual                    | Plans and destroys one Terragrunt unit.                  |
 | Reusable Terragrunt Deployment | `.github/workflows/reusable-terragrunt-deploy.yml` | Called by other workflows | Shared deployment implementation. Do not run directly.   |
+
+## Python CI
+
+`Python CI` validates the Lambda application code under `src`.
+
+It runs when:
+
+- A pull request changes `src/**` or `.github/workflows/python-ci.yml`.
+- A push to `main` or `develop` changes `src/**` or
+  `.github/workflows/python-ci.yml`.
+
+It performs these checks:
+
+- Installs dependencies from `src/requirements-dev.txt`.
+- Runs `pytest` for `src/tests/unit/`.
+- Runs `pylint` for `src/portal/app`, `src/tests/unit`, and
+  `src/tests/conftest.py`.
+
+Use this workflow as the primary CI signal for Python application changes. It
+does not validate Terraform or Terragrunt infrastructure changes.
 
 ## Terraform Checks
 
@@ -23,7 +45,7 @@ runs static checks:
 - Terraform formatting
 - Terragrunt HCL formatting
 - TFLint
-- actionlint
+- actionlint with ShellCheck integration for workflow shell scripts
 
 ## Deployment Model
 
@@ -50,14 +72,11 @@ and downloads it before applying the saved plan.
 
 ## Required GitHub Configuration
 
-Create GitHub environments named `dev`, `prod-plan`, and `prod` before running
-deployment workflows. The `prod-plan` environment is used for production plan
-variables and must not require manual approval. The `prod` environment is used
-for production apply jobs and should require manual approval.
+Create a GitHub environment named `dev` before running deployment workflows.
+The current workflows only expose the implemented development deployment path.
 
-Do not configure required reviewers on `dev` or `prod-plan` unless you want
-approval before those jobs start. Production apply approval should be attached
-only to the `prod` GitHub environment.
+Do not configure required reviewers on `dev` unless you want approval before
+development jobs start.
 
 Set these environment or repository variables:
 
@@ -97,8 +116,8 @@ merged to `main`.
 ## Manual Unit Deployment
 
 Use `Terragrunt Unit Deploy` when you need to deploy one unit without running
-the full development deployment. Choose `dev` for development or `prod` for
-production.
+the full development deployment. The current manual workflow only supports the
+implemented `dev` environment.
 
 1. Open the repository in GitHub.
 2. Go to **Actions**.
@@ -118,12 +137,10 @@ Deploy `api` after dependency changes to `src/requirements.txt` or Lambda source
 changes. Terraform builds the Lambda dependency layer before reading it into the
 `api` unit, reusing the existing zip when the requirements hash still matches.
 
-For production deployments, the same workflow splits plan and apply into
-separate jobs. The plan job targets Terraform environment `prod` while using
-GitHub environment `prod-plan`, so it can run without manual approval. If the
-plan reports changes, the apply job targets Terraform environment `prod` and
-uses GitHub environment `prod`, where required reviewers can approve or reject
-the actual infrastructure change.
+Production deployment is not currently wired into the repository workflows.
+Before reintroducing `prod` in GitHub Actions, add the missing
+`terraform/environments/prod/*/terragrunt.hcl` unit configuration and then
+update the workflow inputs and this guide together.
 
 ## Manual Unit Destroy
 
@@ -195,14 +212,28 @@ This prevents overlapping deployments for the same Terraform environment and
 unit while allowing different units to run according to their workflow
 dependencies.
 
+`Terraform Checks` runs for pull requests that change workflow files,
+`.pre-commit-config.yaml`, Terraform/Terragrunt files, or the API dependency
+packaging script at `scripts/build-dependencies-zip.sh`.
+
+The workflow installs `actionlint` on the runner and verifies that
+`shellcheck` is available before linting workflow files. This keeps shell
+validation enabled for inline Bash used in GitHub Actions jobs.
+
+Common tool versions such as Python, Terraform, and Terragrunt are declared at
+the workflow `env` level so each workflow keeps a single local source of truth
+for upgrades instead of repeating the same version values across multiple jobs.
+
+Legacy helper scripts under `scripts/ci/` are no longer part of the active
+workflow path. Current GitHub Actions automation is defined directly in
+`.github/workflows/` and the reusable Terragrunt deployment workflow.
+
 ## Operational Checks
 
 Before running a workflow, confirm:
 
 - The target GitHub environment is correct.
 - The target GitHub environment maps to the intended Terraform environment.
-- `prod-plan` has no required reviewers.
-- `prod` has the required production apply reviewers.
 - `ROLE_TO_ASSUME` points to the expected AWS account.
 - `AWS_REGION` matches `terraform/environments/root.hcl`.
 - The Terragrunt unit exists under `terraform/environments/<terraform-environment>`.
