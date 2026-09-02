@@ -118,7 +118,7 @@ Likely files:
 
 ## Nice To Have After Core Fixes
 
-- [ ] Review naming consistency between `portal`, `Todos/Users API`, and `slstemplate`.
+- [ ] Review naming consistency between `portal`, `Todos/Users API`, and `sls-template`.
 - [ ] Audit dead code or template leftovers such as unused imports, stale comments, or currently unused modules.
 - [ ] Consider adding one short architecture note explaining why the repo uses Powertools + PynamoDB + Terragrunt.
 
