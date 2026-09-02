@@ -2,7 +2,7 @@
 module "lambda_execution_role" {
   source = "../../modules/iam_role"
 
-  role_name        = "${local.resource_prefix}-lambda-exection-role"
+  role_name        = "${local.resource_prefix}-lambda-execution-role"
   role_description = "The execution role grants the Lambda function permission to make AWS API calls"
   principals = {
     "Service" = {

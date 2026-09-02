@@ -22,10 +22,11 @@ os.environ["AWS_ACCESS_KEY_ID"] = "testing"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
 os.environ["AWS_REGION"] = "ap-southeast-1"
 os.environ["AWS_DEFAULT_REGION"] = "ap-southeast-1"
-os.environ["ENVIRONMENT"] = "test"
-os.environ["APPLICATION_NAME"] = "slstemplate"
-os.environ["TODOS_TABLE_NAME"] = "test-sls-template-todos"
-os.environ["USERS_TABLE_NAME"] = "test-sls-template-users"
+os.environ["ENVIRONMENT"] = "dev"
+os.environ["APPLICATION_NAME"] = "sls-template"
+os.environ["APP_VERSION"] = "0.0.1"
+os.environ["TODOS_TABLE_NAME"] = "dev-sls-template-todos"
+os.environ["USERS_TABLE_NAME"] = "dev-sls-template-users"
 
 from app.settings import Config  # noqa: E402  # pylint: disable=wrong-import-position
 

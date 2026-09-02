@@ -23,7 +23,8 @@ sys.path.insert(0, str(PORTAL_ROOT))
 # Set minimal env vars for local run
 os.environ.setdefault("AWS_REGION", "ap-southeast-1")
 os.environ.setdefault("ENVIRONMENT", "dev")
-os.environ.setdefault("APPLICATION_NAME", "slstemplate")
+os.environ.setdefault("APPLICATION_NAME", "sls-template")
+os.environ.setdefault("APP_VERSION", "0.0.1")
 os.environ.setdefault("LOG_LEVEL", "DEBUG")
 
 

@@ -7,11 +7,11 @@ variable "tags" {
 
 variable "env" {
   type        = string
-  description = "The environment of project, such as dev, int, prod"
+  description = "The environment of application, such as dev or prod"
   default     = "dev"
   validation {
-    condition     = contains(["dev", "int", "prod"], var.env)
-    error_message = "The env value must be dev, int, or prod"
+    condition     = contains(["dev", "prod"], var.env)
+    error_message = "The env value must be dev or prod"
   }
 }
 

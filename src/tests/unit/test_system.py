@@ -17,6 +17,8 @@ def test_system_info_returns_application_metadata(api_event, lambda_context):
 
     assert response["statusCode"] == 200
     body = json.loads(response["body"])
-    assert body["application_name"] == "slstemplate"
-    assert body["environment"] == "test"
+    assert body["version"] == "0.0.1"
+    assert body["service"] == "sls-template"
+    assert body["application_name"] == "sls-template"
+    assert body["environment"] == "dev"
     assert body["current_datetime"]
