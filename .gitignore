@@ -206,3 +206,6 @@ terragrunt.log
 
 # Build files
 .build/
+
+# Local git worktrees
+.worktrees/

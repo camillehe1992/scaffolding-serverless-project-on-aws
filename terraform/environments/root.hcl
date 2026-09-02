@@ -8,9 +8,8 @@ locals {
 
   # Region configuration
   regions = {
-    dev     = "ap-southeast-1"
-    staging = "ap-southeast-1"
-    prod    = "ap-southeast-1"
+    dev  = "ap-southeast-1"
+    prod = "ap-southeast-1"
   }
 
   # Get current account from the active AWS credentials.

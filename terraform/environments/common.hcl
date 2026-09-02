@@ -11,5 +11,5 @@ locals {
   }
 
   # Application name
-  application_name = "slstemplate"
+  application_name = "sls-template"
 }

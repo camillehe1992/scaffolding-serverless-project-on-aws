@@ -7,7 +7,7 @@ release tagging and Terragrunt-based infrastructure deployment.
 
 | Workflow                       | File                                               | Trigger                   | Purpose                                                  |
 | ------------------------------ | -------------------------------------------------- | ------------------------- | -------------------------------------------------------- |
-| Create Release Tag             | `.github/workflows/create-release-tag.yml`         | Push to `main`            | Creates a Git tag and GitHub release from `VERSION.txt`. |
+| Create Release Tag             | `.github/workflows/create-release-tag.yml`         | Manual                    | Creates a Git tag and GitHub release from `VERSION.txt`. |
 | Deploy Development Environment | `.github/workflows/deploy-dev.yml`                 | Push to `main`            | Deploys the full `dev` environment in dependency order.  |
 | Terraform Checks               | `.github/workflows/terraform-checks.yml`           | Pull request              | Runs non-AWS Terraform, Terragrunt, and workflow checks. |
 | Terragrunt Unit Deploy         | `.github/workflows/terragrunt-unit-deploy.yml`     | Manual                    | Plans and applies one Terragrunt unit.                   |
@@ -149,7 +149,7 @@ environment, AWS account, and approval path have all been verified.
 
 ## Release Tagging
 
-Pushing to `main` also runs `Create Release Tag`.
+`Create Release Tag` is a manual workflow.
 
 The workflow:
 
@@ -157,7 +157,10 @@ The workflow:
 2. Creates or updates the matching Git tag.
 3. Creates a GitHub release for that tag.
 
-Update `VERSION.txt` before merging release changes to `main`.
+Use this flow when you want to publish a release explicitly, independent of the
+normal `dev` deployment workflow.
+
+Update `VERSION.txt` before running the release workflow.
 
 ## Reusable Workflow Behavior
 

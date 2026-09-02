@@ -6,13 +6,13 @@ variable "tags" {
 
 variable "env" {
   type        = string
-  description = "The environment of project, such as dev, int, prod"
+  description = "The environment of application, such as dev or prod"
   default     = "dev"
 }
 
 variable "application_name" {
   type        = string
-  description = "The nickname of project. Should be lowercase without special chars"
+  description = "The name of application. Should be lowercase without special chars"
 }
 
 variable "billing_mode" {

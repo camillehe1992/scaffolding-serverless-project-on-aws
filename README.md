@@ -3,7 +3,7 @@
 
 [![license](https://img.shields.io/badge/license-apache-blue.svg)](https://github.com/camillehe1992/scaffolding-serverless-project-on-aws/blob/main/LICENSE)
 [![python-3.14](https://img.shields.io/badge/python-3.14-blue.svg)](https://www.python.org/downloads/)
-[![version](https://img.shields.io/badge/version-0.1.2-green.svg)](https://github.com/camillehe1992/scaffolding-serverless-project-on-aws/releases/tag/v0.1.2)
+[![version](https://img.shields.io/badge/version-0.0.1-green.svg)](https://github.com/camillehe1992/scaffolding-serverless-project-on-aws/releases/tag/v0.0.1)
 
 The project is an AWS cloud native serverless application, including API Gateway, Lambda function (with layers), and Dynamodb for data persistence. However, AWS provides a variety of storage services and you should make the decisition as you needs.
 
@@ -56,7 +56,7 @@ Follow [DEVELOPMENT.md](./docs/DEVELOPMENT.md) when you want to setup a developm
 
 Follow [terraform/README.md](./terraform/README.md) to deploy project infrastructure from a local machine.
 
-Follow [docs/GITHUB_ACTIONS.md](/docs/GITHUB_ACTIONS.md) to deploy project infrastructure via CICD pipelines.
+Follow [docs/GITHUB_ACTIONS.md](./docs/GITHUB_ACTIONS.md) for deployment and release workflows in GitHub Actions.
 
 ## References
 

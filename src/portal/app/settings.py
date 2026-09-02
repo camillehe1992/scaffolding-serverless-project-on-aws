@@ -31,7 +31,7 @@ def _getenv_bool(key: str, default: str = "false") -> bool:
 # Application metadata
 # --------------------------------------------------------------------------- #
 
-APP_VERSION: str = _getenv("APP_VERSION", "1.0.0").replace("\n", "")
+APP_VERSION: str = _getenv("APP_VERSION", "0.0.1").replace("\n", "")
 ENVIRONMENT: str = _getenv("ENVIRONMENT", "dev")
 APPLICATION_NAME: str = _getenv("APPLICATION_NAME", "sls-template")
 

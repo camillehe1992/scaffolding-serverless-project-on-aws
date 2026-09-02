@@ -10,8 +10,8 @@ variable "env" {
   description = "The environment of application, such as dev, prod"
   default     = "dev"
   validation {
-    condition     = contains(["dev", "staging", "prod"], var.env)
-    error_message = "The env value must be dev, staging, or prod"
+    condition     = contains(["dev", "prod"], var.env)
+    error_message = "The env value must be dev or prod"
   }
 }
 
