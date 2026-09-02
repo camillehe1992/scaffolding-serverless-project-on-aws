@@ -22,13 +22,9 @@ class InfrastructureContractsTest(unittest.TestCase):
         deploy_workflow = (
             REPO_ROOT / ".github" / "workflows" / "terragrunt-unit-deploy.yml"
         ).read_text(encoding="utf-8")
-        destroy_workflow = (
-            REPO_ROOT / ".github" / "workflows" / "terragrunt-unit-destroy.yml"
-        ).read_text(encoding="utf-8")
         prod_full_deploy_workflow = REPO_ROOT / ".github" / "workflows" / "deploy-prod.yml"
 
         self.assertIn("- prod", deploy_workflow)
-        self.assertIn("- prod", destroy_workflow)
         self.assertTrue(prod_full_deploy_workflow.exists())
 
     def test_deploy_dev_workflow_only_runs_for_deployment_relevant_paths(self) -> None:
@@ -36,6 +32,7 @@ class InfrastructureContractsTest(unittest.TestCase):
             REPO_ROOT / ".github" / "workflows" / "deploy-dev.yml"
         ).read_text(encoding="utf-8")
 
+        self.assertIn("workflow_dispatch:", deploy_dev_workflow)
         self.assertIn("paths:", deploy_dev_workflow)
         self.assertIn("- \".github/workflows/**\"", deploy_dev_workflow)
         self.assertIn("- \"scripts/build-dependencies-zip.sh\"", deploy_dev_workflow)
@@ -49,7 +46,7 @@ class InfrastructureContractsTest(unittest.TestCase):
 
         self.assertIn("TF_PLUGIN_CACHE_DIR", reusable_workflow)
         self.assertIn("plugin_cache_dir", reusable_workflow)
-        self.assertIn("actions/cache@v4", reusable_workflow)
+        self.assertIn("actions/cache@v5", reusable_workflow)
 
     def test_api_build_uses_pip_cache(self) -> None:
         reusable_workflow = (
@@ -62,6 +59,22 @@ class InfrastructureContractsTest(unittest.TestCase):
         self.assertIn("cache: pip", reusable_workflow)
         self.assertIn("cache-dependency-path: src/requirements.txt", reusable_workflow)
         self.assertNotIn("--no-cache-dir", build_dependencies_script)
+
+    def test_unit_deploy_workflow_handles_destroy_with_delete_confirmation(self) -> None:
+        deploy_workflow = (
+            REPO_ROOT / ".github" / "workflows" / "terragrunt-unit-deploy.yml"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("confirm_destroy", deploy_workflow)
+        self.assertIn("Type DELETE to destroy instead of deploy", deploy_workflow)
+        self.assertIn("DELETE", deploy_workflow)
+        self.assertIn("is_destroy:", deploy_workflow)
+        self.assertIn("inputs.confirm_destroy == 'DELETE'", deploy_workflow)
+
+    def test_unit_destroy_workflow_is_removed(self) -> None:
+        destroy_workflow = REPO_ROOT / ".github" / "workflows" / "terragrunt-unit-destroy.yml"
+
+        self.assertFalse(destroy_workflow.exists())
 
 
 if __name__ == "__main__":

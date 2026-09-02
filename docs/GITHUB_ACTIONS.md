@@ -8,18 +8,17 @@ deployment.
 
 | Workflow                       | File                                               | Trigger                   | Purpose                                                  |
 | ------------------------------ | -------------------------------------------------- | ------------------------- | -------------------------------------------------------- |
-| Create Release Tag             | `.github/workflows/create-release-tag.yml`         | Manual                    | Creates a Git tag and GitHub release from `VERSION.txt`. |
-| Deploy Development Environment | `.github/workflows/deploy-dev.yml`                 | Push to `main`            | Deploys the full `dev` environment in dependency order.  |
-| Deploy Production Environment  | `.github/workflows/deploy-prod.yml`                | Manual                    | Deploys the full `prod` environment in dependency order. |
-| Python CI                      | `.github/workflows/python-ci.yml`                  | Pull request, push        | Runs unit tests and pylint for the Python application.   |
-| Terraform Checks               | `.github/workflows/terraform-checks.yml`           | Pull request              | Runs non-AWS Terraform, Terragrunt, and workflow checks. |
-| Terragrunt Unit Deploy         | `.github/workflows/terragrunt-unit-deploy.yml`     | Manual                    | Plans and applies one Terragrunt unit.                   |
-| Terragrunt Unit Destroy        | `.github/workflows/terragrunt-unit-destroy.yml`    | Manual                    | Plans and destroys one Terragrunt unit.                  |
-| Reusable Terragrunt Deployment | `.github/workflows/reusable-terragrunt-deploy.yml` | Called by other workflows | Shared deployment implementation. Do not run directly.   |
+| Publish Release Tag                | `.github/workflows/create-release-tag.yml`         | Manual                    | Creates a Git tag and GitHub release from `VERSION.txt`. |
+| Deploy Dev Environment             | `.github/workflows/deploy-dev.yml`                 | Push to `main`, manual    | Deploys the full `dev` environment in dependency order.  |
+| Deploy Prod Environment            | `.github/workflows/deploy-prod.yml`                | Manual                    | Deploys the full `prod` environment in dependency order. |
+| Validate Python App                | `.github/workflows/python-ci.yml`                  | Pull request, push        | Runs unit tests and pylint for the Python application.   |
+| Validate Terraform and Workflows   | `.github/workflows/terraform-checks.yml`           | Pull request              | Runs non-AWS Terraform, Terragrunt, and workflow checks. |
+| Deploy or Destroy Terragrunt Unit  | `.github/workflows/terragrunt-unit-deploy.yml`     | Manual                    | Plans and applies one Terragrunt unit, or destroys it when `DELETE` is confirmed. |
+| Run Terragrunt Unit Plan and Apply | `.github/workflows/reusable-terragrunt-deploy.yml` | Called by other workflows | Shared deployment implementation. Do not run directly.   |
 
-## Python CI
+## Validate Python App
 
-`Python CI` validates the Lambda application code under `src`.
+`Validate Python App` validates the Lambda application code under `src`.
 
 It runs when:
 
@@ -37,9 +36,9 @@ It performs these checks:
 Use this workflow as the primary CI signal for Python application changes. It
 does not validate Terraform or Terragrunt infrastructure changes.
 
-## Terraform Checks
+## Validate Terraform And Workflows
 
-`Terraform Checks` runs on pull requests that touch Terraform, Terragrunt, or
+`Validate Terraform and Workflows` runs on pull requests that touch Terraform, Terragrunt, or
 GitHub Actions workflow files. It does not configure AWS credentials and only
 runs static checks:
 
@@ -100,7 +99,7 @@ permissions to:
 
 ## Automatic Development Deployment
 
-Pushing to `main` runs `Deploy Development Environment`.
+Pushing to `main` runs `Deploy Dev Environment`.
 
 The workflow deploys units in this order:
 
@@ -116,9 +115,12 @@ If the plan exits with code `1`, the job fails and does not apply changes.
 Use this workflow for normal development environment updates after changes are
 merged to `main`.
 
+You can also run `Deploy Dev Environment` manually from **Actions**
+when you want to redeploy the full `dev` stack without pushing a new commit.
+
 ## Manual Production Deployment
 
-Use `Deploy Production Environment` when you want to deploy all `prod` units in
+Use `Deploy Prod Environment` when you want to deploy all `prod` units in
 dependency order with GitHub environment protections.
 
 The workflow deploys units in this order:
@@ -133,16 +135,20 @@ environment `prod`.
 
 ## Manual Unit Deployment
 
-Use `Terragrunt Unit Deploy` when you need to deploy one unit without running
+Use `Deploy or Destroy Terragrunt Unit` when you need to deploy one unit without running
 the full environment deployment. The workflow supports both `dev` and `prod`.
+It also handles one-unit destroy flows when you explicitly confirm
+`confirm_destroy=DELETE`.
 
 1. Open the repository in GitHub.
 2. Go to **Actions**.
-3. Select **Terragrunt Unit Deploy**.
+3. Select **Deploy or Destroy Terragrunt Unit**.
 4. Select **Run workflow**.
 5. Choose the target `environment`.
 6. Choose the `unit`.
-7. Start the workflow.
+7. Leave `confirm_destroy` empty for a normal deploy, or type `DELETE` to run
+   a destroy plan and destroy apply for that unit.
+8. Start the workflow.
 
 Use the normal deploy order when applying related changes:
 
@@ -156,16 +162,9 @@ changes. Terraform builds the Lambda dependency layer before reading it into the
 
 ## Manual Unit Destroy
 
-Use `Terragrunt Unit Destroy` when one environment unit should be removed. It
-supports both `dev` and `prod`.
-
-1. Open the repository in GitHub.
-2. Go to **Actions**.
-3. Select **Terragrunt Unit Destroy**.
-4. Select **Run workflow**.
-5. Choose the target `environment`.
-6. Choose the `unit`.
-7. Start the workflow.
+Use `Deploy or Destroy Terragrunt Unit` for one-unit destroy operations too. Set
+`confirm_destroy` to `DELETE` to switch the workflow from deploy mode into
+destroy mode.
 
 Destroy units in reverse dependency order:
 
@@ -178,7 +177,7 @@ environment, AWS account, and approval path have all been verified.
 
 ## Release Tagging
 
-`Create Release Tag` is a manual workflow.
+`Publish Release Tag` is a manual workflow.
 
 The workflow:
 
@@ -193,7 +192,7 @@ Update `VERSION.txt` before running the release workflow.
 
 ## Reusable Workflow Behavior
 
-`Reusable Terragrunt Deployment` is called by the automatic and manual
+`Run Terragrunt Unit Plan and Apply` is called by the automatic and manual
 deployment workflows. It performs the common deployment sequence:
 
 1. Checks out the repository.
@@ -249,7 +248,7 @@ This prevents overlapping deployments for the same Terraform environment and
 unit while allowing different units to run according to their workflow
 dependencies.
 
-`Terraform Checks` runs for pull requests that change workflow files,
+`Validate Terraform and Workflows` runs for pull requests that change workflow files,
 `.pre-commit-config.yaml`, Terraform/Terragrunt files, or the API dependency
 packaging script at `scripts/build-dependencies-zip.sh`.
 

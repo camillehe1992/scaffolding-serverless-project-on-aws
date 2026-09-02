@@ -1,4 +1,4 @@
-name: Reusable Terragrunt Deployment
+name: Run Terragrunt Unit Plan and Apply
 
 on:
   workflow_call:
@@ -76,7 +76,7 @@ jobs:
 
       - name: Cache Terraform Providers
         id: cache-terraform-providers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.TF_PLUGIN_CACHE_DIR }}
           key: terraform-providers-${{ runner.os }}-${{ env.TF_VERSION }}-${{ hashFiles('terraform/**/*.hcl', 'terraform/**/*.tf', '.github/workflows/reusable-terragrunt-deploy.yml') }}
@@ -238,7 +238,7 @@ jobs:
 
       - name: Cache Terraform Providers
         id: cache-terraform-providers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.TF_PLUGIN_CACHE_DIR }}
           key: terraform-providers-${{ runner.os }}-${{ env.TF_VERSION }}-${{ hashFiles('terraform/**/*.hcl', 'terraform/**/*.tf', '.github/workflows/reusable-terragrunt-deploy.yml') }}

@@ -1,10 +1,10 @@
-name: Terragrunt Unit Deploy
+name: Deploy or Destroy Terragrunt Unit
 
 on:
   workflow_dispatch:
     inputs:
       unit:
-        description: Terragrunt unit to apply
+        description: Terragrunt unit to deploy or destroy
         type: choice
         options:
           - security
@@ -20,8 +20,13 @@ on:
           - prod
         default: dev
         required: true
+      confirm_destroy:
+        description: Type DELETE to destroy instead of deploy
+        type: string
+        default: ""
+        required: false
 
-run-name: Deploy ${{ inputs.unit }} to ${{ inputs.environment }} environment
+run-name: ${{ inputs.confirm_destroy == 'DELETE' && format('Destroy {0} from {1} environment', inputs.unit, inputs.environment) || format('Deploy {0} to {1} environment', inputs.unit, inputs.environment) }}
 
 permissions:
   actions: read
@@ -30,10 +35,11 @@ permissions:
 
 jobs:
   deploy-unit:
-    name: Deploy
+    name: ${{ inputs.confirm_destroy == 'DELETE' && 'Destroy' || 'Deploy' }}
     uses: ./.github/workflows/reusable-terragrunt-deploy.yml
     with:
       environment: ${{ inputs.environment }}
       plan_environment: ${{ inputs.environment == 'prod' && 'prod-plan' || inputs.environment }}
       apply_environment: ${{ inputs.environment == 'prod' && 'prod' || inputs.environment }}
+      is_destroy: ${{ inputs.confirm_destroy == 'DELETE' }}
       unit: ${{ inputs.unit }}
