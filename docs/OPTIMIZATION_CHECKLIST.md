@@ -2,6 +2,8 @@
 
 > Context: this repository is positioned as a teaching/scaffold project, not a production-grade application. The goal of these optimizations is to make the example safer, clearer, and more internally consistent for learners and future extension work.
 
+> Execution status: P0 complete (merged in #8). P1-P4 are implemented on the unified feature branch `codex/optimization-checklist`.
+
 ## Prioritization Rules
 
 - Fix issues that teach the wrong architectural or coding pattern first.
@@ -32,10 +34,10 @@ Likely files:
 
 ## P1: Fix Timestamp Defaults And Persistence Examples
 
-- [ ] Replace eager timestamp defaults with callables so new records get the creation time at write time, not import time.
-- [ ] Make `Todo` timestamps follow the same pattern instead of defaulting to empty strings.
-- [ ] Standardize timestamp formatting between create and update paths.
-- [ ] Ensure response models and stored values stay compatible after the timestamp cleanup.
+- [x] Replace eager timestamp defaults with callables so new records get the creation time at write time, not import time.
+- [x] Make `Todo` timestamps follow the same pattern instead of defaulting to empty strings.
+- [x] Standardize timestamp formatting between create and update paths.
+- [x] Ensure response models and stored values stay compatible after the timestamp cleanup.
 
 Acceptance criteria:
 
@@ -53,11 +55,11 @@ Likely files:
 
 ## P2: Tighten Error Handling And HTTP Boundary Behavior
 
-- [ ] Remove broad catch-and-rethrow patterns that hide the original exception type.
-- [ ] Let framework-managed exceptions pass through when appropriate.
-- [ ] Keep business errors explicit, especially `404` cases for missing resources.
-- [ ] Normalize logging so unexpected exceptions are logged once at the right boundary.
-- [ ] Decide whether to restore a dedicated not-found handler or rely on the framework default, and document that choice in code.
+- [x] Remove broad catch-and-rethrow patterns that hide the original exception type.
+- [x] Let framework-managed exceptions pass through when appropriate.
+- [x] Keep business errors explicit, especially `404` cases for missing resources.
+- [x] Normalize logging so unexpected exceptions are logged once at the right boundary.
+- [x] Decide whether to restore a dedicated not-found handler or rely on the framework default, and document that choice in code.
 
 Acceptance criteria:
 
@@ -74,11 +76,11 @@ Likely files:
 
 ## P3: Build A Minimal Real Test Suite And Python CI Gate
 
-- [ ] Replace the placeholder unit test with meaningful tests around routing and handler behavior.
-- [ ] Add tests for the corrected `Todo` identity semantics.
-- [ ] Add tests for timestamp behavior and missing-resource paths.
-- [ ] Add a Python-focused CI workflow for unit tests and linting.
-- [ ] Keep the test scope lightweight so the scaffold stays easy to run locally.
+- [x] Replace the placeholder unit test with meaningful tests around routing and handler behavior.
+- [x] Add tests for the corrected `Todo` identity semantics.
+- [x] Add tests for timestamp behavior and missing-resource paths.
+- [x] Add a Python-focused CI workflow for unit tests and linting.
+- [x] Keep the test scope lightweight so the scaffold stays easy to run locally.
 
 Acceptance criteria:
 
@@ -96,10 +98,10 @@ Likely files:
 
 ## P4: Repair Local Developer Experience Drift
 
-- [ ] Fix broken `just` recipes in `src/justfile`, especially references to missing helpers.
-- [ ] Correct incorrect test paths in local commands.
-- [ ] Verify the documented commands in `README.md` and `docs/DEVELOPMENT.md` still match the repository.
-- [ ] Make sure a new contributor can follow the documented path without hitting obvious command failures.
+- [x] Fix broken `just` recipes in `src/justfile`, especially references to missing helpers.
+- [x] Correct incorrect test paths in local commands.
+- [x] Verify the documented commands in `README.md` and `docs/DEVELOPMENT.md` still match the repository.
+- [x] Make sure a new contributor can follow the documented path without hitting obvious command failures.
 
 Acceptance criteria:
 

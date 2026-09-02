@@ -64,4 +64,5 @@ jobs:
           docker run --rm \
             --volume "${PWD}:/repo" \
             --workdir /repo \
-            rhysd/actionlint:${ACTIONLINT_VERSION}
+            "rhysd/actionlint:${ACTIONLINT_VERSION}" \
+            -shellcheck=

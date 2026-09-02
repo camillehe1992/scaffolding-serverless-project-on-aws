@@ -15,8 +15,7 @@ def _getenv(key: str, default: Optional[str] = None) -> str:
     """
     Return an environment variable value or raise if not set and no default.
     """
-    value = os.getenv(key, default)
-    if value is None:
+    if (value := os.getenv(key, default)) is None:
         raise RuntimeError(f"Environment variable {key} is required but not set")
     return value
 

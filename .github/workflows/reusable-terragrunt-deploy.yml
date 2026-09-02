@@ -110,7 +110,11 @@ jobs:
         run: |
           set +e
 
-          terragrunt plan $DESTROY_FLAG -detailed-exitcode -no-color > "$PLAN_OUTPUT_FILE" 2>&1
+          if [ -n "$DESTROY_FLAG" ]; then
+            terragrunt plan "$DESTROY_FLAG" -detailed-exitcode -no-color > "$PLAN_OUTPUT_FILE" 2>&1
+          else
+            terragrunt plan -detailed-exitcode -no-color > "$PLAN_OUTPUT_FILE" 2>&1
+          fi
 
           exitcode=$?
           echo "exitcode=${exitcode}"
@@ -120,19 +124,21 @@ jobs:
           if [ "${exitcode}" -eq 2 ]; then
             total_lines=$(wc -l < "$PLAN_OUTPUT_FILE" | tr -d ' ')
 
-            echo "### Terragrunt Plan Output - ${TERRAFORM_ENVIRONMENT}/${UNIT}" >> "$GITHUB_STEP_SUMMARY"
-            echo "<details><summary>Click to expand</summary>" >> "$GITHUB_STEP_SUMMARY"
-            echo "" >> "$GITHUB_STEP_SUMMARY"
-            echo '```terraform' >> "$GITHUB_STEP_SUMMARY"
-            head -n "$PLAN_SUMMARY_LINES" "$PLAN_OUTPUT_FILE" >> "$GITHUB_STEP_SUMMARY"
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
-            if [ "$total_lines" -gt "$PLAN_SUMMARY_LINES" ]; then
-              echo "" >> "$GITHUB_STEP_SUMMARY"
-              echo "_Plan output truncated to ${PLAN_SUMMARY_LINES} lines. See the readable plan output artifact for the full text._" >> "$GITHUB_STEP_SUMMARY"
-            fi
-            echo "" >> "$GITHUB_STEP_SUMMARY"
-            echo "_Full readable plan output is uploaded as a workflow artifact._" >> "$GITHUB_STEP_SUMMARY"
-            echo "</details>" >> "$GITHUB_STEP_SUMMARY"
+            {
+              echo "### Terragrunt Plan Output - ${TERRAFORM_ENVIRONMENT}/${UNIT}"
+              echo "<details><summary>Click to expand</summary>"
+              echo ""
+              echo '```terraform'
+              head -n "$PLAN_SUMMARY_LINES" "$PLAN_OUTPUT_FILE"
+              echo '```'
+              if [ "$total_lines" -gt "$PLAN_SUMMARY_LINES" ]; then
+                echo ""
+                echo "_Plan output truncated to ${PLAN_SUMMARY_LINES} lines. See the readable plan output artifact for the full text._"
+              fi
+              echo ""
+              echo "_Full readable plan output is uploaded as a workflow artifact._"
+              echo "</details>"
+            } >> "$GITHUB_STEP_SUMMARY"
           fi
 
           if [ "${exitcode}" -eq 1 ]; then
@@ -202,9 +208,11 @@ jobs:
         id: publish-plan-only-summary
         if: ${{ !inputs.apply_changes && steps.plan-terragrunt.outputs.exitcode == '2' }}
         run: |
-          echo "### Infrastructure changes planned for ${TERRAFORM_ENVIRONMENT}/${UNIT}" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "Apply was skipped because this workflow is plan-only." >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "### Infrastructure changes planned for ${TERRAFORM_ENVIRONMENT}/${UNIT}"
+            echo ""
+            echo "Apply was skipped because this workflow is plan-only."
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Publish No Changes Summary
         id: publish-no-changes-summary
@@ -312,15 +320,17 @@ jobs:
           TERRAGRUNT_OUTPUT=$(terragrunt apply -auto-approve -no-color terraform.plan)
 
           delimiter="$(openssl rand -hex 8)"
-          echo "summary<<${delimiter}" >> "$GITHUB_OUTPUT"
-          echo "### Terragrunt Apply Output - ${TERRAFORM_ENVIRONMENT}/${UNIT}" >> "$GITHUB_OUTPUT"
-          echo "<details><summary>Click to expand</summary>" >> "$GITHUB_OUTPUT"
-          echo "" >> "$GITHUB_OUTPUT"
-          echo '```terraform' >> "$GITHUB_OUTPUT"
-          echo "$TERRAGRUNT_OUTPUT" >> "$GITHUB_OUTPUT"
-          echo '```' >> "$GITHUB_OUTPUT"
-          echo "</details>" >> "$GITHUB_OUTPUT"
-          echo "${delimiter}" >> "$GITHUB_OUTPUT"
+          {
+            echo "summary<<${delimiter}"
+            echo "### Terragrunt Apply Output - ${TERRAFORM_ENVIRONMENT}/${UNIT}"
+            echo "<details><summary>Click to expand</summary>"
+            echo ""
+            echo '```terraform'
+            echo "$TERRAGRUNT_OUTPUT"
+            echo '```'
+            echo "</details>"
+            echo "${delimiter}"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Publish Apply Summary
         id: publish-apply-summary
