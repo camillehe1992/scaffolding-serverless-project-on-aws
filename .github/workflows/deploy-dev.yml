@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+    paths:
+      - ".github/workflows/**"
+      - "scripts/build-dependencies-zip.sh"
+      - "src/**"
+      - "terraform/**"
 
 permissions:
   actions: read

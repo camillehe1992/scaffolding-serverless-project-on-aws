@@ -63,7 +63,6 @@ rm -f "${DEPS_ZIP}"
 mkdir -p "${DEPS_DIR}/python"
 
 PYTHONDONTWRITEBYTECODE=1 python3 -m pip install \
-    --no-cache-dir \
     -r "${REQ_FILE}" \
     -t "${DEPS_DIR}/python" >&2
 
