@@ -41,7 +41,7 @@ env:
 
 jobs:
   terragrunt-plan:
-    name: Terragrunt Unit Plan
+    name: Plan
     runs-on: ubuntu-latest
     environment: ${{ inputs.plan_environment || inputs.environment }}
     permissions:
@@ -162,7 +162,7 @@ jobs:
           bash "${GITHUB_WORKSPACE}/.github/scripts/write-terragrunt-summary.sh" no-changes >> "$GITHUB_STEP_SUMMARY"
 
   terragrunt-apply:
-    name: Terragrunt Unit Apply
+    name: Apply
     needs: terragrunt-plan
     if: ${{ inputs.apply_changes && needs.terragrunt-plan.outputs.exitcode == '2' }}
     runs-on: ubuntu-latest
