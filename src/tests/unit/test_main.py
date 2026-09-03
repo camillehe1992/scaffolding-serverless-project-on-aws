@@ -1,6 +1,7 @@
 """Lambda entrypoint and HTTP boundary behavior."""
 
 import json
+import re
 
 import pytest
 
@@ -32,6 +33,7 @@ def test_swagger_json_title_includes_uppercase_environment(api_event, lambda_con
     assert response["statusCode"] == 200
     body = json.loads(response["body"])
     assert body["info"]["title"] == "Swagger for SLS `API - DEV"
+    assert re.fullmatch(r"0\.0\.1\.dev\.\d+", body["info"]["version"])
 
 
 def test_swagger_title_formats_dev_and_prod():
