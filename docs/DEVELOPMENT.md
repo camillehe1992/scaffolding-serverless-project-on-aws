@@ -18,12 +18,11 @@ Install the following tools before starting:
 - Terragrunt
 - just
 - pre-commit
-- markdownlint-cli
 
 On macOS, you can install the infrastructure tooling with Homebrew:
 
 ```bash
-brew install awscli terraform terragrunt just pre-commit markdownlint-cli
+brew install awscli terraform terragrunt just pre-commit
 ```
 
 Configure AWS credentials for the account you plan to use:
@@ -65,7 +64,9 @@ Powertools, Pydantic, Boto3, pytest, and coverage are installed locally through
 
 ## Environment Variables
 
-The application reads environment variables for `.env` file in root. Create a `.env` from `.env.sample` file.
+The application reads environment variables from the repository root `.env`
+file. Create `.env` from `.env.sample` before running commands that depend on
+AWS credentials or custom table names.
 
 ## Local Lambda Runs
 
@@ -98,9 +99,7 @@ just unit-test
 cd ..
 ```
 
-Or `just src/unit-test` from root directory directly.
-
-Equivalent direct command:
+Equivalent direct command from the `src` directory:
 
 ```bash
 cd src
@@ -109,7 +108,8 @@ cd ..
 ```
 
 Run integration or end-to-end tests when those suites are present and their
-external dependencies are available:
+external dependencies are available. The `src` justfile skips these commands
+when no matching test files exist:
 
 ```bash
 cd src
@@ -198,7 +198,7 @@ just output-all prod
 cd ..
 ```
 
-Destroy development infrastructure when finished:
+Destroy infrastructure when finished:
 
 ```bash
 just destroy dev

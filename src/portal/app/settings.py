@@ -4,6 +4,7 @@ All environment variables and hard-coded values should be defined here.
 """
 
 import os
+import time
 from typing import Optional
 
 # --------------------------------------------------------------------------- #
@@ -31,9 +32,22 @@ def _getenv_bool(key: str, default: str = "false") -> bool:
 # Application metadata
 # --------------------------------------------------------------------------- #
 
-APP_VERSION: str = _getenv("APP_VERSION", "0.0.1").replace("\n", "")
 ENVIRONMENT: str = _getenv("ENVIRONMENT", "dev")
 APPLICATION_NAME: str = _getenv("APPLICATION_NAME", "sls-template")
+
+
+def format_app_version(base_version: str, environment: str, timestamp: int) -> str:
+    normalized_version = base_version.replace("\n", "")
+    if (normalized_environment := environment.strip().lower()) == "prod":
+        return f"{normalized_version}.{timestamp}"
+    return f"{normalized_version}.{normalized_environment}.{timestamp}"
+
+
+APP_VERSION: str = format_app_version(
+    _getenv("APP_VERSION", "0.0.1"),
+    ENVIRONMENT,
+    int(time.time()),
+)
 
 # --------------------------------------------------------------------------- #
 # Observability
