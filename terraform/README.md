@@ -59,13 +59,12 @@ Install these tools before running local infrastructure commands:
 - Terraform
 - Terragrunt
 - just
-- markdownlint-cli
 - pre-commit
 
 On macOS:
 
 ```bash
-brew install awscli terraform terragrunt just markdownlint-cli pre-commit
+brew install awscli terraform terragrunt just pre-commit
 ```
 
 Enable pre-commit hooks after cloning:
@@ -233,7 +232,9 @@ just hcl-validate
 cd ..
 ```
 
-Clean local Terraform and Terragrunt generated files:
+Clean local Terraform and Terragrunt generated files. This also removes local
+state files under the `terraform` directory, so use it only for disposable
+local artifacts:
 
 ```bash
 cd terraform

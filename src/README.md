@@ -1,60 +1,49 @@
 # Local Python Development Environment Setup
 
-This document describes how to set up a local development environment for this serverless based python project hosted in Lambda function.
+This document covers the Python application under `src/portal`, its tests under
+`src/tests`, and the local commands defined in `src/justfile`.
 
-## Install Python on Local Machine
+## Install Python
 
-- Install Python 3.14+ following <https://www.python.org/downloads/mac-osx/>.
+- Install Python 3.14+ from <https://www.python.org/downloads/mac-osx/>.
 
-## Create Virtual Environment & Install Dependencies
+## Create A Virtual Environment
 
-From root folder of the project, run below commands to create virtual environment and install dependencies.
+From the repository root:
 
 ```bash
-
-# Create virtual environment (Python 3.14+) in local .venv folder
 python3.14 -m venv .venv
-
-# Activate the virtual environment
 source .venv/bin/activate
-
-# Your prompt should change to show (.venv)
-# (.venv) user@Mac src %
-
-# Install dependencies using pip in the virtual environment,
-# and the dependencies will be installed in the virtual environment
 pip install -r src/requirements-dev.txt
-# or run the src just recipe
+```
+
+You can install the same dependencies through the `src` justfile:
+
+```bash
 cd src
 just install
 cd ..
-
-# Exit the virtual environment if needed
-deactivate
 ```
 
-Now, you should have `.venv` folder in the project root folder with all dependencies installed.
+## Local Lambda Runs
 
-## Testing
+Local API Gateway events live in `src/tests/local/events.json`.
 
-### Local Lambda Test
-
-Run lambda function in python on local machine using [python-lambda-local](https://pypi.org/project/python-lambda-local/). All local test files locates in `src/tests/local` folder.
+Run them from the `src` directory:
 
 ```bash
-# Test GET /todos with an event defined in src/tests/local/events.json
-# Run below recipes from src folder
 cd src
 just local-test get_all_todos
-
-just local-test create_todo
+just local-test get_all_users
+just local-test create_user
 cd ..
 ```
 
-### Unit Test
+These commands invoke `tests.local.run`, not `python-lambda-local`.
 
-Run `just unit-test` from the `src` directory to execute unit tests in one
-command. All unit test files locates in `src/tests/unit` folder.
+## Tests
+
+Run unit tests from `src`:
 
 ```bash
 cd src
@@ -62,28 +51,19 @@ just unit-test
 cd ..
 ```
 
-### Integration Test
-
-Run `just integration-test` from the `src` directory to execute integration
-tests in one command. All integration test files locates in
-`src/tests/integration` folder.
+Integration and end-to-end recipes are available, but they skip cleanly when
+there are no matching test files:
 
 ```bash
 cd src
 just integration-test
+just e2e-test
 cd ..
 ```
 
-## Linting & Formatting
+## Linting And Formatting
 
-[Pylint](https://pypi.org/project/pylint/) is a static code analyser for Python 2 or 3.
-
-Pylint analyses your code without actually running it. It checks for errors, enforces a coding standard, looks for code smells, and can make suggestions about how the code could be refactored.
-
-__To keep code quality, passing lint is mandatory to commit your code with pre-commit hooks enabled.__
-
-From the `src` directory, run the same Python lint command used by CI and
-pre-commit:
+Run the same Python lint command used by CI from `src`:
 
 ```bash
 cd src
@@ -91,15 +71,13 @@ pylint portal/app tests/unit tests/conftest.py
 cd ..
 ```
 
-Terraform and Terragrunt hooks are also part of pre-commit. Run all configured
-hooks manually:
+Run all configured pre-commit hooks from the repository root:
 
 ```bash
 pre-commit run --all-files
 ```
 
-[TFLint](https://github.com/terraform-linters/tflint) is not a terraform built-in feature, you need to install the tool on your local machine if you want to pre-lint terraform code before commiting.
+## Notes
 
----
-
-Now, the local development environment is setup.
+- Root-level infrastructure and workflow guidance lives in [docs/DEVELOPMENT.md](../docs/DEVELOPMENT.md) and [terraform/README.md](../terraform/README.md).
+- Deactivate the virtual environment with `deactivate` when you are done.

@@ -23,8 +23,7 @@ deployment.
 It runs when:
 
 - A pull request changes `src/**` or `.github/workflows/python-ci.yml`.
-- A push to `main` or `develop` changes `src/**` or
-  `.github/workflows/python-ci.yml`.
+- A push to `main` changes `src/**` or `.github/workflows/python-ci.yml`.
 
 It performs these checks:
 
