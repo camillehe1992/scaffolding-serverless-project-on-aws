@@ -8,11 +8,16 @@ from app.logging import logger
 from app.routers import todo, system, user
 from app.settings import Config
 
+
+def swagger_title(environment: str) -> str:
+    return f"Swagger for SLS `API - {environment.upper()}"
+
+
 # Enable Swagger UI
 app = APIGatewayRestResolver(enable_validation=True)
 app.enable_swagger(
     version=Config.app_version,
-    title="Swagger for Todos/Users API",
+    title=swagger_title(Config.environment),
     tags=["System", "Todo", "User"],
 )
 
