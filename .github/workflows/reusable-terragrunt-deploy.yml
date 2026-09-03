@@ -61,6 +61,7 @@ jobs:
       DESTROY_FLAG: ${{ inputs.is_destroy && '-destroy' || '' }}
       PLAN_MODE: ${{ inputs.is_destroy && 'destroy' || 'apply' }}
       PLAN_OUTPUT_FILE: terraform-plan-output.txt
+      PLAN_OUTPUT_ARTIFACT_NAME: terraform-plan-output-${{ inputs.environment }}-${{ inputs.unit }}-${{ inputs.is_destroy && 'destroy' || 'apply' }}
       PLAN_METADATA_FILE: terraform-plan-metadata.env
       DEPENDENCIES_LAYER_FILE: .build/dependencies.zip
       PORTAL_ZIP_FILE: .build/portal.zip
@@ -152,17 +153,13 @@ jobs:
         id: publish-plan-only-summary
         if: ${{ !inputs.apply_changes && steps.plan-terragrunt.outputs.exitcode == '2' }}
         run: |
-          {
-            echo "### Infrastructure changes planned for ${TERRAFORM_ENVIRONMENT}/${UNIT}"
-            echo ""
-            echo "Apply was skipped because this workflow is plan-only."
-          } >> "$GITHUB_STEP_SUMMARY"
+          bash "${GITHUB_WORKSPACE}/.github/scripts/write-terragrunt-summary.sh" plan-only >> "$GITHUB_STEP_SUMMARY"
 
       - name: Publish No Changes Summary
         id: publish-no-changes-summary
         if: ${{ steps.plan-terragrunt.outputs.exitcode == '0' }}
         run: |
-          echo "### No infrastructure changes for ${TERRAFORM_ENVIRONMENT}/${UNIT}" >> "$GITHUB_STEP_SUMMARY"
+          bash "${GITHUB_WORKSPACE}/.github/scripts/write-terragrunt-summary.sh" no-changes >> "$GITHUB_STEP_SUMMARY"
 
   terragrunt-apply:
     name: Terragrunt Unit Apply
@@ -241,10 +238,3 @@ jobs:
         id: apply-terragrunt
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: bash "${GITHUB_WORKSPACE}/.github/scripts/apply-terragrunt.sh"
-
-      - name: Publish Apply Summary
-        id: publish-apply-summary
-        env:
-          SUMMARY: ${{ steps.apply-terragrunt.outputs.summary }}
-        run: |
-          echo "$SUMMARY" >> "$GITHUB_STEP_SUMMARY"
